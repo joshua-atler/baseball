@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import * as React from 'react'
 
 import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material'
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -20,9 +20,9 @@ import 'datatables.net-select-dt'
 import SlimSelect from 'slim-select'
 
 import { Consts } from '../../consts/consts.ts'
-import DatePicker, { DateObject } from "react-multi-date-picker"
-import "react-multi-date-picker/styles/backgrounds/bg-dark.css"
-import dayjs from "dayjs"
+import DatePicker, { DateObject } from 'react-multi-date-picker'
+import 'react-multi-date-picker/styles/backgrounds/bg-dark.css'
+import dayjs from 'dayjs'
 // import transition from "react-element-popper/animations/transition"
 
 export default function GamesList({ setSelectedGame }) {

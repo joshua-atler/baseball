@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { Box, Typography, Button, Divider } from "@mui/material";
+import { Box, Typography, Button, Divider } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import GamesList from './GamesList'
-import Boxscore from "./Boxscore";
+import Boxscore from "./Boxscore"
+import Plays from './Plays'
 
 
 
@@ -13,7 +14,7 @@ export default function Games() {
 
     return (
         <>
-            <Grid container spacing={1} id="games-grid">
+            <Grid container spacing={2} id="games-grid">
                 <Grid>
                     <GamesList setSelectedGame={setSelectedGame} />
                 </Grid>
@@ -22,7 +23,7 @@ export default function Games() {
                     <Boxscore selectedGame={selectedGame} />
                 </Grid>
                 <Grid>
-                    <h1>Plays</h1>
+                    <Plays selectedGame={selectedGame} />
                 </Grid>
             </Grid>
         </>
