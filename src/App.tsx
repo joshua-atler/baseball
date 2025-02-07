@@ -17,7 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import CssBaseline from '@mui/material/CssBaseline'
 
 import MainContent from './pages/Home'
-import Games from './pages/Games'
+import Games from './pages/Games/Games.tsx'
 import backgroundImage from './assets/baseballs.jpg'
 
 
@@ -70,8 +70,7 @@ function NavTabs() {
   );
 }
 
-function App() {
-
+export default function App() {
   return (
     <>
       <Router>
@@ -82,7 +81,6 @@ function App() {
             {/* <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default' }}></Box> */}
             <Box
               sx={{
-                // backgroundImage: 'url("https://img.freepik.com/free-photo/baseballs_53876-33526.jpg?t=st=1738553209~exp=1738556809~hmac=dd402a8d3bf7eb3b6f724ad0bc7ff27850ef1f7f42ce5a10f70d4261c0704e67&w=1800")',
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
@@ -103,7 +101,7 @@ function App() {
                 </Link>
               </Typography>
             </Toolbar>
-            <Box sx={{ ml: 2 }}>
+            <Box sx={{ ml: 0 }}>
               <NavTabs />
               <Box sx={{ p: 4 }}>
                 <Routes>
@@ -122,5 +120,3 @@ function App() {
     </>
   )
 }
-
-export default App

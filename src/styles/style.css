@@ -2,6 +2,10 @@
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 } */
 
+#games-grid {
+    font-size: 14px;
+}
+
 h1 {
     font-size: 24px;
     margin: 0px 0px 20px 0px;
@@ -13,7 +17,7 @@ p {
 
 #dt, #dt-box {
     width: 1240px !important;
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 
 p.details {
@@ -163,7 +167,7 @@ table#boxscore>thead>tr:nth-child(1)>th>span {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 40px;
     width: 40%;
     background-color: #555555;
     padding: 10px;
@@ -227,10 +231,10 @@ tr th span.tooltip::after {
     visibility: hidden;
 }
 
-table#boxscore th:last-child span.tooltip::after,
+/* table#boxscore th:last-child span.tooltip::after,
 table#pitchers th:last-child span.tooltip::after {
     left: -20px !important;
-}
+} */
 
 table#pitching-stats tr th span.tooltip::after,
 table#hitting-stats tr th span.tooltip::after {

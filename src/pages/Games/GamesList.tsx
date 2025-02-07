@@ -6,11 +6,10 @@ import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProg
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import Select from '../components/Select'
 
-import '../styles/style.css';
-import '../styles/dtStyle.css'
-import '../styles/datepickerStyle.css';
-import '../styles/slimSelectStyle.css';
-// import '../styles/cssToggleSwitchStyle.css';
+import '../../styles/style.css'
+import '../../styles/dtStyle.css'
+import '../../styles/datepickerStyle.css'
+import '../../styles/slimSelectStyle.css'
 
 import $ from 'jquery'
 import datepicker from 'js-datepicker'
@@ -20,13 +19,13 @@ import 'datatables.net-select-dt'
 // import ProgressBar from 'progressbar.js'
 import SlimSelect from 'slim-select'
 
-import { Consts } from '../consts/consts.ts'
+import { Consts } from '../../consts/consts.ts'
 import DatePicker, { DateObject } from "react-multi-date-picker"
 import "react-multi-date-picker/styles/backgrounds/bg-dark.css"
 import dayjs from "dayjs"
 // import transition from "react-element-popper/animations/transition"
 
-export default function Games() {
+export default function GamesList({ setSelectedGame }) {
     const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
     const datesRef = React.useRef(dates);
     const [progress, setProgress] = React.useState(0);
@@ -454,16 +453,18 @@ export default function Games() {
         }
 
 
-        // dt.on('select', function (e, dt, type, indexes) {
-        //     var selectedIndex = indexes[0];
-        //     var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: gamesDetails[selectedIndex] });
-        //     document.dispatchEvent(gameDetailsEvent);
-        // });
+        dt.on('select', function (e, dt, type, indexes) {
+            var selectedIndex = indexes[0];
+            setSelectedGame(gamesDetails[selectedIndex]);
+            // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: gamesDetails[selectedIndex] });
+            // document.dispatchEvent(gameDetailsEvent);
+        });
 
-        // dt.on('deselect', function (e, dt, type, indexes) {
-        //     var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: null });
-        //     document.dispatchEvent(gameDetailsEvent);
-        // });
+        dt.on('deselect', function (e, dt, type, indexes) {
+            setSelectedGame(null);
+            // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: null });
+            // document.dispatchEvent(gameDetailsEvent);
+        });
 
         function getDates(offset) {
             var currentDate = new Date();
@@ -491,9 +492,6 @@ export default function Games() {
             clearInterval(timer);
         };
     }, []);
-
-
-    //
 
     return (
         <>
