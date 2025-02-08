@@ -1,19 +1,18 @@
 // @ts-nocheck
 
-import * as React from 'react'
+import * as React from 'react';
+
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
+import '../../styles/datepickerStyle.css';
+import '../../styles/slimSelectStyle.css';
+
+import $ from 'jquery';
+
+import { Consts } from '../../consts/consts.ts';
 
 
-import '../../styles/style.css'
-import '../../styles/dtStyle.css'
-import '../../styles/datepickerStyle.css'
-import '../../styles/slimSelectStyle.css'
-
-import $ from 'jquery'
-
-import { Consts } from '../../consts/consts.ts'
-
-
-export default function Plays({ selectedGame }) {
+export default function Plays({ selectedGame, setSelectedPlayer }) {
 
     React.useEffect(() => {
         (async () => {
@@ -40,7 +39,6 @@ export default function Plays({ selectedGame }) {
             } else {
                 var gameDataWithBases = await fetch('https://statsapi.mlb.com' + `${selectedGame['link']}?hydrate=alignment`);
                 gameDataWithBases = await gameDataWithBases.json();
-
                 currentGameID = gameDataWithBases['gameData']['game']['pk'];
             }
 
@@ -138,11 +136,25 @@ export default function Plays({ selectedGame }) {
                 playsDiv.find('div.inning-content button').each(function () {
                     var batter = $(this).data('batter');
 
-                    // $(this).on('mouseenter', startPlayerHover(batter));
-                    // $(this).next().on('mouseenter', startPlayerHover(batter));
+                    // $(this).on('mouseenter', setSelectedPlayer(batter));
+                    // $(this).next().on('mouseenter', setSelectedPlayer(batter));
 
-                    // $(this).on('mouseleave', stopPlayerHover(batter));
-                    // $(this).next().on('mouseleave', stopPlayerHover(batter));
+                    $(this).on('mouseenter', async () => {
+                        setSelectedPlayer(batter);
+                    });
+                    $(this).next().on('mouseenter', async () => {
+                        setSelectedPlayer(batter);
+                    });
+
+                    $(this).on('mouseleave', async () => {
+                        setSelectedPlayer(null);
+                    });
+                    $(this).next().on('mouseleave', async () => {
+                        setSelectedPlayer(null);
+                    });
+
+                    // $(this).on('mouseleave', setSelectedPlayer(null));
+                    // $(this).next().on('mouseleave', setSelectedPlayer(null));
                 });
             }
 

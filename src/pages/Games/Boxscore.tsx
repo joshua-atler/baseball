@@ -2,19 +2,19 @@
 
 import * as React from 'react';
 
-import '../../styles/style.css'
-import '../../styles/dtStyle.css'
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
 
-import $ from 'jquery'
-import 'datatables.net-dt'
-import 'datatables.net-buttons/js/buttons.colVis.mjs'
-import 'datatables.net-select-dt'
+import $ from 'jquery';
+import 'datatables.net-dt';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-select-dt';
 
-import { Consts } from '../../consts/consts.ts'
+import { Consts } from '../../consts/consts.ts';
 
 
 
-export default function Boxscore({ selectedGame }) {
+export default function Boxscore({ selectedGame, selectedPlayer }) {
 
 
     React.useEffect(() => {
@@ -289,23 +289,23 @@ export default function Boxscore({ selectedGame }) {
                     var divisionRecord = standingsJson['records'][i]['teamRecords'];
                     for (let j = 0; j < divisionRecord.length; j++) {
                         if (divisionRecord[j]['team']['id'] == awayTeamID) {
-                            awayTeamRecord = `${divisionRecord[j]['wins']}-${divisionRecord[j]['losses']}`;
+                            awayTeamRecord = `(${divisionRecord[j]['wins']}-${divisionRecord[j]['losses']})`;
                         }
 
                         if (divisionRecord[j]['team']['id'] == homeTeamID) {
-                            homeTeamRecord = `${divisionRecord[j]['wins']}-${divisionRecord[j]['losses']}`;
+                            homeTeamRecord = `(${divisionRecord[j]['wins']}-${divisionRecord[j]['losses']})`;
                         }
                     }
                 }
 
                 if (awayTeamName in Consts.teamsDetails) {
-                    awayBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName][0]}"><span>${awayTeamClubName} (${awayTeamRecord})</span>`);
+                    awayBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName][0]}"><span>${awayTeamClubName} ${awayTeamRecord}</span>`);
                 } else {
                     awayBoxscoreTeamLabel.text(awayTeamName);
                 }
 
                 if (homeTeamName in Consts.teamsDetails) {
-                    homeBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName][0]}"><span>${homeTeamClubName} (${homeTeamRecord})</span>`);
+                    homeBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName][0]}"><span>${homeTeamClubName} ${homeTeamRecord}</span>`);
                 } else {
                     homeBoxscoreTeamLabel.text(homeTeamName);
                 }
@@ -527,25 +527,22 @@ export default function Boxscore({ selectedGame }) {
             }
         }
 
-        const receiveStartPlayerHover = async (e) => {
-            var startPlayerHover = e.detail;
 
-            boxscoreTable.find('tr td a').each(function () {
-                if ($(this).text() == startPlayerHover) {
-                    $(this).closest('tr').addClass('selected-batter');
-                }
-            });
-        }
+        // console.log(selectedPlayer);
+        // if (selectedPlayer !== null) {
 
-        const receiveStopPlayerHover = async (e) => {
-            var stopPlayerHover = e.detail;
-
-            boxscoreTable.find('tr td a').each(function () {
-                if ($(this).text() == stopPlayerHover) {
-                    $(this).closest('tr').removeClass('selected-batter');
-                }
-            });
-        }
+        //     boxscoreTable.find('tr td a').each(function () {
+        //         if ($(this).text() == selectedPlayer) {
+        //             $(this).closest('tr').addClass('selected-batter');
+        //         }
+        //     });
+        // } else {
+        //     boxscoreTable.find('tr td a').each(function () {
+        //         if ($(this).text() == selectedPlayer) {
+        //             $(this).closest('tr').removeClass('selected-batter');
+        //         }
+        //     });
+        // }
 
         // document.addEventListener('gameDetailsEvent', receiveData);
 
@@ -565,6 +562,22 @@ export default function Boxscore({ selectedGame }) {
         //     document.removeEventListener('stopPlayerHover', receiveStopPlayerHover);
         // };
     }, [selectedGame]);
+
+    React.useEffect(() => {
+        try {
+            const boxscoreTable = $(document.querySelector('#boxscore'));
+
+            boxscoreTable.find('tr td a').each(function () {
+                if ($(this).text() == selectedPlayer) {
+                    $(this).closest('tr').addClass('selected-batter');
+                } else {
+                    $(this).closest('tr').removeClass('selected-batter');
+                }
+            });
+        } catch {
+
+        }
+    }, [selectedPlayer]);
 
 
     return (

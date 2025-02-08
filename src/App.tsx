@@ -3,22 +3,20 @@ import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react
 import './App.css'
 // import './styles/style.css'
 
-import Drawer from './components/Drawer'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import Tab from '@mui/material/Tab'
-import TabContext from '@mui/lab/TabContext'
-import TabList from '@mui/lab/TabList'
-import TabPanel from '@mui/lab/TabPanel'
-import Typography from '@mui/material/Typography'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import CssBaseline from '@mui/material/CssBaseline'
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import Typography from '@mui/material/Typography';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import CssBaseline from '@mui/material/CssBaseline';
 
-import MainContent from './pages/Home'
-import Games from './pages/Games/Games.tsx'
-import backgroundImage from './assets/baseballs.jpg'
+import MainContent from './pages/Home';
+import Games from './pages/Games/Games.tsx';
+import backgroundImage from './assets/baseballs.jpg';
 
 
 

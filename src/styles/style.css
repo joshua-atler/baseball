@@ -971,13 +971,15 @@ table#news {
     margin: 0 auto;
     /* text-align: justify; */
     max-width: 75ch;
+    max-height: 900px;
+    overflow-y: scroll;
 }
 
 table#news>thead>tr:nth-child(1)>th>span {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 40px;
     width: 40%;
     background-color: #555555;
     padding: 10px;

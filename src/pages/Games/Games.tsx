@@ -1,16 +1,24 @@
 import * as React from 'react';
 
-import { Box, Typography, Button, Divider } from '@mui/material';
+import { Box, Typography, Tabs, Tab } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import GamesList from './GamesList'
-import Boxscore from "./Boxscore"
-import Plays from './Plays'
+import GamesList from './GamesList';
+import Boxscore from './Boxscore';
+import Plays from './Plays';
+import News from './News';
 
 
 
 export default function Games() {
     const [selectedGame, setSelectedGame] = React.useState(null);
+    const [selectedPlayer, setSelectedPlayer] = React.useState(null);
+    const [tabValue, setTabValue] = React.useState(0);
 
+    console.log(selectedGame);
+
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
 
     return (
         <>
@@ -20,10 +28,18 @@ export default function Games() {
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
                 <Grid>
-                    <Boxscore selectedGame={selectedGame} />
+                    <Boxscore selectedGame={selectedGame} selectedPlayer={selectedPlayer} />
                 </Grid>
                 <Grid>
-                    <Plays selectedGame={selectedGame} />
+                    <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
+                        <Tab label="Plays" value={0} />
+                        <Tab label="News" value={1} />
+                    </Tabs>
+                    <Box>
+                        {tabValue === 0 && <Plays selectedGame={selectedGame} setSelectedPlayer={setSelectedPlayer} />}
+                        {tabValue === 1 && <News gamePk={selectedGame?.['gamePk'] || null} />}
+                    </Box>
+
                 </Grid>
             </Grid>
         </>
