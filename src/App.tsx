@@ -72,7 +72,7 @@ function NavTabs() {
 
 export default function App() {
   const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
-  const [tableData, setTableData] = React.useState({ dtData: null, gamesDetails: null, selectedIndex: null });
+  const [tableData, setTableData] = React.useState({ dtData: null, gamesDetails: null, selectedIndex: null, page: null });
   const [isLiveGames, setIsLiveGames] = React.useState(false);
   const [isAutoUpdate, setIsAutoUpdate] = React.useState(false);
   const [selectedGame, setSelectedGame] = React.useState(null);

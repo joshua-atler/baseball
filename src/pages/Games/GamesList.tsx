@@ -272,6 +272,9 @@ export default function GamesList({
                 dt.row(tableData.selectedIndex).select();
             }
             dt.draw();
+            if (tableData.page !== null) {
+                dt.page(tableData.page).draw('page');
+            }
         }
 
         var gamesList = [];
@@ -464,6 +467,10 @@ export default function GamesList({
             setTableData((prev) => ({ ...prev, selectedIndex: null }));
             // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: null });
             // document.dispatchEvent(gameDetailsEvent);
+        });
+
+        dt.on('page', function (e, dt2, type, indexes) {
+            setTableData((prev) => ({ ...prev, page: dt.page() }));
         });
 
         function getDates(offset) {
