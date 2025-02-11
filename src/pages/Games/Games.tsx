@@ -9,12 +9,29 @@ import News from './News';
 
 
 
-export default function Games() {
-    const [selectedGame, setSelectedGame] = React.useState(null);
-    const [selectedPlayer, setSelectedPlayer] = React.useState(null);
-    const [tabValue, setTabValue] = React.useState(0);
+export default function Games({
+    dates,
+    setDates,
+    tableData,
+    setTableData,
+    isLiveGames,
+    setIsLiveGames,
+    isAutoUpdate,
+    setIsAutoUpdate,
+    selectedGame,
+    setSelectedGame,
+    teamsFilter,
+    setTeamsFilter,
+    selectedPlayer,
+    setSelectedPlayer,
+    tabValue,
+    setTabValue
+}) {
+    // const [selectedGame, setSelectedGame] = React.useState(null);
+    // const [selectedPlayer, setSelectedPlayer] = React.useState(null);
+    // const [tabValue, setTabValue] = React.useState(0);
 
-    console.log(selectedGame);
+    // console.log(selectedGame);
 
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
@@ -24,7 +41,20 @@ export default function Games() {
         <>
             <Grid container spacing={2} id="games-grid">
                 <Grid>
-                    <GamesList setSelectedGame={setSelectedGame} />
+                    <GamesList
+                        dates={dates}
+                        setDates={setDates}
+                        tableData={tableData}
+                        setTableData={setTableData}
+                        isLiveGames={isLiveGames}
+                        setIsLiveGames={setIsLiveGames}
+                        isAutoUpdate={isAutoUpdate}
+                        setIsAutoUpdate={setIsAutoUpdate}
+                        selectedGame={setSelectedGame}
+                        setSelectedGame={setSelectedGame}
+                        teamsFilter={teamsFilter}
+                        setTeamsFilter={setTeamsFilter}
+                    />
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
                 <Grid>

@@ -975,6 +975,10 @@ table#news {
     overflow-y: scroll;
 }
 
+/* .news-active {
+    overflow-y: scroll;
+} */
+
 table#news>thead>tr:nth-child(1)>th>span {
     display: flex;
     align-items: center;

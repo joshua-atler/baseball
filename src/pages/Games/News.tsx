@@ -1,16 +1,34 @@
 // @ts-nocheck
 
 import * as React from 'react';
+import ReactDOM from 'react-dom/client';
+
+import { Box } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 
 import '../../styles/style.css';
 
 import $ from 'jquery';
-
 import { Consts } from './consts.ts';
 
 
 
 export default function News({ gamePk }) {
+
+    function Skel() {
+
+        return (
+            <>
+                <Box sx={{ width: 500 }}>
+                    <Skeleton animation={false} height={50} />
+                    <Skeleton animation={false} height={50} />
+                    <Skeleton animation={false} height={50} />
+                    <Skeleton animation={false} height={50} />
+                    <Skeleton animation={false} height={50} />
+                </Box>
+            </>
+        )
+    }
 
     React.useEffect(() => {
         (async () => {
@@ -19,7 +37,8 @@ export default function News({ gamePk }) {
             var mediaTab = document.querySelector('#media-tab');
 
             var newsDiv = $(document.querySelector('#news-content'));
-            newsDiv.parent().hide();
+            // var root = ReactDOM.createRoot(newsDiv.get(0));
+            // newsDiv.parent().hide();
 
             var gameContent = null;
             var selectedSide = 'article';
@@ -27,7 +46,16 @@ export default function News({ gamePk }) {
             if (gamePk == null) {
 
                 newsDiv.html('');
-                newsDiv.parent().hide();
+                // newsDiv.html(`
+                //     <Box sx={{ width: 300 }}>
+                //         <Skeleton/>
+                //     </Box>
+                // `);
+                // root.render(
+                //     <Skel />
+                // );
+                // newsDiv.removeClass('news-active');
+                // newsDiv.parent().hide();
 
                 $(articleTab).css('background-color', '#555555');
                 $(mediaTab).css('background-color', '#555555');
@@ -46,12 +74,13 @@ export default function News({ gamePk }) {
                 gameContent = await fetch(`https://statsapi.mlb.com/api/v1/game/${gamePk}/content`);
                 gameContent = await gameContent.json();
 
-                console.log(`game: ${gamePk}`);
+                // console.log(`game: ${gamePk}`);
 
                 updateNewsContent(gameContent, selectedSide);
             }
 
             function updateNewsContent(gameContent, selectedSide) {
+                // root.unmount();
                 if (selectedSide == 'article') {
                     try {
                         var articleHeader = '';
@@ -102,6 +131,7 @@ export default function News({ gamePk }) {
                     }
                 }
 
+                // newsDiv.addClass('news-active');
                 newsDiv.parent().show();
             }
 
@@ -142,7 +172,9 @@ export default function News({ gamePk }) {
                         <td>
                             {/* <div id="article-content"></div>
                                 <div id="media-content"></div> */}
-                            <div id="news-content"></div>
+                            <div id="news-content">
+                                {/* <Skel /> */}
+                            </div>
                         </td>
                     </tr>
                 </tbody>

@@ -18,6 +18,8 @@ import MainContent from './pages/Home';
 import Games from './pages/Games/Games.tsx';
 import backgroundImage from './assets/baseballs.jpg';
 
+import DatePicker, { DateObject } from 'react-multi-date-picker';
+
 
 
 const darkTheme = createTheme({
@@ -69,6 +71,16 @@ function NavTabs() {
 }
 
 export default function App() {
+  const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
+  const [tableData, setTableData] = React.useState({ dtData: null, gamesDetails: null, selectedIndex: null });
+  const [isLiveGames, setIsLiveGames] = React.useState(false);
+  const [isAutoUpdate, setIsAutoUpdate] = React.useState(false);
+  const [selectedGame, setSelectedGame] = React.useState(null);
+  const [teamsFilter, setTeamsFilter] = React.useState([]);
+  const [selectedPlayer, setSelectedPlayer] = React.useState(null);
+  const [tabValue, setTabValue] = React.useState(0);
+
+
   return (
     <>
       <Router>
@@ -104,7 +116,24 @@ export default function App() {
               <Box sx={{ p: 4 }}>
                 <Routes>
                   <Route path="/" element={<MainContent />} />
-                  <Route path="/games" element={<Games />} />
+                  <Route path="/games" element={<Games
+                    dates={dates}
+                    setDates={setDates}
+                    tableData={tableData}
+                    setTableData={setTableData}
+                    isLiveGames={isLiveGames}
+                    setIsLiveGames={setIsLiveGames}
+                    isAutoUpdate={isAutoUpdate}
+                    setIsAutoUpdate={setIsAutoUpdate}
+                    selectedGame={selectedGame}
+                    setSelectedGame={setSelectedGame}
+                    teamsFilter={teamsFilter}
+                    setTeamsFilter={setTeamsFilter}
+                    selectedPlayer={selectedPlayer}
+                    setSelectedPlayer={setSelectedPlayer}
+                    tabValue={tabValue}
+                    setTabValue={setTabValue}
+                  />} />
                   <Route path="/stats" element={<div>stats</div>} />
                   <Route path="/rosters" element={<div>rosters</div>} />
                   <Route path="/standings" element={<div>standings</div>} />

@@ -1,6 +1,10 @@
 // @ts-nocheck
 
 import * as React from 'react';
+import ReactDOM from 'react-dom/client';
+
+import { Box } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
@@ -14,13 +18,32 @@ import { Consts } from '../../consts/consts.ts';
 
 export default function Plays({ selectedGame, setSelectedPlayer }) {
 
+    function Skel() {
+
+        return (
+            <>
+                <Box sx={{ width: 500, margin: 'auto' }}>
+                    {/* <Box sx={{ width: 550 }}> */}
+                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
+                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
+                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
+                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
+                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
+                </Box>
+            </>
+        )
+    }
+
     React.useEffect(() => {
         (async () => {
+
 
             // var playsLegend = $(htmlNode.querySelector('#plays-legend'));
             var playsOuterDiv = $(document.querySelector('#plays-outer'));
             var playsDiv = $(document.querySelector('#plays'));
             var inningCollapsibles;
+
+            // var root = ReactDOM.createRoot(playsDiv.get(0));
 
             var strikeZoneData = [];
             // const strikeZoneWidth = 150;
@@ -45,11 +68,11 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
             // if game was live and is no longer live, then set lastGameID to false as if a new game was just selected
 
             if (currentGameID != lastGameID) {
-                console.log(`game changed from ${lastGameID} to ${currentGameID}`);
+                // console.log(`game changed from ${lastGameID} to ${currentGameID}`);
                 inningCollapsedState = [];
                 gameChanged = true;
             } else {
-                console.log(`game still ${currentGameID}`);
+                // console.log(`game still ${currentGameID}`);
                 gameChanged = false;
             }
             lastGameID = currentGameID;
@@ -59,6 +82,11 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
             if (gameDataWithBases == null || gameDataWithBases['liveData']['plays']['playsByInning'].length == 0) {
                 playsOuterDiv.hide();
                 playsDiv.html('');
+                // var root = ReactDOM.createRoot(playsDiv.get(0));
+                // console.log(root);
+                // root.render(
+                //     <Skel />
+                // );
 
             } else {
                 playsOuterDiv.show();
@@ -424,9 +452,12 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
     return (
         <>
             <div id="plays-outer" style={{ display: 'none' }}>
+            {/* <div id="plays-outer"> */}
                 <div id="plays-inner">
                     {/* <p>Plays <span id="plays-legend">(Legend: <span style="color: black; padding: 10px; border-radius: 10px; background-color: #ffa1a1;">Out</span> <span style="color: black; padding: 10px; background-color: #abff91; border-radius: 10px;">Scoring play</span>)</span></p> */}
-                    <div id="plays"></div>
+                    <div id="plays">
+                        {/* <Skel /> */}
+                    </div>
                 </div>
             </div>
         </>

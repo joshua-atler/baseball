@@ -313,7 +313,7 @@ export default function Boxscore({ selectedGame, selectedPlayer }) {
 
             boxscore(selectedGame, selectedSide);
 
-            console.log(selectedGame['gameData']['game']['pk']);
+            // console.log(selectedGame['gameData']['game']['pk']);
 
             var playsEvent = new CustomEvent('plays', { detail: selectedGame });
             document.dispatchEvent(playsEvent);

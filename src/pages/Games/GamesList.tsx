@@ -1,40 +1,51 @@
 // @ts-nocheck
 
-import * as React from 'react'
+import * as React from 'react';
 
-import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material'
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import Select from '../components/Select'
+import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material';
+import Select from '../components/Select';
 
-import '../../styles/style.css'
-import '../../styles/dtStyle.css'
-import '../../styles/datepickerStyle.css'
-import '../../styles/slimSelectStyle.css'
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
+import '../../styles/datepickerStyle.css';
+import '../../styles/slimSelectStyle.css';
 
-import $ from 'jquery'
-import datepicker from 'js-datepicker'
-import 'datatables.net-dt'
-import 'datatables.net-buttons/js/buttons.colVis.mjs'
-import 'datatables.net-select-dt'
-// import ProgressBar from 'progressbar.js'
-import SlimSelect from 'slim-select'
+import $ from 'jquery';
+import datepicker from 'js-datepicker';
+import 'datatables.net-dt';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-select-dt';
+import SlimSelect from 'slim-select';
 
-import { Consts } from '../../consts/consts.ts'
-import DatePicker, { DateObject } from 'react-multi-date-picker'
-import 'react-multi-date-picker/styles/backgrounds/bg-dark.css'
-import dayjs from 'dayjs'
-// import transition from "react-element-popper/animations/transition"
+import { Consts } from '../../consts/consts.ts';
+import DatePicker, { DateObject } from 'react-multi-date-picker';
+import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
+import dayjs from 'dayjs';
 
-export default function GamesList({ setSelectedGame }) {
-    const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
+export default function GamesList({
+    dates,
+    setDates,
+    tableData,
+    setTableData,
+    isLiveGames,
+    setIsLiveGames,
+    isAutoUpdate,
+    setIsAutoUpdate,
+    selectedGame,
+    setSelectedGame,
+    teamsFilter,
+    setTeamsFilter
+}) {
+    // const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
     const datesRef = React.useRef(dates);
+    const teamsFilterRef = React.useRef(teamsFilter);
     const [progress, setProgress] = React.useState(0);
     // const [disableAnimation, setDisableAnimation] = React.useState(false);
     // const [selectedTeams, setSelectedTeams] = React.useState([]);
     const [newSettings, setNewSettings] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
 
-    var selectedTeams = [];
+    // var selectedTeams = [];
 
     const updateDates = () => {
         if (dates.length > 0) {
@@ -131,7 +142,9 @@ export default function GamesList({ setSelectedGame }) {
                     return true
                 },
                 afterChange: (newVal, oldVal) => {
-                    selectedTeams = teamsDropdown.getSelected();
+                    // selectedTeams = teamsDropdown.getSelected();
+                    setTeamsFilter(teamsDropdown.getSelected());
+                    teamsFilterRef.current = teamsDropdown.getSelected();
 
                     var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
@@ -180,6 +193,7 @@ export default function GamesList({ setSelectedGame }) {
                 for (let i = 0; i < allData.length; i++) {
                     dt.row(i).data(allData[i]);
                 }
+                setTableData((prev) => ({ ...prev, dtData: dt.data() }));
 
                 if (reset) {
                     $(document.querySelector('#dt_wrapper')).show();
@@ -200,6 +214,11 @@ export default function GamesList({ setSelectedGame }) {
             }
             // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: detail });
             // document.dispatchEvent(gameDetailsEvent);
+
+            // if (selectedGame !== null) {
+            //     console.log('-----');
+            //     dt.row(0).select();
+            // }
         }
 
         datesButton.onclick = function () {
@@ -235,38 +254,6 @@ export default function GamesList({ setSelectedGame }) {
         todayButton.onclick = () => handleDateButtonClick(0);
         tomorrowButton.onclick = () => handleDateButtonClick(1);
 
-        // yesterdayButton.onclick = function () {
-        //     setDates((prevDates) => {
-        //         const yesterday = new Date();
-        //         yesterday.setDate(yesterday.getDate() - 1);
-        //         const newDates = [new DateObject(yesterday), new DateObject(yesterday)];
-        //         datesRef.current = newDates.map(date => date.format("MM/DD/YYYY"));
-        //         updateTable(true);
-        //         return newDates;
-        //     });
-
-        // }
-        // todayButton.onclick = function () {
-        //     setDates((prevDates) => {
-        //         const today = new Date();
-        //         const newDates = [new DateObject(today), new DateObject(today)];
-        //         datesRef.current = newDates.map(date => date.format("MM/DD/YYYY"));
-        //         updateTable(true);
-        //         return newDates;
-        //     });
-        // }
-
-        // tomorrowButton.onclick = function () {
-        //     setDates((prevDates) => {
-        //         const tomorrow = new Date();
-        //         tomorrow.setDate(tomorrow.getDate() + 1);
-        //         const newDates = [new DateObject(tomorrow), new DateObject(tomorrow)];
-        //         datesRef.current = newDates.map(date => date.format("MM/DD/YYYY"));
-        //         updateTable(true);
-        //         return newDates;
-        //     });
-        // }
-
         var table = document.querySelector('#dt');
         var dt = $(table).DataTable({
             select: {
@@ -277,11 +264,21 @@ export default function GamesList({ setSelectedGame }) {
             columnDefs: [],
             ordering: false,
             buttons: [],
-            scrollCollapse: true,
+            scrollCollapse: true
         });
+        if (tableData.dtData !== null) {
+            dt.rows.add(tableData.dtData);
+            if (tableData.selectedIndex !== null) {
+                dt.row(tableData.selectedIndex).select();
+            }
+            dt.draw();
+        }
 
         var gamesList = [];
         var gamesDetails;
+        if (tableData.gamesDetails !== null) {
+            gamesDetails = tableData.gamesDetails;
+        }
 
         async function fillTableWithDates(startDate, endDate, reset) {
             var allData = [];
@@ -290,7 +287,7 @@ export default function GamesList({ setSelectedGame }) {
                 dt.clear();
             }
 
-            if (liveGamesSwitch.checked) {
+            if (isLiveGames) {
                 var yesterday = getDates(-1);
                 var tomorrow = getDates(1);
                 startDate = new Date(yesterday.year, yesterday.month, yesterday.day).toLocaleDateString('en-US');
@@ -305,13 +302,13 @@ export default function GamesList({ setSelectedGame }) {
             var gamesForDates = [];
             for (let i = 0; i < gamesJson['dates'].length; i++) {
                 for (let j = 0; j < gamesJson['dates'][i]['games'].length; j++) {
-                    if (liveGamesSwitch.checked && gamesJson['dates'][i]['games'][j]['status']['abstractGameState'] != 'Live') {
+                    if (isLiveGames && gamesJson['dates'][i]['games'][j]['status']['abstractGameState'] != 'Live') {
                         // skip
                     } else {
-                        if (selectedTeams.length == 0) {
+                        if (teamsFilterRef.current.length == 0) {
                             gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                         } else {
-                            if (selectedTeams.includes(gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']) || selectedTeams.includes(gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'])) {
+                            if (teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']) || teamsFilter.includes(gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'])) {
                                 gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                             }
                         }
@@ -449,6 +446,7 @@ export default function GamesList({ setSelectedGame }) {
                 setProgress(100 * progressAmount / gamesForDates.length);
             }
             // });
+            setTableData((prev) => ({ ...prev, gamesDetails: gamesDetails }));
             return allData;
         }
 
@@ -456,12 +454,14 @@ export default function GamesList({ setSelectedGame }) {
         dt.on('select', function (e, dt, type, indexes) {
             var selectedIndex = indexes[0];
             setSelectedGame(gamesDetails[selectedIndex]);
+            setTableData((prev) => ({ ...prev, selectedIndex: selectedIndex }));
             // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: gamesDetails[selectedIndex] });
             // document.dispatchEvent(gameDetailsEvent);
         });
 
         dt.on('deselect', function (e, dt, type, indexes) {
             setSelectedGame(null);
+            setTableData((prev) => ({ ...prev, selectedIndex: null }));
             // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: null });
             // document.dispatchEvent(gameDetailsEvent);
         });
@@ -476,7 +476,9 @@ export default function GamesList({ setSelectedGame }) {
             return { year, month, day };
         }
 
-        datesButton.click();
+        // datesButton.click();
+        // dt.state.save();
+        teamsDropdown.setSelected(teamsFilter);
 
         const timer = setInterval(() => {
             setProgress((oldProgress) => {
@@ -551,8 +553,8 @@ export default function GamesList({ setSelectedGame }) {
                 <Box sx={{ mr: 3 }} id="teams-select-container">
                     <select id="teams-select" multiple></select>
                 </Box>
-                <FormControlLabel control={<Checkbox id="live-games" />} label="Live games" />
-                <FormControlLabel control={<Checkbox id="auto-update" />} label="Auto update" />
+                <FormControlLabel control={<Checkbox id="live-games" checked={isLiveGames} onChange={(e) => { setIsLiveGames(e.target.checked) }} />} label="Live games" />
+                <FormControlLabel control={<Checkbox id="auto-update" checked={isAutoUpdate} onChange={(e) => { setIsAutoUpdate(e.target.checked) }} />} label="Auto update" />
             </Box>
             <Box id="games-progress" hidden={!isLoading}>
                 <LinearProgress variant="determinate" color="success" value={progress}
