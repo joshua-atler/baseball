@@ -6,6 +6,7 @@ import GamesList from './GamesList';
 import Boxscore from './Boxscore';
 import Plays from './Plays';
 import News from './News';
+import Media from './Media';
 
 
 
@@ -64,10 +65,12 @@ export default function Games({
                     <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
                         <Tab label="Plays" value={0} />
                         <Tab label="News" value={1} />
+                        <Tab label="Media" value={2} />
                     </Tabs>
-                    <Box>
+                    <Box sx={{ width: '100%' }}>
                         {tabValue === 0 && <Plays selectedGame={selectedGame} setSelectedPlayer={setSelectedPlayer} />}
                         {tabValue === 1 && <News gamePk={selectedGame?.['gamePk'] || null} />}
+                        {tabValue === 2 && <Media gamePk={selectedGame?.['gamePk'] || null} />}
                     </Box>
 
                 </Grid>

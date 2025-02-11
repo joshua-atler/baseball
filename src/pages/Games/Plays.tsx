@@ -18,27 +18,12 @@ import { Consts } from '../../consts/consts.ts';
 
 export default function Plays({ selectedGame, setSelectedPlayer }) {
 
-    function Skel() {
-
-        return (
-            <>
-                <Box sx={{ width: 500, margin: 'auto' }}>
-                    {/* <Box sx={{ width: 550 }}> */}
-                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
-                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
-                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
-                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
-                    <Skeleton sx={{ bgcolor: 'grey.900' }} animation={false} height={50} />
-                </Box>
-            </>
-        )
-    }
-
     React.useEffect(() => {
         (async () => {
 
 
             // var playsLegend = $(htmlNode.querySelector('#plays-legend'));
+            var newsDiv = $(document.querySelector('#news-content'));
             var playsOuterDiv = $(document.querySelector('#plays-outer'));
             var playsDiv = $(document.querySelector('#plays'));
             var inningCollapsibles;
@@ -77,18 +62,14 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
             }
             lastGameID = currentGameID;
 
-
             strikeZoneData = [];
             if (gameDataWithBases == null || gameDataWithBases['liveData']['plays']['playsByInning'].length == 0) {
+                newsDiv.show();
                 playsOuterDiv.hide();
                 playsDiv.html('');
-                // var root = ReactDOM.createRoot(playsDiv.get(0));
-                // console.log(root);
-                // root.render(
-                //     <Skel />
-                // );
 
             } else {
+                newsDiv.hide();
                 playsOuterDiv.show();
 
                 plays(gameDataWithBases);
@@ -451,13 +432,14 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
 
     return (
         <>
+            <div id="news-content">
+                <p>Select a game</p>
+            </div>
             <div id="plays-outer" style={{ display: 'none' }}>
             {/* <div id="plays-outer"> */}
                 <div id="plays-inner">
                     {/* <p>Plays <span id="plays-legend">(Legend: <span style="color: black; padding: 10px; border-radius: 10px; background-color: #ffa1a1;">Out</span> <span style="color: black; padding: 10px; background-color: #abff91; border-radius: 10px;">Scoring play</span>)</span></p> */}
-                    <div id="plays">
-                        {/* <Skel /> */}
-                    </div>
+                    <div id="plays"></div>
                 </div>
             </div>
         </>
