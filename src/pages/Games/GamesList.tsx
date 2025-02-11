@@ -311,7 +311,7 @@ export default function GamesList({
                         if (teamsFilterRef.current.length == 0) {
                             gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                         } else {
-                            if (teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']) || teamsFilter.includes(gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'])) {
+                            if (teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']) || teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'])) {
                                 gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                             }
                         }
@@ -483,7 +483,10 @@ export default function GamesList({
             return { year, month, day };
         }
 
-        // datesButton.click();
+        if (isLiveGames) {
+            datesButton.click();
+        }
+
         // dt.state.save();
         teamsDropdown.setSelected(teamsFilter);
 

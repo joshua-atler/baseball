@@ -14,9 +14,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CssBaseline from '@mui/material/CssBaseline';
 
+import backgroundImage from './assets/baseballs.jpg';
 import MainContent from './pages/Home';
 import Games from './pages/Games/Games.tsx';
-import backgroundImage from './assets/baseballs.jpg';
+import Rosters from './pages/Games/Rosters.tsx';
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 
@@ -60,8 +61,8 @@ function NavTabs() {
         <TabList>
           <Tab label="Home" component={Link} to="/" value="/" />
           <Tab label="Games" component={Link} to="/games" value="/games" />
-          <Tab label="Stats" component={Link} to="/stats" value="/stats" />
           <Tab label="Rosters" component={Link} to="/rosters" value="/rosters" />
+          <Tab label="Stats" component={Link} to="/stats" value="/stats" />
           <Tab label="Standings" component={Link} to="/standings" value="/standings" />
           <Tab label="Settings" component={Link} to="/settings" value="/settings" />
         </TabList>
@@ -134,8 +135,8 @@ export default function App() {
                     tabValue={tabValue}
                     setTabValue={setTabValue}
                   />} />
+                  <Route path="/rosters" element={<Rosters />} />
                   <Route path="/stats" element={<div>stats</div>} />
-                  <Route path="/rosters" element={<div>rosters</div>} />
                   <Route path="/standings" element={<div>standings</div>} />
                   <Route path="/settings" element={<div>settings</div>} />
                 </Routes>

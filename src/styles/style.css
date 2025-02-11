@@ -569,7 +569,7 @@ div.ss-option {
 }
 
 div.ss-content.ss-open-below {
-    min-height: 430px;
+    min-height: 450px;
 }
 
 /* div.ss-main.ss-open-below {
@@ -900,7 +900,7 @@ table#roster-dt thead th {
 }
 
 #roster-teams-select-container {
-    width: 300px;
+    width: 500px;
     float: right;
     margin-top: 25px;
     margin-right: 50px;
