@@ -9,7 +9,10 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import CheckIcon from '@mui/icons-material/Check';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,7 +20,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import backgroundImage from './assets/baseballs.jpg';
 import MainContent from './pages/Home';
 import Games from './pages/Games/Games.tsx';
-import Rosters from './pages/Games/Rosters.tsx';
+import Players from './pages/Players/Players.tsx'
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 
@@ -61,13 +64,21 @@ function NavTabs() {
         <TabList>
           <Tab label="Home" component={Link} to="/" value="/" />
           <Tab label="Games" component={Link} to="/games" value="/games" />
-          <Tab label="Rosters" component={Link} to="/rosters" value="/rosters" />
+          <Tab label="Players" component={Link} to="/players" value="/players" />
           <Tab label="Stats" component={Link} to="/stats" value="/stats" />
           <Tab label="Standings" component={Link} to="/standings" value="/standings" />
           <Tab label="Settings" component={Link} to="/settings" value="/settings" />
         </TabList>
       </Box>
     </TabContext>
+  );
+}
+
+function SimpleAlert() {
+  return (
+    <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+      Here is a gentle confirmation that your action was successful.
+    </Alert>
   );
 }
 
@@ -78,8 +89,10 @@ export default function App() {
   const [isAutoUpdate, setIsAutoUpdate] = React.useState(false);
   const [selectedGame, setSelectedGame] = React.useState(null);
   const [teamsFilter, setTeamsFilter] = React.useState([]);
-  const [selectedPlayer, setSelectedPlayer] = React.useState(null);
+  const [highlightedPlayer, setHighlightedPlayer] = React.useState(null);
   const [tabValue, setTabValue] = React.useState(0);
+
+  const [selectedPlayer, setSelectedPlayer] = React.useState({ playerID: null, color: null });
 
 
   return (
@@ -94,7 +107,9 @@ export default function App() {
               sx={{
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
+                // backgroundSize: '500px 50px',
                 backgroundPosition: 'center',
+                // backgroundRepeat: 'no-repeat',
                 height: '64px',
                 // mt: 2,
                 mb: 0,
@@ -130,12 +145,16 @@ export default function App() {
                     setSelectedGame={setSelectedGame}
                     teamsFilter={teamsFilter}
                     setTeamsFilter={setTeamsFilter}
-                    selectedPlayer={selectedPlayer}
-                    setSelectedPlayer={setSelectedPlayer}
+                    highlightedPlayer={highlightedPlayer}
+                    setHighlightedPlayer={setHighlightedPlayer}
                     tabValue={tabValue}
                     setTabValue={setTabValue}
                   />} />
-                  <Route path="/rosters" element={<Rosters />} />
+                  <Route path="/players" element={<Players
+                    selectedPlayer={selectedPlayer}
+                    setSelectedPlayer={setSelectedPlayer}
+                    setSelectedGame={setSelectedGame}
+                  />} />
                   <Route path="/stats" element={<div>stats</div>} />
                   <Route path="/standings" element={<div>standings</div>} />
                   <Route path="/settings" element={<div>settings</div>} />

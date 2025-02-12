@@ -264,7 +264,11 @@ export default function GamesList({
             columnDefs: [],
             ordering: false,
             buttons: [],
-            scrollCollapse: true
+            scrollCollapse: true,
+            language: {
+                emptyTable: 'No games for selected filters',
+                zeroRecords: 'No games for selected filters'
+            }
         });
         if (tableData.dtData !== null) {
             dt.rows.add(tableData.dtData);
@@ -483,9 +487,9 @@ export default function GamesList({
             return { year, month, day };
         }
 
-        if (isLiveGames) {
-            datesButton.click();
-        }
+        // if (isLiveGames) {
+        //     datesButton.click();
+        // }
 
         // dt.state.save();
         teamsDropdown.setSelected(teamsFilter);

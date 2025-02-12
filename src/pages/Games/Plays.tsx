@@ -16,7 +16,7 @@ import $ from 'jquery';
 import { Consts } from '../../consts/consts.ts';
 
 
-export default function Plays({ selectedGame, setSelectedPlayer }) {
+export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
     React.useEffect(() => {
         (async () => {
@@ -149,17 +149,17 @@ export default function Plays({ selectedGame, setSelectedPlayer }) {
                     // $(this).next().on('mouseenter', setSelectedPlayer(batter));
 
                     $(this).on('mouseenter', async () => {
-                        setSelectedPlayer(batter);
+                        setHighlightedPlayer(batter);
                     });
                     $(this).next().on('mouseenter', async () => {
-                        setSelectedPlayer(batter);
+                        setHighlightedPlayer(batter);
                     });
 
                     $(this).on('mouseleave', async () => {
-                        setSelectedPlayer(null);
+                        setHighlightedPlayer(null);
                     });
                     $(this).next().on('mouseleave', async () => {
-                        setSelectedPlayer(null);
+                        setHighlightedPlayer(null);
                     });
 
                     // $(this).on('mouseleave', setSelectedPlayer(null));

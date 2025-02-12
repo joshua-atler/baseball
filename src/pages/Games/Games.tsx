@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as React from 'react';
 
 import { Box, Typography, Tabs, Tab } from '@mui/material';
@@ -23,8 +25,8 @@ export default function Games({
     setSelectedGame,
     teamsFilter,
     setTeamsFilter,
-    selectedPlayer,
-    setSelectedPlayer,
+    highlightedPlayer,
+    setHighlightedPlayer,
     tabValue,
     setTabValue
 }) {
@@ -59,7 +61,7 @@ export default function Games({
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
                 <Grid>
-                    <Boxscore selectedGame={selectedGame} selectedPlayer={selectedPlayer} />
+                    <Boxscore selectedGame={selectedGame} highlightedPlayer={highlightedPlayer} />
                 </Grid>
                 <Grid>
                     <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
@@ -68,7 +70,7 @@ export default function Games({
                         <Tab label="Media" value={2} />
                     </Tabs>
                     <Box sx={{ width: '100%' }}>
-                        {tabValue === 0 && <Plays selectedGame={selectedGame} setSelectedPlayer={setSelectedPlayer} />}
+                        {tabValue === 0 && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
                         {tabValue === 1 && <News gamePk={selectedGame?.['gamePk'] || null} />}
                         {tabValue === 2 && <Media gamePk={selectedGame?.['gamePk'] || null} />}
                     </Box>

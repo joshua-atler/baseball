@@ -14,7 +14,7 @@ import { Consts } from '../../consts/consts.ts';
 
 
 
-export default function Boxscore({ selectedGame, selectedPlayer }) {
+export default function Boxscore({ selectedGame, highlightedPlayer }) {
 
 
     React.useEffect(() => {
@@ -568,7 +568,7 @@ export default function Boxscore({ selectedGame, selectedPlayer }) {
             const boxscoreTable = $(document.querySelector('#boxscore'));
 
             boxscoreTable.find('tr td a').each(function () {
-                if ($(this).text() == selectedPlayer) {
+                if ($(this).text() == highlightedPlayer) {
                     $(this).closest('tr').addClass('selected-batter');
                 } else {
                     $(this).closest('tr').removeClass('selected-batter');
@@ -577,7 +577,7 @@ export default function Boxscore({ selectedGame, selectedPlayer }) {
         } catch {
 
         }
-    }, [selectedPlayer]);
+    }, [highlightedPlayer]);
 
 
     return (

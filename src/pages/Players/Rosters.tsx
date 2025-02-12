@@ -4,6 +4,7 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import '../../styles/style.css';
 
@@ -19,7 +20,7 @@ import { Consts } from '../../consts/consts.ts';
 
 
 
-export default function Rosters() {
+export default function Rosters({ setSelectedPlayer }) {
 
     var positionTypes = {
         'Pitcher': 'Pitchers',
@@ -145,23 +146,25 @@ export default function Rosters() {
             var selectedIndex = indexes[0];
             var playerID = dt.row(selectedIndex).data()[0].split('/v1/people/')[1].split('/')[0];
             var teamIndex = findTeamIndex(selectedTeam);
-            var playerSelectEvent = new CustomEvent('playerSelectEvent', {
-                detail: {
-                    playerID: playerID,
-                    color: Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]
-                }
-            });
-            document.dispatchEvent(playerSelectEvent);
+            // var playerSelectEvent = new CustomEvent('playerSelectEvent', {
+            //     detail: {
+            //         playerID: playerID,
+            //         color: Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]
+            //     }
+            // });
+            // document.dispatchEvent(playerSelectEvent);
+            setSelectedPlayer({ playerID: playerID, color: Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]] });
         });
 
         dt.on('deselect', function (e, dt, type, indexes) {
-            var playerSelectEvent = new CustomEvent('playerSelectEvent', {
-                detail: {
-                    playerID: null,
-                    color: null
-                }
-            });
-            document.dispatchEvent(playerSelectEvent);
+            // var playerSelectEvent = new CustomEvent('playerSelectEvent', {
+            //     detail: {
+            //         playerID: null,
+            //         color: null
+            //     }
+            // });
+            // document.dispatchEvent(playerSelectEvent);
+            setSelectedPlayer({ playerID: null, color: null });
         });
 
         // get all team IDs
@@ -250,7 +253,7 @@ export default function Rosters() {
                             var teamID = allTeams.find(t => t.name === selectedTeam).id;
 
                             fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
-                            // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
+                                // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
                                 .then(response => {
                                     return response.json();
                                 })
@@ -340,7 +343,9 @@ export default function Rosters() {
     return (
         <>
             <Box sx={{ width: 1200 }}>
-                <h1>Active Roster</h1>
+                <Typography variant="h5" noWrap component="div">
+                    Active Rosters
+                </Typography>
                 <div style={{ height: '100px' }}>
                     <span id="roster-team-logo"></span>
                     <span id="roster-team-label"></span>
