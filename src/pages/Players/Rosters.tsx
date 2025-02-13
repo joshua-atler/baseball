@@ -62,8 +62,7 @@ export default function Rosters({ setSelectedPlayer }) {
 
         const rosterTeamLogo = $(document.querySelector('#roster-team-logo'));
         const rosterTeamLabel = $(document.querySelector('#roster-team-label'));
-
-
+        const teamColorBanners = $(document.querySelectorAll('.roster-team-color-banner'));
 
         $.fn.dataTable.ext.order['positions-order'] = function (settings, col) {
             var order = ['Pitchers', 'Two-Way Players', 'Catchers', 'Infielders', 'Outfielders', 'Designated Hitter'];
@@ -153,7 +152,7 @@ export default function Rosters({ setSelectedPlayer }) {
             //     }
             // });
             // document.dispatchEvent(playerSelectEvent);
-            setSelectedPlayer({ playerID: playerID, color: Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]] });
+            setSelectedPlayer({ playerID: playerID, color: [Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]], Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]] });
         });
 
         dt.on('deselect', function (e, dt, type, indexes) {
@@ -250,6 +249,10 @@ export default function Rosters({ setSelectedPlayer }) {
                         rosterTeamLabel.html('');
 
                         if (newVal.length > 0 && !newVal[0]['placeholder']) {
+                            var teamIndex = findTeamIndex(selectedTeam);
+                            teamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
+                            teamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
+
                             var teamID = allTeams.find(t => t.name === selectedTeam).id;
 
                             fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
@@ -323,6 +326,7 @@ export default function Rosters({ setSelectedPlayer }) {
 
 
                         } else {
+                            teamColorBanners.css('background-color', 'transparent');
                             dt.draw(true);
                         }
 
@@ -353,6 +357,8 @@ export default function Rosters({ setSelectedPlayer }) {
                         <select id="roster-teams-select"></select>
                     </div>
                 </div>
+                <div className="roster-team-color-banner" style={{ height: '30px' }}></div>
+                <div className="roster-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
                 <table id="roster-dt">
                     <thead>
                         <tr>

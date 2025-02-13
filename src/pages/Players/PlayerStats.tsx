@@ -109,7 +109,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         const playerStatsPhoto = $(document.querySelector('#player-stats-photo'));
         const playerStatsLabel = $(document.querySelector('#player-stats-label'));
         const playerDetails = $(document.querySelector('#player-details'));
-        const teamColorBanner = $(document.querySelector('#team-color-banner'));
+        const teamColorBanners = $(document.querySelectorAll('.player-team-color-banner'));
 
         const allYearsSwitchDiv = $(document.querySelector('#all-years-switch-container'));
         const yearSelectDiv = $(document.querySelector('#player-stats-year-select-container'));
@@ -203,7 +203,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             playerDetails.find('li:nth-child(3) span:nth-child(2)').html('');
             playerDetails.find('li:nth-child(4) span:nth-child(2)').html('');
 
-            teamColorBanner.css('background-color', 'transparent');
+            teamColorBanners.css('background-color', 'transparent');
 
             pitchingStatsDiv.hide();
             hittingStatsDiv.hide();
@@ -250,7 +250,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             hideAllStats();
 
         } else {
-            teamColorBanner.css('background-color', teamColor);
+            teamColorBanners.eq(0).css('background-color', teamColor[0]);
+            teamColorBanners.eq(1).css('background-color', teamColor[1]);
 
             allYearsSwitchDiv.html(`
         <label class="switch-light switch-ios" onclick="">
@@ -2012,7 +2013,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 <Typography variant="h5" noWrap component="div">
                     Player Stats
                 </Typography>
-                <div style={{ float: 'left', height: '150px', marginBottom: '50px' }}>
+                {/* <div style={{ float: 'left', height: '150px', marginBottom: '50px' }}> */}
+                <div style={{ float: 'left', height: '150px' }}>
                     <span id="player-stats-photo"></span>
                     <span id="player-stats-label"></span>
                 </div>
@@ -2026,7 +2028,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     </ul>
                 </div>
                 <div id="all-years-switch-container"></div>
-                <div id="team-color-banner"></div>
+                <div className="player-team-color-banner" style={{ height: '30px' }}></div>
+                <div className="player-team-color-banner" style={{ height: '20px' }}></div>
                 <div id="pitching-stats-container">
                     <table id="pitching-stats">
                         <thead>

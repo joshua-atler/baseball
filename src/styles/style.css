@@ -15,7 +15,8 @@ p {
     font-size: 18px;
 }
 
-#dt, #dt-box {
+#dt,
+#dt-box {
     width: 1240px !important;
     /* font-size: 14px; */
 }
@@ -1055,9 +1056,10 @@ table#news h3 {
     margin-left: 20px;
 }
 
-#team-color-banner {
+.rosters-team-color-banner,
+.player-team-color-banner {
+    /* height: 50px; */
     background-color: transparent;
-    height: 50px;
     clear: left;
 }
 
@@ -1224,6 +1226,7 @@ table#hitting-stats colgroup col:nth-child(7) {
     margin-bottom: 40px;
     /* float: left; */
 }
+
 /* ********** */
 
 #all-years-switch-container {
