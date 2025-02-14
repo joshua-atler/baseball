@@ -1056,7 +1056,7 @@ table#news h3 {
     margin-left: 20px;
 }
 
-.rosters-team-color-banner,
+.roster-team-color-banner,
 .player-team-color-banner {
     /* height: 50px; */
     background-color: transparent;
@@ -1263,6 +1263,7 @@ tr.stats-subrow-hidden {
     background-color: #2c323a;
     width: 400px;
     padding: 10px;
+    margin-bottom: 40px;
 }
 
 table#playerStatsGameLog {
@@ -1305,3 +1306,13 @@ table#playerStatsGameLog td:nth-child(2) {
     width: 75px;
     height: 34px;
 }
+
+#player-awards-div {
+    background-color: #2c323a;
+    width: 1200px;
+    padding: 10px;
+}
+
+/* #player-awards-stack {
+    width: 400px;
+} */

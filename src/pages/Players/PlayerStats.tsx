@@ -5,6 +5,13 @@ import ReactDOM from 'react-dom/client';
 
 import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 import '../../styles/style.css';
@@ -22,8 +29,46 @@ import { Consts } from '../../consts/consts.ts';
 
 
 
+function AwardCard({ award, teams, dates }) {
+    console.log(award);
+    console.log(teams);
+    console.log(dates);
+    return (
+        // <Card sx={{ maxWidth: 345 }}>
+        <Card sx={{ backgroundColor: 'background.default' }}>
+            {/* <CardMedia
+          sx={{ height: 140 }}
+          image="/static/images/cards/contemplative-reptile.jpg"
+          title="green iguana"
+        /> */}
+            <CardContent>
+                <Typography gutterBottom variant="h6" component="div">
+                    {award}
+                </Typography>
+                {teams.map((team, index) => (
+                    <Box key={index} display="flex" gap={2} justifyContent="space-between" alignItems="center">
+                        <Typography variant="body1">{team}</Typography>
+                        <Typography variant="body1">{dates[index]}</Typography>
+                    </Box>
+                ))}
+                {/* <Box sx={{ width: 250 }} display="flex" justifyContent="space-between" alignItems="center"> */}
+                {/* <Box display="flex" gap={2} justifyContent="space-between" alignItems="center">
+                    <Typography variant="body">{teams}</Typography>
+                    <Typography variant="body">{months}</Typography>
+                </Box> */}
+            </CardContent>
+            {/* <CardActions>
+          <Button size="small">Share</Button>
+          <Button size="small">Learn More</Button>
+        </CardActions> */}
+        </Card>
+    );
+}
+
 export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const navigate = useNavigate();
+    const awardsContainerRef = React.useRef(null);
+    const awardsRef = React.useRef(null);
 
     function formatDate(originalDate) {
         const date = new Date(originalDate);
@@ -181,10 +226,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         const gameLogSummary = $(document.querySelector('#game-log-summary'));
         const gameLogDetails = $(document.querySelector('#game-log-details'));
 
-        console.log('####');
-        console.log(detailsButton);
-        console.log(xButton);
-
+        const playerAwards = $(document.querySelector('#player-awards'));
+        if (awardsContainerRef.current && !awardsRef.current) {
+            awardsRef.current = ReactDOM.createRoot(awardsContainerRef.current);
+        }
 
         var year;
         const startYear = 2015;
@@ -211,6 +256,11 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
             gameLogSummary.html('');
             gameLogDetails.html('<br><br><br><br>');
+            // awardsRef.current.render(
+            //     <>
+            //         <br /><br /><br /><br />
+            //     </>
+            // );
         }
 
         hideAllStats();
@@ -1664,6 +1714,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                 })
                         })
                 })
+
+            updatePlayerAwards(playerID);
         }
 
         function updatePitchingStatsTable(seasonsPitching) {
@@ -2005,6 +2057,60 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             detailsButton.prop('disabled', true);
             xButton.prop('disabled', true);
         });
+
+
+        function updatePlayerAwards(playerID) {
+
+            var link = `https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=awards`;
+            fetch(link)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(awards => {
+                    console.log('awards');
+                    if ('awards' in awards['people'][0]) {
+                        awards = awards['people'][0]['awards'];
+                        console.log(awards);
+
+                        awards = awards.reduce((acc, { name, team, date }) => {
+                            if (!acc[name]) {
+                                acc[name] = { name, teams: [], dates: [] };
+                            }
+                            acc[name].teams.push(team.teamName);
+                            acc[name].dates.push(date);
+                            return acc;
+                        }, {});
+                        awards = Object.values(awards);
+                        console.log(awards);
+
+                        awardsRef.current.render(
+                            <ThemeProvider theme={createTheme({
+                                palette: {
+                                    mode: 'dark',
+                                },
+                            })}>
+                                {/* <AwardCard
+                                // key={index}
+                                award='award'
+                                teams={['orioles', 'aaa']}
+                                months={['09/2024', '08/2024']}
+                            /> */}
+                                {awards.map((award, index) => (
+                                    <AwardCard
+                                        key={index}
+                                        award={award.name}
+                                        teams={award.teams}
+                                        dates={award.dates}
+                                    />
+                                ))}
+                            </ThemeProvider>
+                        );
+                    }
+                })
+        }
     }, [selectedPlayer]);
 
     return (
@@ -2103,6 +2209,20 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         <button type="button" id="details-button" className="small-margin" disabled>Details</button>
                         <h2>Game stats<span id="game-log-summary"></span></h2>
                         <p id="game-log-details"></p>
+                    </div>
+                    <div id="player-awards-div">
+                        <h2>Awards</h2>
+                        <Box display="flex" flexWrap="wrap" gap={2} id="player-awards" ref={awardsContainerRef}>
+                            <br /><br /><br /><br />
+                            {/* <Stack id="player-awards-stack" direction="row" spacing={1}>
+                                <Chip label="Chip Filled" />
+                                <Chip label="Chip Outlined" variant="outlined" />
+                                <Chip label="primary" color="primary" />
+                                <Chip label="success" color="success" />
+                                <Chip label="primary" color="primary" variant="outlined" />
+                                <Chip label="success" color="success" variant="outlined" />
+                            </Stack> */}
+                        </Box>
                     </div>
                 </div>
             </Box>
