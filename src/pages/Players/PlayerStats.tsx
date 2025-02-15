@@ -78,6 +78,21 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         return `${month}/${day}/${year}`;
     }
 
+    function fixName(name) {
+        var cleanName = name.toLowerCase();
+        cleanName = cleanName.replace(/ /g, "-");
+        cleanName = cleanName.replace(/'/g, "-");
+        var match = cleanName.match(/\./g);
+        if (match && match.length == 2) {
+            cleanName = cleanName.replace(/\./, '-');
+        }
+        cleanName = cleanName.replace(/\./g, "");
+        cleanName = cleanName.normalize("NFD");
+        cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
+
+        return cleanName;
+    }
+
     function pitchColors(pitchType) {
         var pitchColorsTable = {
             'FA': 'rgba(55, 160, 235, 0.8)',
@@ -387,10 +402,13 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     playerStatsPhoto.html(`<img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${playerID}/headshot/silo/current">`);
 
                     var playerName = `${playerStats['fullName']}`;
+                    var playerNumber = '';
                     if ('primaryNumber' in playerStats) {
-                        playerName = `${playerStats['fullName']} &bull; #${playerStats['primaryNumber']}`;
+                        playerNumber = `&bull; #${playerStats['primaryNumber']}`;
                     }
-                    console.log(playerStats['fullName']);
+                    // console.log(playerStats['fullName']);
+                    // console.log(fixName(playerStats['fullName']));
+                    playerName = `${playerStats['fullName']} ${playerNumber} &bull; <a href="https://www.mlb.com/player/${fixName(playerStats['fullName'])}-${playerID}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF" style="vertical-align: middle; margin-bottom: 5px;"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg></a>`;
                     playerStatsLabel.html(playerName);
 
                     playerDetails.find('li:nth-child(1) span:nth-child(2)').html(playerStats['currentAge']);

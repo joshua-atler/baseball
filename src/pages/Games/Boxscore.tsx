@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
 
@@ -14,8 +16,23 @@ import { Consts } from '../../consts/consts.ts';
 
 
 
-export default function Boxscore({ selectedGame, highlightedPlayer }) {
+export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
+    const navigate = useNavigate();
 
+    function findTeamIndex(teamName) {
+        for (const league in Consts.teams) {
+            for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {
+                const division = Consts.teams[league][divisionIndex];
+                const teamIndex = division.indexOf(teamName);
+
+                if (teamIndex !== -1) {
+                    return [league, divisionIndex, teamIndex];
+                }
+            }
+        }
+
+        return null;
+    }
 
     React.useEffect(() => {
         const dateSpan = $(document.querySelector('#date'));
@@ -341,25 +358,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer }) {
         };
 
         function playerLink(ID, name) {
-            var cleanName = fixName(name);
-            var link = `<a href="https://www.mlb.com/player/${cleanName}-${ID}" target="_blank">${name}</a>`;
-
+            var link = `<a href="/players" class="player-link" data-id="${ID}">${name}</a>`;
             return link;
-        }
-
-        function fixName(name) {
-            var cleanName = name.toLowerCase();
-            cleanName = cleanName.replace(/ /g, "-");
-            cleanName = cleanName.replace(/'/g, "-");
-            var match = cleanName.match(/\./g);
-            if (match && match.length == 2) {
-                cleanName = cleanName.replace(/\./, '-');
-            }
-            cleanName = cleanName.replace(/\./g, "");
-            cleanName = cleanName.normalize("NFD");
-            cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
-
-            return cleanName;
         }
 
         function boxscoreRow(player, isCurrentBatter) {
@@ -526,6 +526,26 @@ export default function Boxscore({ selectedGame, highlightedPlayer }) {
                 return transposed;
             }
         }
+
+        $(document).off('click', '.player-link').on('click', '.player-link', function (e) {
+            e.preventDefault();
+            var ID = $(this).data('id');
+
+            fetch(`https://statsapi.mlb.com/api/v1/people/${ID}?hydrate=currentTeam`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var currentTeam = data['people'][0]['currentTeam']['name'];
+                    console.log(currentTeam);
+                    var teamIndex = findTeamIndex(currentTeam);
+                    setSelectedPlayer({ playerID: ID, color: [Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]], Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]] });
+                    navigate('/players');
+                })
+        });
 
 
         // console.log(selectedPlayer);

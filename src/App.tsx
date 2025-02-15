@@ -149,6 +149,7 @@ export default function App() {
                     setHighlightedPlayer={setHighlightedPlayer}
                     tabValue={tabValue}
                     setTabValue={setTabValue}
+                    setSelectedPlayer={setSelectedPlayer}
                   />} />
                   <Route path="/players" element={<Players
                     selectedPlayer={selectedPlayer}

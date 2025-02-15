@@ -28,7 +28,8 @@ export default function Games({
     highlightedPlayer,
     setHighlightedPlayer,
     tabValue,
-    setTabValue
+    setTabValue,
+    setSelectedPlayer
 }) {
     // const [selectedGame, setSelectedGame] = React.useState(null);
     // const [selectedPlayer, setSelectedPlayer] = React.useState(null);
@@ -61,7 +62,11 @@ export default function Games({
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
                 <Grid>
-                    <Boxscore selectedGame={selectedGame} highlightedPlayer={highlightedPlayer} />
+                    <Boxscore
+                        selectedGame={selectedGame}
+                        highlightedPlayer={highlightedPlayer}
+                        setSelectedPlayer={setSelectedPlayer}
+                    />
                 </Grid>
                 <Grid>
                     <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
