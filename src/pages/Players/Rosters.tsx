@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import '../../styles/style.css';
 
 import $ from 'jquery';
-import datepicker from 'js-datepicker';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
@@ -255,8 +254,8 @@ export default function Rosters({ setSelectedPlayer }) {
 
                             var teamID = allTeams.find(t => t.name === selectedTeam).id;
 
-                            fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
-                                // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
+                            // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
+                            fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
                                 .then(response => {
                                     return response.json();
                                 })

@@ -11,7 +11,6 @@ import '../../styles/datepickerStyle.css';
 import '../../styles/slimSelectStyle.css';
 
 import $ from 'jquery';
-import datepicker from 'js-datepicker';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';

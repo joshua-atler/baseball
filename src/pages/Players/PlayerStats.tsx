@@ -35,7 +35,7 @@ function AwardCard({ award, teams, dates }) {
     console.log(dates);
     return (
         // <Card sx={{ maxWidth: 345 }}>
-        <Card sx={{ backgroundColor: 'background.default' }}>
+        <Card>
             {/* <CardMedia
           sx={{ height: 140 }}
           image="/static/images/cards/contemplative-reptile.jpg"
@@ -46,7 +46,7 @@ function AwardCard({ award, teams, dates }) {
                     {award}
                 </Typography>
                 {teams.map((team, index) => (
-                    <Box key={index} display="flex" gap={2} justifyContent="space-between" alignItems="center">
+                    <Box key={index} display="flex" gap={2} justifyContent="space-between">
                         <Typography variant="body1">{team}</Typography>
                         <Typography variant="body1">{dates[index]}</Typography>
                     </Box>
@@ -1260,6 +1260,9 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                     display: true,
                                                     labels: {
                                                         color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        },
                                                         // usePointStyle: true,
                                                         generateLabels: chart => chart.data.labels.map((l, i) => ({
                                                             // generateLabels: chart => chart.data.datasets.labels.slice(0, 2).map((l, i) => ({
@@ -1283,14 +1286,14 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                         size: 21
                                                     }
                                                 },
-                                                legend: {
-                                                    labels: {
-                                                        color: 'white',
-                                                        font: {
-                                                            size: 18
-                                                        }
-                                                    },
-                                                }
+                                                // legend: {
+                                                //     labels: {
+                                                //         color: 'white',
+                                                //         font: {
+                                                //             size: 18
+                                                //         }
+                                                //     },
+                                                // }
                                                 // tooltip: {
                                                 //   callbacks: {
                                                 //     label: function (context) {

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import * as React from 'react'
 import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom'
 import './App.css'
@@ -20,7 +22,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import backgroundImage from './assets/baseballs.jpg';
 import MainContent from './pages/Home';
 import Games from './pages/Games/Games.tsx';
-import Players from './pages/Players/Players.tsx'
+import Players from './pages/Players/Players.tsx';
+import News from './pages/News.tsx';
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 
@@ -65,6 +68,7 @@ function NavTabs() {
           <Tab label="Home" component={Link} to="/" value="/" />
           <Tab label="Games" component={Link} to="/games" value="/games" />
           <Tab label="Players" component={Link} to="/players" value="/players" />
+          <Tab label="News" component={Link} to="/news" value="/news" />
           <Tab label="Stats" component={Link} to="/stats" value="/stats" />
           <Tab label="Standings" component={Link} to="/standings" value="/standings" />
           <Tab label="Settings" component={Link} to="/settings" value="/settings" />
@@ -156,6 +160,7 @@ export default function App() {
                     setSelectedPlayer={setSelectedPlayer}
                     setSelectedGame={setSelectedGame}
                   />} />
+                  <Route path="/news" element={<News />} />
                   <Route path="/stats" element={<div>stats</div>} />
                   <Route path="/standings" element={<div>standings</div>} />
                   <Route path="/settings" element={<div>settings</div>} />
