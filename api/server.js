@@ -16,7 +16,7 @@ app.get('/api/rss/:team?', async (req, res) => {
         const rssPath = team ? `${team}/feeds/news/rss.xml` : 'feeds/news/rss.xml';
         const rssUrl = `${baseUrl}${rssPath}`;
 
-        console.log(`Fetching RSS feed from: ${rssUrl}`);
+        console.log(rssUrl);
 
         const response = await axios.get(rssUrl);
         res.send(response.data);

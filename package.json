@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "VITE_LOCAL=LOCAL vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -17,35 +17,49 @@
     "@mui/lab": "^6.0.0-beta.26",
     "@mui/material": "^6.4.2",
     "@mui/x-date-pickers": "^7.25.0",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.7",
     "chartjs-adapter-dayjs-4": "^1.0.4",
+    "cors": "^2.8.5",
     "datatables.net-buttons-dt": "^3.2.1",
     "datatables.net-dt": "^2.2.1",
     "datatables.net-rowgroup": "^1.5.1",
     "datatables.net-select-dt": "^3.0.0",
     "dayjs": "^1.11.13",
+    "eslint": "^9.20.1",
+    "events": "^3.3.0",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^4.5.1",
     "jquery": "^3.7.1",
-    "js-datepicker": "^5.18.3",
     "leaflet": "^1.9.4",
+    "node-fetch": "^3.3.2",
     "range-slider-input": "^2.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-multi-date-picker": "^4.5.2",
     "react-router": "^7.1.5",
     "react-router-dom": "^7.1.5",
-    "slim-select": "^2.10.0"
+    "rss-parser": "^3.13.0",
+    "slim-select": "^2.10.0",
+    "url": "^0.11.4",
+    "vite-plugin-eslint": "^1.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@types/node": "^22.13.4",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
-  }
+    "vite": "^6.1.0"
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

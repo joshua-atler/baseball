@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/rss/:team*",
+            "destination": "/api/server.js"
+        },
+        {
+            "source": "/:match*",
+            "destination": "/"
+        }
+    ]
+}

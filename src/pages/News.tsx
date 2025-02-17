@@ -62,13 +62,22 @@ function NewsCard({ title, link, pubDate, imageUrl }) {
 }
 
 export default function News() {
+    console.log('news');
 
     const [articles, setArticles] = React.useState([]);
 
     React.useEffect(() => {
 
-        // fetch("http://localhost:5000/rss")
-        fetch('/api/rss')
+        var apiUrl;
+        console.log(import.meta.env.VITE_LOCAL);
+        if (import.meta.env.VITE_LOCAL === "LOCAL") {
+            apiUrl = 'http://localhost:5000/rss';
+        } else {
+            apiUrl = '/api/rss';
+        }
+        fetch(apiUrl)
+            // fetch("http://localhost:5000/rss")
+            // fetch('/api/rss')
             .then(response => response.text())
             .then(data => {
                 const json = parseXMLtoJSON(data);
