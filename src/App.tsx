@@ -2,8 +2,7 @@
 
 import * as React from 'react'
 import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom'
-import './App.css'
-// import './styles/style.css'
+import './styles/style.css'
 
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
