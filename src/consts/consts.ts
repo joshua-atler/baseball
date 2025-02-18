@@ -26,6 +26,19 @@ class Consts {
         ]
     };
 
+    static teamNicknames = {
+        'AL': [
+            ['yankees', 'orioles', 'redsox', 'rays', 'bluejays'],
+            ['guarians', 'royals', 'tigers', 'twins', 'whitesox'],
+            ['rangers', 'astros', 'angels', 'mariners', 'athletics']
+        ],
+        'NL': [
+            ['braves', 'phillies', 'mets', 'nationals', 'marlins'],
+            ['brewers', 'cubs', 'reds', 'cardinals', 'pirates'],
+            ['dodgers', 'padres', 'giants', 'dbacks', 'rockies']
+        ]
+    };
+
     static teamAbbrs = {
         'AL': [
             ['NYY', 'BAL', 'BOS', 'TB', 'TOR'],

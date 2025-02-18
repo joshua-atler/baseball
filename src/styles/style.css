@@ -896,19 +896,22 @@ table#roster-dt thead th {
     outline: none !important;
 }
 
-#roster-teams-select-container {
+#roster-teams-select-container,
+#news-teams-select-container {
     width: 500px;
     float: right;
     margin-top: 25px;
     margin-right: 50px;
 }
 
-#roster-team-logo {
+#roster-team-logo,
+#news-team-logo {
     /* margin-top: 10px; */
     margin-left: 75px;
 }
 
-#roster-team-label {
+#roster-team-label,
+#news-team-label {
     font-size: 24px;
     line-height: 100px;
     margin-left: 20px;
@@ -1053,7 +1056,8 @@ table#news h3 {
 }
 
 .roster-team-color-banner,
-.player-team-color-banner {
+.player-team-color-banner,
+.news-team-color-banner {
     /* height: 50px; */
     background-color: transparent;
     clear: left;
