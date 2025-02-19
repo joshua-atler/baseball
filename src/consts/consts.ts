@@ -29,7 +29,7 @@ class Consts {
     static teamNicknames = {
         'AL': [
             ['yankees', 'orioles', 'redsox', 'rays', 'bluejays'],
-            ['guarians', 'royals', 'tigers', 'twins', 'whitesox'],
+            ['guardians', 'royals', 'tigers', 'twins', 'whitesox'],
             ['rangers', 'astros', 'angels', 'mariners', 'athletics']
         ],
         'NL': [
