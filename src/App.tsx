@@ -19,7 +19,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import backgroundImage from './assets/baseballs.jpg';
-import MainContent from './pages/Home';
+import Home from './pages/Home';
 import Games from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
 import News from './pages/News.tsx';
@@ -134,7 +134,7 @@ export default function App() {
               <NavTabs />
               <Box sx={{ p: 4 }}>
                 <Routes>
-                  <Route path="/" element={<MainContent />} />
+                  <Route path="/" element={<Home />} />
                   <Route path="/games" element={<Games
                     dates={dates}
                     setDates={setDates}
@@ -160,9 +160,9 @@ export default function App() {
                     setSelectedGame={setSelectedGame}
                   />} />
                   <Route path="/news" element={<News />} />
-                  <Route path="/stats" element={<div>stats</div>} />
-                  <Route path="/standings" element={<div>standings</div>} />
-                  <Route path="/settings" element={<div>settings</div>} />
+                  <Route path="/stats" element={<p>stats<br />(no content yet)</p>} />
+                  <Route path="/standings" element={<p>standings<br />(no content yet)</p>} />
+                  <Route path="/settings" element={<p>settings<br />(no content yet)</p>} />
                 </Routes>
               </Box>
             </Box>

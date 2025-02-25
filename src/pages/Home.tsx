@@ -1,5 +1,5 @@
 export default function Home() {
   return (
-    <p>main</p>
+    <p>Welcome to Basedash</p>
   );
 }
