@@ -394,7 +394,8 @@ export default function GamesList({
                     inningData = '<span class="svg-span">' + inningData + '</span>';
                 }
 
-                if (status != 'Preview' && started) {
+                var detailedState = data['gameData']['status']['detailedState'];
+                if (status != 'Preview' && started && detailedState != 'Cancelled') {
                     awayScore = data['liveData']['linescore']['teams']['away']['runs'];
                     homeScore = data['liveData']['linescore']['teams']['home']['runs'];
                 }
@@ -402,14 +403,17 @@ export default function GamesList({
                     status = 'Preview';
                 }
 
-                if (status == 'Final') {
+                if (status == 'Final' && detailedState == 'Final') {
+
                     if (homeScore > awayScore) {
                         homeWin = true;
                         homeScore = `<span style="font-weight: bold;">${homeScore.toString()} &#9664;</span>`;
-                    } else {
+                    } else if (awayScore > homeScore) {
                         homeWin = false;
                         awayScore = `<span style="font-weight: bold;">${awayScore.toString()} &#9664;</span>`;
                     }
+                } else {
+                    status = detailedState;
                 }
 
                 var currData = dt.row(row_i).data();
@@ -445,6 +449,7 @@ export default function GamesList({
 
                 currData[6] = inningData;
                 currData[7] = status;
+                status = data['gameData']['status']['abstractGameState'];
 
                 allData.push(currData);
 
