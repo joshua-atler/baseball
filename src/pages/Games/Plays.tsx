@@ -262,7 +262,9 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                         }
                         var speed = '';
                         if ('pitchData' in pitch) {
-                            speed = `${pitch['pitchData']['startSpeed']} mph`;
+                            if ('startSpeed' in pitch['pitchData']) {
+                                speed = `${pitch['pitchData']['startSpeed']} mph`;
+                            }
                         }
                         var pitchLink = '';
                         try {
@@ -311,10 +313,9 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     playString += `<tr>${playDetails}</tr>`;
                 }
                 playString += '</tbody></table>';
-
                 playString += `<canvas class="strike-zone" width="${strikeZoneWidth}" height="${strikeZoneHeight}"></canvas>`;
-
                 playString += '</div>';
+
                 return playString;
             }
 

@@ -201,7 +201,11 @@ export default function News() {
                         resetLabels();
                     } else {
                         newsTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamsDetails[selectedTeam[0]][0]}" />`);
-                        newsTeamLabel.html(selectedTeam[0]);
+                        if (selectedTeam[0] == 'Oakland Athletics') {
+                            newsTeamLabel.html('Athletics');
+                        } else {
+                            newsTeamLabel.html(selectedTeam[0]);
+                        }
                         var teamIndex = findTeamIndex(selectedTeam[0]);
                         newsTeamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
                         newsTeamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);

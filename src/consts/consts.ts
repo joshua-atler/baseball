@@ -43,7 +43,7 @@ class Consts {
         'AL': [
             ['NYY', 'BAL', 'BOS', 'TB', 'TOR'],
             ['CLE', 'KC', 'DET', 'MIN', 'CWS'],
-            ['TEX', 'HOU', 'LAA', 'SEA', 'OAK']
+            ['TEX', 'HOU', 'LAA', 'SEA', 'ATH']
         ],
         'NL': [
             ['ATL', 'PHI', 'NYM', 'WSH', 'MIA'],
@@ -128,6 +128,12 @@ class Consts {
             [47.60174, -122.330829]
         ],
         'Oakland Athletics': [
+            svgs['oaklandAthletics'],
+            'https://en.wikipedia.org/wiki/Oakland_Coliseum',
+            'Oakland Coliseum',
+            [37.74923, -122.196487]
+        ],
+        'Athletics': [
             svgs['oaklandAthletics'],
             'https://en.wikipedia.org/wiki/Oakland_Coliseum',
             'Oakland Coliseum',

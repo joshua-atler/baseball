@@ -39,6 +39,10 @@ export default function Rosters({ setSelectedPlayer }) {
     }
 
     function findTeamIndex(teamName) {
+        if (teamName == 'Athletics') {
+            teamName = 'Oakland Athletics';
+        }
+
         for (const league in Consts.teams) {
             for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {
                 const division = Consts.teams[league][divisionIndex];
@@ -81,7 +85,7 @@ export default function Rosters({ setSelectedPlayer }) {
         var table = document.querySelector('#roster-dt');
         var dt = $(table).DataTable({
             select: true,
-            pageLength: 30,
+            pageLength: 50,
             dom: 'Bfrt',
             columnDefs: [
                 {
@@ -144,6 +148,7 @@ export default function Rosters({ setSelectedPlayer }) {
             var selectedIndex = indexes[0];
             var playerID = dt.row(selectedIndex).data()[0].split('/v1/people/')[1].split('/')[0];
             var teamIndex = findTeamIndex(selectedTeam);
+            console.log(`teamIndex: ${teamIndex}`);
             // var playerSelectEvent = new CustomEvent('playerSelectEvent', {
             //     detail: {
             //         playerID: playerID,
@@ -251,6 +256,10 @@ export default function Rosters({ setSelectedPlayer }) {
                             var teamIndex = findTeamIndex(selectedTeam);
                             teamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
                             teamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
+
+                            if (selectedTeam == 'Oakland Athletics') {
+                                selectedTeam = 'Athletics';
+                            }
 
                             var teamID = allTeams.find(t => t.name === selectedTeam).id;
 

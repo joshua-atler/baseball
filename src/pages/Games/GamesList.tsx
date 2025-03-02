@@ -84,10 +84,6 @@ export default function GamesList({
         const autoUpdateSwitch = document.querySelector('#auto-update');
         const datesErrorSpan = document.querySelector('#dates-error');
 
-        liveGamesSwitch.onchange = function () {
-            updateTable(true);
-        }
-
         var teamsSelect = document.querySelector('#teams-select');
 
         var newStylesheet = $('<link>', {
@@ -226,6 +222,10 @@ export default function GamesList({
 
         var intervalId;
 
+        liveGamesSwitch.onchange = (e) => {
+            updateTable(true);
+        };
+
         autoUpdateSwitch.onchange = function () {
             if (autoUpdateSwitch.checked) {
                 intervalId = setInterval(function () {
@@ -254,21 +254,28 @@ export default function GamesList({
         tomorrowButton.onclick = () => handleDateButtonClick(1);
 
         var table = document.querySelector('#dt');
-        var dt = $(table).DataTable({
-            select: {
-                info: false
-            },
-            pageLength: 12,
-            dom: 'Bript',
-            columnDefs: [],
-            ordering: false,
-            buttons: [],
-            scrollCollapse: true,
-            language: {
-                emptyTable: 'No games for selected filters',
-                zeroRecords: 'No games for selected filters'
-            }
-        });
+        var dt;
+
+        if ($.fn.DataTable.isDataTable(table)) {
+            dt = $(table).DataTable();
+        } else {
+            var dt = $(table).DataTable({
+                select: {
+                    info: false
+                },
+                pageLength: 20,
+                dom: 'Bript',
+                columnDefs: [],
+                ordering: false,
+                buttons: [],
+                scrollCollapse: true,
+                language: {
+                    emptyTable: 'No games for selected filters',
+                    zeroRecords: 'No games for selected filters'
+                }
+            });
+        }
+
         if (tableData.dtData !== null) {
             dt.rows.add(tableData.dtData);
             if (tableData.selectedIndex !== null) {
@@ -293,7 +300,7 @@ export default function GamesList({
                 dt.clear();
             }
 
-            if (isLiveGames) {
+            if (liveGamesSwitch.checked) {
                 var yesterday = getDates(-1);
                 var tomorrow = getDates(1);
                 startDate = new Date(yesterday.year, yesterday.month, yesterday.day).toLocaleDateString('en-US');
@@ -308,14 +315,23 @@ export default function GamesList({
             var gamesForDates = [];
             for (let i = 0; i < gamesJson['dates'].length; i++) {
                 for (let j = 0; j < gamesJson['dates'][i]['games'].length; j++) {
-                    if (isLiveGames && gamesJson['dates'][i]['games'][j]['status']['abstractGameState'] != 'Live') {
+                    if (liveGamesSwitch.checked && gamesJson['dates'][i]['games'][j]['status']['abstractGameState'] != 'Live') {
                         // skip
                     } else {
                         if (teamsFilterRef.current.length == 0) {
                             gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                         } else {
-                            if (teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']) || teamsFilterRef.current.includes(gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'])) {
+                            var homeTeamFixed = gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name'];
+                            var awayTeamFixed = gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name'];
+
+                            if (teamsFilterRef.current.includes(homeTeamFixed) || teamsFilterRef.current.includes(awayTeamFixed)) {
                                 gamesForDates.push(gamesJson['dates'][i]['games'][j]);
+                            }
+
+                            if (teamsFilterRef.current.includes('Oakland Athletics')) {
+                                if (homeTeamFixed == 'Athletics' || awayTeamFixed == 'Athletics') {
+                                    gamesForDates.push(gamesJson['dates'][i]['games'][j]);
+                                }
                             }
                         }
                     }
@@ -404,7 +420,6 @@ export default function GamesList({
                 }
 
                 if (status == 'Final' && detailedState == 'Final') {
-
                     if (homeScore > awayScore) {
                         homeWin = true;
                         homeScore = `<span style="font-weight: bold;">${homeScore.toString()} &#9664;</span>`;
@@ -491,11 +506,11 @@ export default function GamesList({
             return { year, month, day };
         }
 
-        // if (isLiveGames) {
-        //     datesButton.click();
-        // }
+        // if dt has no rows
+        if (dt.rows().count() == 0) {
+            updateTable(true);
+        }
 
-        // dt.state.save();
         teamsDropdown.setSelected(teamsFilter);
 
         const timer = setInterval(() => {

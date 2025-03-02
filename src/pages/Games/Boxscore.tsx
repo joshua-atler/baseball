@@ -192,7 +192,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 $(homeTab).css('background-color', '#0416c0');
             }
 
-            dateSpan.text(`${new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US')} ${selectedGame['gameData']['datetime']['time']} ${selectedGame['gameData']['datetime']['ampm']}`);
+            dateSpan.text(`${new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US')} ${new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`);
 
             // recapSpan.html(`<a href="https://stories.mlb.com/live/${gameData['gameData']['game']['pk']}.html" target="_blank">Video recap</a>`);
             recapSpan.html(`<a href="https://www.mlb.com/stories/game/${selectedGame['gameData']['game']['pk']}" target="_blank">Video recap</a>`);

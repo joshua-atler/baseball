@@ -413,7 +413,12 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
                     playerDetails.find('li:nth-child(1) span:nth-child(2)').html(playerStats['currentAge']);
                     playerDetails.find('li:nth-child(2) span:nth-child(2)').html(playerStats['primaryPosition']['abbreviation']);
-                    playerDetails.find('li:nth-child(3) span:nth-child(2)').html(formatDate(playerStats['mlbDebutDate']));
+
+                    var debutDate = '---';
+                    if (playerStats['mlbDebutDate'] != undefined) {
+                        debutDate = formatDate(playerStats['mlbDebutDate']);
+                    }
+                    playerDetails.find('li:nth-child(3) span:nth-child(2)').html(debutDate);
 
                     if ('birthStateProvince' in playerStats) {
                         playerDetails.find('li:nth-child(4) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthStateProvince']}`);
