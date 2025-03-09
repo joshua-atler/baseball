@@ -245,73 +245,119 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     strikeZoneData[strikeZoneData.length - 1].push([3, 1]);
                 }
                 var pitchIndex = 1;
-                for (let i = 0; i < play['pitchIndex'].length; i++) {
-                    var pitch = play['playEvents'][play['pitchIndex'][i]];
-                    var pitchDesc = '';
+                // for (let i = 0; i < play['pitchIndex'].length; i++) {
+                var firstPitch = true;
+                for (let i = 0; i < play['playEvents'].length; i++) {
+                    var playEvent = play['playEvents'][i];
+                    // console.log('');
+                    // console.log(i, playEvent);
                     var playDetails = '';
 
-                    try {
-                        var pitchDesc = pitch['details']['description'];
-                        var pitchType = '';
-                        if ('type' in pitch['details']) {
-                            pitchType = pitch['details']['type']['description'];
+                    if (playEvent['isPitch']) {
+                        // console.log(play['pitchIndex'][i]);
+                        // var pitch = play['playEvents'][play['pitchIndex'][i]];
+                        var pitch = playEvent;
+                        var pitchDesc = '';
+                        try {
+                            var pitchDesc = pitch['details']['description'];
+                            var pitchType = '';
+                            if ('type' in pitch['details']) {
+                                pitchType = pitch['details']['type']['description'];
+                            }
+                            var count = `${pitch['count']['balls']}-${pitch['count']['strikes']}`;
+                            if (i == play['pitchIndex'].length - 1 && pitch['details']['isInPlay']) {
+                                count = '';
+                            }
+                            var speed = '';
+                            if ('pitchData' in pitch) {
+                                if ('startSpeed' in pitch['pitchData']) {
+                                    speed = `${pitch['pitchData']['startSpeed']} mph`;
+                                }
+                            }
+                            var pitchLink = '';
+                            try {
+                                pitchLink = `<a href="https://baseballsavant.mlb.com/sporty-videos?playId=${pitch['playId']}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#374bfb"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h528v-264h72v264q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm171-192-51-51 357-357H576v-72h240v240h-72v-117L387-336Z"/></svg></a>`;
+                            } catch { }
+
+                            var playDetails = `
+                            <td>
+                                ${pitch['isPitch'] ? `<div class="pitch-circle" style="background-color: ${pitch['details']['ballColor']}">${pitchIndex}</div>` : ''}
+                            </td>
+                            <td>
+                                <span class="pitch-bold">${pitchDesc}<br>${speed}</span>
+                                ${pitchType}
+                            </td>
+                            <td><span class="pitch-bold">${count}</span></td>
+                            <td>${pitchLink}</td>
+                            `;
+
+                            if ('pitchData' in pitch) {
+                                strikeZoneTop = Math.round(pitch['pitchData']['strikeZoneTop'] * 1000) / 1000;
+                                strikeZoneBottom = Math.round(pitch['pitchData']['strikeZoneBottom'] * 1000) / 1000;
+                            } else {
+                                strikeZoneTop = 3;
+                                strikeZoneBottom = 1;
+                            }
+
+                            if (firstPitch) {
+                                strikeZoneData[strikeZoneData.length - 1].push([strikeZoneTop, strikeZoneBottom]);
+                            }
+                            if (pitch['isPitch']) {
+                                strikeZoneData[strikeZoneData.length - 1].push([
+                                    Math.round(pitch['pitchData']['coordinates']['pX'] * 1000) / 1000,
+                                    Math.round(pitch['pitchData']['coordinates']['pZ'] * 1000) / 1000,
+                                    pitch['details']
+                                ]);
+                                pitchIndex += 1;
+                            } else {
+                                // console.log('not adding');
+                            }
+                        } catch (error) {
+                            // console.log(pitch);
+                            // console.log(error);
+                            var pitchDesc = pitch['details']['description'];
+                            playDetails = `${pitchDesc}`;
                         }
-                        var count = `${pitch['count']['balls']}-${pitch['count']['strikes']}`;
-                        if (i == play['pitchIndex'].length - 1 && pitch['details']['isInPlay']) {
-                            count = '';
-                        }
-                        var speed = '';
-                        if ('pitchData' in pitch) {
-                            if ('startSpeed' in pitch['pitchData']) {
-                                speed = `${pitch['pitchData']['startSpeed']} mph`;
+
+                        firstPitch = false;
+                    } else {
+                        var desc = playEvent['details']['description'];
+                        var icon = '';
+
+                        if (desc !== undefined) {
+
+
+                            if (desc.includes('steals')) {
+                                icon = Consts.pitchIcons['steals'];
+                            } else if (desc.includes('error')) {
+                                icon = Consts.pitchIcons['error'];
+                            } else if (desc.includes('replaces') || desc.includes('switch')) {
+                                icon = Consts.pitchIcons['switch'];
+                            } else if (desc.includes('Visit') || desc.includes('Timeout') || desc.includes('Step Off')) {
+                                icon = Consts.pitchIcons['pause'];
+                            } else if (desc.includes('Status Change')) {
+                                icon = Consts.pitchIcons['status'];
+                            } else if (desc.includes('caught')) {
+                                icon = Consts.pitchIcons['caught'];
+                            } else if (desc.includes('remains')) {
+                                icon = Consts.pitchIcons['remains'];
+                            } else if (desc.includes('Pickoff Attempt') || desc.includes('picks off') || desc.includes('Wild pitch') || desc.includes('Passed ball') || desc.includes('Delay')) {
+                                icon = Consts.pitchIcons['warning'];
+                            } else if (desc.includes('Timer Violation')) {
+                                icon = Consts.pitchIcons['timer'];
+                            } else {
+                                // console.log(playEvent);
+                                // console.log(desc);
                             }
                         }
-                        var pitchLink = '';
-                        try {
-                            pitchLink = `<a href="https://baseballsavant.mlb.com/sporty-videos?playId=${pitch['playId']}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#374bfb"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h528v-264h72v264q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm171-192-51-51 357-357H576v-72h240v240h-72v-117L387-336Z"/></svg></a>`;
-                        } catch { }
 
-                        var playDetails = `
-                    <td>
-                        ${pitch['isPitch'] ? `<div class="pitch-circle" style="background-color: ${pitch['details']['ballColor']}">${pitchIndex}</div>` : ''}
-                    </td>
-                    <td>
-                        <span class="pitch-bold">${pitchDesc}<br>${speed}</span>
-                        ${pitchType}
-                    </td>
-                    <td><span class="pitch-bold">${count}</span></td>
-                    <td>${pitchLink}</td>
-                    `;
 
-                        if ('pitchData' in pitch) {
-                            strikeZoneTop = Math.round(pitch['pitchData']['strikeZoneTop'] * 1000) / 1000;
-                            strikeZoneBottom = Math.round(pitch['pitchData']['strikeZoneBottom'] * 1000) / 1000;
-                        } else {
-                            strikeZoneTop = 3;
-                            strikeZoneBottom = 1;
-                        }
-
-                        if (i == 0) {
-                            strikeZoneData[strikeZoneData.length - 1].push([strikeZoneTop, strikeZoneBottom]);
-                        }
-                        if (pitch['isPitch']) {
-                            strikeZoneData[strikeZoneData.length - 1].push([
-                                Math.round(pitch['pitchData']['coordinates']['pX'] * 1000) / 1000,
-                                Math.round(pitch['pitchData']['coordinates']['pZ'] * 1000) / 1000,
-                                pitch['details']
-                            ]);
-                            pitchIndex += 1;
-                        } else {
-                            // console.log('not adding');
-                        }
-                    } catch (error) {
-                        console.log(error);
-                        var pitchDesc = pitch['details']['description'];
-                        playDetails = `${pitchDesc}`;
+                        playDetails = `<td>${icon}<td>${desc}</td>`;
                     }
 
                     playString += `<tr>${playDetails}</tr>`;
                 }
+
                 playString += '</tbody></table>';
                 playString += `<canvas class="strike-zone" width="${strikeZoneWidth}" height="${strikeZoneHeight}"></canvas>`;
                 playString += '</div>';
@@ -437,7 +483,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                 <p>Select a game</p>
             </div>
             <div id="plays-outer" style={{ display: 'none' }}>
-            {/* <div id="plays-outer"> */}
+                {/* <div id="plays-outer"> */}
                 <div id="plays-inner">
                     {/* <p>Plays <span id="plays-legend">(Legend: <span style="color: black; padding: 10px; border-radius: 10px; background-color: #ffa1a1;">Out</span> <span style="color: black; padding: 10px; background-color: #abff91; border-radius: 10px;">Scoring play</span>)</span></p> */}
                     <div id="plays"></div>

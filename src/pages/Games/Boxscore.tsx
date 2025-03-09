@@ -23,7 +23,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         if (timeZone !== lastTimeZone) {
 
             console.log('should update times');
-          }
+        }
     }, [location]);
 
     function findTeamIndex(teamName) {
@@ -300,10 +300,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 pitchingRow.find('td').eq(1).html(playerLink(loser['id'], loser['fullName']));
                 if (save != 'N/A') {
                     pitchingRow.find('td').eq(2).html(playerLink(save['id'], save['fullName']));
+                } else {
+                    pitchingRow.find('td').eq(2).html('-');
                 }
-            } catch {
-
-            }
+            } catch { }
 
             var awayTeamID = awayTeam['id'];
             var homeTeamID = homeTeam['id'];
