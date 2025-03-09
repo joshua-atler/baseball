@@ -23,9 +23,9 @@ import Home from './pages/Home';
 import Games from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
 import News from './pages/News.tsx';
+import Settings from './pages/Settings.tsx';
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
-
 
 
 const darkTheme = createTheme({
@@ -94,9 +94,8 @@ export default function App() {
   const [teamsFilter, setTeamsFilter] = React.useState([]);
   const [highlightedPlayer, setHighlightedPlayer] = React.useState(null);
   const [tabValue, setTabValue] = React.useState(0);
-
   const [selectedPlayer, setSelectedPlayer] = React.useState({ playerID: null, color: null });
-
+  const [lastTimeZone, setLastTimeZone] = React.useState(localStorage.getItem('timeZone') || '');
 
   return (
     <>
@@ -153,6 +152,8 @@ export default function App() {
                     tabValue={tabValue}
                     setTabValue={setTabValue}
                     setSelectedPlayer={setSelectedPlayer}
+                    lastTimeZone={lastTimeZone}
+                    setLastTimeZone={setLastTimeZone}
                   />} />
                   <Route path="/players" element={<Players
                     selectedPlayer={selectedPlayer}
@@ -162,7 +163,7 @@ export default function App() {
                   <Route path="/news" element={<News />} />
                   <Route path="/stats" element={<p>stats<br />(no content yet)</p>} />
                   <Route path="/standings" element={<p>standings<br />(no content yet)</p>} />
-                  <Route path="/settings" element={<p>settings<br />(no content yet)</p>} />
+                  <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Box>
             </Box>

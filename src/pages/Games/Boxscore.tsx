@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import * as React from 'react';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
@@ -15,9 +14,17 @@ import 'datatables.net-select-dt';
 import { Consts } from '../../consts/consts.ts';
 
 
-
-export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
+export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer, lastTimeZone }) {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    React.useEffect(() => {
+        var timeZone = localStorage.getItem('timeZone');
+        if (timeZone !== lastTimeZone) {
+
+            console.log('should update times');
+          }
+    }, [location]);
 
     function findTeamIndex(teamName) {
         for (const league in Consts.teams) {
@@ -97,6 +104,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         var numInnings;
         if (selectedGame != null) {
             var status = selectedGame['gameData']['status']['abstractGameState'];
+            var detailedState = selectedGame['gameData']['status']['detailedState'];
             var linescore = selectedGame['liveData']['linescore'];
 
             if (status == 'Preview') {
@@ -108,6 +116,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 } else {
                     numInnings = 9;
                 }
+            } else if (detailedState != 'Final') {
+                numInnings = 9;
             } else {
                 numInnings = linescore['innings'].length;
             }
@@ -192,7 +202,13 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 $(homeTab).css('background-color', '#0416c0');
             }
 
-            dateSpan.text(`${new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US')} ${new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`);
+            var timeZone = localStorage.getItem('timeZone');
+            var date = new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
+            var time = new Date(selectedGame['gameData']['datetime']['dateTime']);
+            time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);
+            time = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+            dateSpan.text(`${date} ${time}`);
 
             // recapSpan.html(`<a href="https://stories.mlb.com/live/${gameData['gameData']['game']['pk']}.html" target="_blank">Video recap</a>`);
             recapSpan.html(`<a href="https://www.mlb.com/stories/game/${selectedGame['gameData']['game']['pk']}" target="_blank">Video recap</a>`);

@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box, Typography, Tabs, Tab } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -9,7 +10,6 @@ import Boxscore from './Boxscore';
 import Plays from './Plays';
 import News from './News';
 import Media from './Media';
-
 
 
 export default function Games({
@@ -29,14 +29,10 @@ export default function Games({
     setHighlightedPlayer,
     tabValue,
     setTabValue,
-    setSelectedPlayer
+    setSelectedPlayer,
+    lastTimeZone,
+    setLastTimeZone
 }) {
-    // const [selectedGame, setSelectedGame] = React.useState(null);
-    // const [selectedPlayer, setSelectedPlayer] = React.useState(null);
-    // const [tabValue, setTabValue] = React.useState(0);
-
-    // console.log(selectedGame);
-
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -58,6 +54,8 @@ export default function Games({
                         setSelectedGame={setSelectedGame}
                         teamsFilter={teamsFilter}
                         setTeamsFilter={setTeamsFilter}
+                        lastTimeZone={lastTimeZone}
+                        setLastTimeZone={setLastTimeZone}
                     />
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
@@ -66,6 +64,7 @@ export default function Games({
                         selectedGame={selectedGame}
                         highlightedPlayer={highlightedPlayer}
                         setSelectedPlayer={setSelectedPlayer}
+                        lastTimeZone={lastTimeZone}
                     />
                 </Grid>
                 <Grid>

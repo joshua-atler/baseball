@@ -1,26 +1,26 @@
 // @ts-nocheck
 
-import * as React from 'react'
+import * as React from 'react';
 
-import Box from '@mui/material/Box'
+import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer'
-import CssBaseline from '@mui/material/CssBaseline'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import CssBaseline from '@mui/material/CssBaseline';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText'
 import SettingsIcon from '@mui/icons-material/Settings';
-import SportsBaseballIcon from '@mui/icons-material/SportsBaseball'
-import AssessmentIcon from '@mui/icons-material/Assessment'
-import GroupIcon from '@mui/icons-material/Group'
-import TableViewIcon from '@mui/icons-material/TableView'
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import GroupIcon from '@mui/icons-material/Group';
+import TableViewIcon from '@mui/icons-material/TableView';
 
-import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 

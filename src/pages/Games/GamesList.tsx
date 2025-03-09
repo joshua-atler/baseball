@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material';
 import Select from '../components/Select';
@@ -33,7 +34,9 @@ export default function GamesList({
     selectedGame,
     setSelectedGame,
     teamsFilter,
-    setTeamsFilter
+    setTeamsFilter,
+    lastTimeZone,
+    setLastTimeZone
 }) {
     // const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
     const datesRef = React.useRef(dates);
@@ -43,6 +46,7 @@ export default function GamesList({
     // const [selectedTeams, setSelectedTeams] = React.useState([]);
     const [newSettings, setNewSettings] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const location = useLocation();
 
     // var selectedTeams = [];
 
@@ -353,6 +357,8 @@ export default function GamesList({
 
             var progressAmount = 0;
 
+            var timeZone = localStorage.getItem('timeZone');
+
             gamesDetails = Array(gamesList.length);
             for (let i = 0; i < gamesForDates.length; i++) {
                 var url = gamesForDates[i]['link'];
@@ -369,6 +375,9 @@ export default function GamesList({
                 var now = new Date();
                 var dateString = new Date(data['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
                 var time = new Date(data['gameData']['datetime']['dateTime']);
+
+                time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);
+
                 var timeString = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
                 var awayScore = '-';
                 var awayTeam = data['gameData']['teams']['away']['name'];
@@ -411,9 +420,13 @@ export default function GamesList({
                 }
 
                 var detailedState = data['gameData']['status']['detailedState'];
-                if (status != 'Preview' && started && detailedState != 'Cancelled') {
-                    awayScore = data['liveData']['linescore']['teams']['away']['runs'];
-                    homeScore = data['liveData']['linescore']['teams']['home']['runs'];
+                if (status != 'Preview' && started) {
+                    if (data['liveData']['linescore']['teams']['away']['runs'] !== undefined) {
+                        awayScore = data['liveData']['linescore']['teams']['away']['runs'];
+                    }
+                    if (data['liveData']['linescore']['teams']['home']['runs'] !== undefined) {
+                        homeScore = data['liveData']['linescore']['teams']['home']['runs'];
+                    }
                 }
                 if (status != 'Preview' && !started) {
                     status = 'Preview';
@@ -506,8 +519,14 @@ export default function GamesList({
             return { year, month, day };
         }
 
-        // if dt has no rows
         if (dt.rows().count() == 0) {
+            updateTable(true);
+        }
+
+        var timeZone = localStorage.getItem('timeZone');
+        if (timeZone !== lastTimeZone) {
+            setLastTimeZone(timeZone);
+
             updateTable(true);
         }
 
@@ -526,7 +545,7 @@ export default function GamesList({
         return () => {
             clearInterval(timer);
         };
-    }, []);
+    }, [location]);
 
     return (
         <>
