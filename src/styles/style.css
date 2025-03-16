@@ -1316,3 +1316,38 @@ table#playerStatsGameLog td:nth-child(2) {
 /* #player-awards-stack {
     width: 400px;
 } */
+
+/* table.pitches {
+    width: 100% !important;
+    table-layout: fixed;
+} */
+
+table.pitches colgroup col:nth-child(1) {
+    width: 30px !important;
+    max-width: 30px !important;
+}
+
+table.pitches th:nth-child(1),
+table.pitches td:nth-child(1) {
+    width: 30px !important;
+    max-width: 30px !important;
+}
+
+table.pitches colgroup col:nth-child(2) {
+    width: 200px !important;
+    max-width: 200px !important;
+}
+
+table.pitches th:nth-child(2),
+table.pitches td:nth-child(2) {
+    width: 200px !important;
+    max-width: 200px !important;
+}
+
+.play-icon {
+    padding: 0 !important;
+}
+
+.play-icon svg {
+    vertical-align: middle;
+}

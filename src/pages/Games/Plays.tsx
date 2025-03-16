@@ -352,7 +352,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                         }
 
 
-                        playDetails = `<td>${icon}<td>${desc}</td>`;
+                        playDetails = `<td class="play-icon">${icon}<td>${desc}</td>`;
                     }
 
                     playString += `<tr>${playDetails}</tr>`;
