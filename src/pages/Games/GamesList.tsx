@@ -202,7 +202,6 @@ export default function GamesList({
                 }
 
                 dt.draw(false);
-
             })();
 
             var detail;
@@ -357,7 +356,7 @@ export default function GamesList({
 
             var progressAmount = 0;
 
-            var timeZone = localStorage.getItem('timeZone');
+            var timeZone = localStorage.getItem('timeZone') || 'ET';
 
             gamesDetails = Array(gamesList.length);
             for (let i = 0; i < gamesForDates.length; i++) {
@@ -523,11 +522,14 @@ export default function GamesList({
             updateTable(true);
         }
 
-        var timeZone = localStorage.getItem('timeZone');
+        var timeZone = localStorage.getItem('timeZone') || 'ET';
         if (timeZone !== lastTimeZone) {
             setLastTimeZone(timeZone);
 
-            updateTable(true);
+
+            if (lastTimeZone !== '') {
+                updateTable(true);
+            }
         }
 
         teamsDropdown.setSelected(teamsFilter);
