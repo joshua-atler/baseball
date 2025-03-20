@@ -19,7 +19,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const location = useLocation();
 
     React.useEffect(() => {
-        var timeZone = localStorage.getItem('timeZone');
+        var timeZone = localStorage.getItem('timeZone') || 'ET';
         if (timeZone !== lastTimeZone) {
 
             console.log('should update times');
@@ -202,7 +202,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 $(homeTab).css('background-color', '#0416c0');
             }
 
-            var timeZone = localStorage.getItem('timeZone');
+            var timeZone = localStorage.getItem('timeZone') || 'ET';
             var date = new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
             var time = new Date(selectedGame['gameData']['datetime']['dateTime']);
             time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);
