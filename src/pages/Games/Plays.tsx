@@ -302,16 +302,12 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                             if (firstPitch) {
                                 strikeZoneData[strikeZoneData.length - 1].push([strikeZoneTop, strikeZoneBottom]);
                             }
-                            if (pitch['isPitch']) {
-                                strikeZoneData[strikeZoneData.length - 1].push([
-                                    Math.round(pitch['pitchData']['coordinates']['pX'] * 1000) / 1000,
-                                    Math.round(pitch['pitchData']['coordinates']['pZ'] * 1000) / 1000,
-                                    pitch['details']
-                                ]);
-                                pitchIndex += 1;
-                            } else {
-                                // console.log('not adding');
-                            }
+                            strikeZoneData[strikeZoneData.length - 1].push([
+                                Math.round(pitch['pitchData']['coordinates']['pX'] * 1000) / 1000,
+                                Math.round(pitch['pitchData']['coordinates']['pZ'] * 1000) / 1000,
+                                pitch['details']
+                            ]);
+                            pitchIndex += 1;
                         } catch (error) {
                             // console.log(pitch);
                             // console.log(error);
@@ -323,6 +319,13 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     } else {
                         var desc = playEvent['details']['description'];
                         var icon = '';
+
+                        if (firstPitch) {
+                            strikeZoneTop = 3;
+                            strikeZoneBottom = 1;
+                            strikeZoneData[strikeZoneData.length - 1].push([strikeZoneTop, strikeZoneBottom]);
+                            firstPitch = false;
+                        }
 
                         if (desc !== undefined) {
 
@@ -337,7 +340,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                                 icon = Consts.pitchIcons['pause'];
                             } else if (desc.includes('Status Change')) {
                                 icon = Consts.pitchIcons['status'];
-                            } else if (desc.includes('caught')) {
+                            } else if (desc.includes('caught') || desc.includes('Automatic')) {
                                 icon = Consts.pitchIcons['caught'];
                             } else if (desc.includes('remains')) {
                                 icon = Consts.pitchIcons['remains'];
