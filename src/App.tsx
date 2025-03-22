@@ -23,6 +23,7 @@ import Home from './pages/Home';
 import Games from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
 import News from './pages/News.tsx';
+import Standings from './pages/Standings.tsx';
 import Settings from './pages/Settings.tsx';
 
 import DatePicker, { DateObject } from 'react-multi-date-picker';
@@ -162,7 +163,7 @@ export default function App() {
                   />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/stats" element={<p>stats<br />(no content yet)</p>} />
-                  <Route path="/standings" element={<p>standings<br />(no content yet)</p>} />
+                  <Route path="/standings" element={<Standings />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Box>
