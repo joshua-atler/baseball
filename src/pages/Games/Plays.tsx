@@ -234,19 +234,23 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                 </button>`;
 
                 playString += '<div class="play-data">';
-                var strikeZoneTop = 0;
-                var strikeZoneBottom = 0;
+                var strikeZoneTop = 3;
+                var strikeZoneBottom = 1;
                 strikeZoneData.push([]);
 
                 playString += `<p>${playDescription}</p>`;
                 playString += '<table class="pitches"><tbody>';
 
+                var firstPitch = true;
+
                 if (play['pitchIndex'].length == 0) {
-                    strikeZoneData[strikeZoneData.length - 1].push([3, 1]);
+                    if (firstPitch) {
+                        strikeZoneData[strikeZoneData.length - 1].push([3, 1]);
+                        firstPitch = false;
+                    }
                 }
                 var pitchIndex = 1;
                 // for (let i = 0; i < play['pitchIndex'].length; i++) {
-                var firstPitch = true;
                 for (let i = 0; i < play['playEvents'].length; i++) {
                     var playEvent = play['playEvents'][i];
                     // console.log('');
