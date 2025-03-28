@@ -211,7 +211,7 @@ span.tooltip {
     position: relative;
 }
 
-tr th span.tooltip::after {
+span.tooltip::after {
     content: attr(data-tooltip);
     position: absolute;
     background-color: black;
@@ -233,8 +233,8 @@ table#pitchers th:last-child span.tooltip::after {
     left: -20px !important;
 } */
 
-table#pitching-stats tr th span.tooltip::after,
-table#hitting-stats tr th span.tooltip::after {
+span.tooltip::after,
+span.tooltip::after {
     width: 125px;
 }
 
@@ -1308,14 +1308,43 @@ table#playerStatsGameLog td:nth-child(2) {
 }
 
 #player-awards-div {
-    background-color: #2c323a;
     width: 1200px;
-    padding: 10px;
 }
 
-/* #player-awards-stack {
-    width: 400px;
-} */
+#awards-accordion {
+    background-color: #2c323a;
+}
+
+table.standings-dt {
+    width: 100% !important;
+    table-layout: fixed;
+}
+
+table.standings-dt colgroup col:first-child {
+    width: 200px !important;
+    max-width: 200px !important;
+}
+
+table.standings-dt colgroup col {
+    width: 80px !important;
+    max-width: 80px !important;
+    min-width: 80px !important;
+}
+
+table.standings-dt th:first-child,
+table.standings-dt td:first-child {
+    width: 200px !important;
+    max-width: 200px !important;
+    text-align: left;
+}
+
+table.standings-dt th,
+table.standings-dt td {
+    width: 80px !important;
+    max-width: 80px !important;
+    min-width: 80px !important;
+    text-align: left;
+}
 
 /* table.pitches {
     width: 100% !important;
@@ -1350,4 +1379,12 @@ table.pitches td:nth-child(2) {
 
 .play-icon svg {
     vertical-align: middle;
+}
+
+table.wild-card {
+    border: none !important;
+}
+
+table.wild-card tbody tr:nth-child(3) {
+    border-bottom: 3px solid white;
 }

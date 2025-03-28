@@ -3,14 +3,20 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box } from '@mui/material';
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+import {
+    Box,
+    Typography,
+    Chip,
+    Stack,
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,13 +40,7 @@ function AwardCard({ award, teams, dates }) {
     console.log(teams);
     console.log(dates);
     return (
-        // <Card sx={{ maxWidth: 345 }}>
         <Card>
-            {/* <CardMedia
-          sx={{ height: 140 }}
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="green iguana"
-        /> */}
             <CardContent>
                 <Typography gutterBottom variant="h6" component="div">
                     {award}
@@ -51,16 +51,7 @@ function AwardCard({ award, teams, dates }) {
                         <Typography variant="body1">{dates[index]}</Typography>
                     </Box>
                 ))}
-                {/* <Box sx={{ width: 250 }} display="flex" justifyContent="space-between" alignItems="center"> */}
-                {/* <Box display="flex" gap={2} justifyContent="space-between" alignItems="center">
-                    <Typography variant="body">{teams}</Typography>
-                    <Typography variant="body">{months}</Typography>
-                </Box> */}
             </CardContent>
-            {/* <CardActions>
-          <Button size="small">Share</Button>
-          <Button size="small">Learn More</Button>
-        </CardActions> */}
         </Card>
     );
 }
@@ -199,7 +190,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         var hitsScatterPlot = Chart.getChart(hitsScatterPlotCanvas);
         // var hitsScatterPlot = null;
 
-
         // generic charts
         const activeStatusTimePlotCanvas = $(document.querySelector('#active-status-time-plot canvas'));
         var activeStatusTimePlot = Chart.getChart(activeStatusTimePlotCanvas);
@@ -241,7 +231,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         const gameLogSummary = $(document.querySelector('#game-log-summary'));
         const gameLogDetails = $(document.querySelector('#game-log-details'));
 
-        const playerAwards = $(document.querySelector('#player-awards'));
+        const playerAwards = $(document.querySelector('#player-awards-div'));
         if (awardsContainerRef.current && !awardsRef.current) {
             awardsRef.current = ReactDOM.createRoot(awardsContainerRef.current);
         }
@@ -2096,10 +2086,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     return response.json();
                 })
                 .then(awards => {
-                    console.log('awards');
                     if ('awards' in awards['people'][0]) {
                         awards = awards['people'][0]['awards'];
-                        console.log(awards);
 
                         awards = awards.reduce((acc, { name, team, date }) => {
                             if (!acc[name]) {
@@ -2110,7 +2098,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                             return acc;
                         }, {});
                         awards = Object.values(awards);
-                        console.log(awards);
 
                         awardsRef.current.render(
                             <ThemeProvider theme={createTheme({
@@ -2118,20 +2105,25 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     mode: 'dark',
                                 },
                             })}>
-                                {/* <AwardCard
-                                // key={index}
-                                award='award'
-                                teams={['orioles', 'aaa']}
-                                months={['09/2024', '08/2024']}
-                            /> */}
-                                {awards.map((award, index) => (
-                                    <AwardCard
-                                        key={index}
-                                        award={award.name}
-                                        teams={award.teams}
-                                        dates={award.dates}
-                                    />
-                                ))}
+                                <Accordion sx={{ width: 1200 }} id="awards-accordion">
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                    >
+                                        <h2>Awards ({awards.length})</h2>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box display="flex" flexWrap="wrap" gap={2}>
+                                            {awards.map((award, index) => (
+                                                <AwardCard
+                                                    key={index}
+                                                    award={award.name}
+                                                    teams={award.teams}
+                                                    dates={award.dates}
+                                                />
+                                            ))}
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
                             </ThemeProvider>
                         );
                     }
@@ -2237,17 +2229,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         <p id="game-log-details"></p>
                     </div>
                     <div id="player-awards-div">
-                        <h2>Awards</h2>
                         <Box display="flex" flexWrap="wrap" gap={2} id="player-awards" ref={awardsContainerRef}>
                             <br /><br /><br /><br />
-                            {/* <Stack id="player-awards-stack" direction="row" spacing={1}>
-                                <Chip label="Chip Filled" />
-                                <Chip label="Chip Outlined" variant="outlined" />
-                                <Chip label="primary" color="primary" />
-                                <Chip label="success" color="success" />
-                                <Chip label="primary" color="primary" variant="outlined" />
-                                <Chip label="success" color="success" variant="outlined" />
-                            </Stack> */}
                         </Box>
                     </div>
                 </div>
