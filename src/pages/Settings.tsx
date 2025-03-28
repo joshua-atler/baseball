@@ -8,7 +8,6 @@ import Grid from '@mui/material/Grid2';
 
 import $ from 'jquery';
 import '../styles/style.css';
-import { XMLParser } from 'fast-xml-parser';
 
 import { Consts } from '../consts/consts.ts';
 
@@ -28,7 +27,7 @@ export default function Settings() {
 
     return (
         <Box sx={{ width: 1200 }}>
-            <Grid container spacing={2} id="games-grid" alignItems="center" mt={5} ml={10}>
+            <Grid container spacing={2} alignItems="center" mt={5} ml={10}>
                 <Grid>
                     <Typography variant="h6" noWrap component="div">
                         Time zone

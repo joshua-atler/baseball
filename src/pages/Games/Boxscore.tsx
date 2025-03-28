@@ -387,7 +387,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
             var note = 'note' in batting ? batting['note'] : '';
             var playerID = player['person']['id'];
-            var jerseyNum = '#' + player['jerseyNumber'];
+            var jerseyNum = '';
+            if ('jerseyNumber' in player && player['jerseyNumber'].length > 0) {
+                jerseyNum = '#' + player['jerseyNumber'];
+            }
             var name = player['person']['fullName'];
 
             var allPositions = player['allPositions'];
@@ -423,7 +426,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
             var note = 'note' in pitching ? `&nbsp;${pitching['note']}` : '';
             var playerID = player['person']['id'];
-            var jerseyNum = '#' + player['jerseyNumber'];
+            var jerseyNum = '';
+            if ('jerseyNumber' in player && player['jerseyNumber'].length > 0) {
+                jerseyNum = '#' + player['jerseyNumber'];
+            }
             var name = player['person']['fullName'];
 
             var inningsPitched = pitching['inningsPitched'];

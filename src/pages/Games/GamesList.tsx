@@ -38,17 +38,13 @@ export default function GamesList({
     lastTimeZone,
     setLastTimeZone
 }) {
-    // const [dates, setDates] = React.useState([new DateObject(new Date()), new DateObject(new Date())]);
     const datesRef = React.useRef(dates);
     const teamsFilterRef = React.useRef(teamsFilter);
     const [progress, setProgress] = React.useState(0);
-    // const [disableAnimation, setDisableAnimation] = React.useState(false);
-    // const [selectedTeams, setSelectedTeams] = React.useState([]);
     const [newSettings, setNewSettings] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const location = useLocation();
-
-    // var selectedTeams = [];
+    const prevLocation = React.useRef(null);
 
     const updateDates = () => {
         if (dates.length > 0) {
@@ -80,6 +76,11 @@ export default function GamesList({
     };
 
     React.useEffect(() => {
+        if (prevLocation.current === location['pathname']) {
+            return;
+        }
+        prevLocation.current = location['pathname'];
+
         const yesterdayButton = document.querySelector('#yesterday-button');
         const todayButton = document.querySelector('#today-button');
         const tomorrowButton = document.querySelector('#tomorrow-button');
