@@ -4,23 +4,22 @@ import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material';
-import Select from '../components/Select';
-
-import '../../styles/style.css';
-import '../../styles/dtStyle.css';
-import '../../styles/datepickerStyle.css';
-import '../../styles/slimSelectStyle.css';
+import DatePicker, { DateObject } from 'react-multi-date-picker';
 
 import $ from 'jquery';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
+import dayjs from 'dayjs';
 import SlimSelect from 'slim-select';
 
 import { Consts } from '../../consts/consts.ts';
-import DatePicker, { DateObject } from 'react-multi-date-picker';
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
+import '../../styles/datepickerStyle.css';
+import '../../styles/slimSelectStyle.css';
 import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
-import dayjs from 'dayjs';
+
 
 export default function GamesList({
     dates,

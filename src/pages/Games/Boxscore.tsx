@@ -3,16 +3,14 @@
 import * as React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import '../../styles/style.css';
-import '../../styles/dtStyle.css';
-
 import $ from 'jquery';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
 
 import { Consts } from '../../consts/consts.ts';
-
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer, lastTimeZone }) {
     const navigate = useNavigate();
@@ -459,7 +457,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             }
             for (let i = 0; i < batters.length; i++) {
                 var playerID = 'ID' + batters[i].toString();
-                if (!$.isEmptyObject(players[playerID]['stats']['batting'])) {
+                if (players[playerID]['position']['type'] != 'Pitcher') {
                     boxscoreTable.append(boxscoreRow(players[playerID], (selectedGame['gameData']['status']['abstractGameState'] == 'Live') ? batters[i].toString() == currentBatter['id'] : false));
                 }
             }

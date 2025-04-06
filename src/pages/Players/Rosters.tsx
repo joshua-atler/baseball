@@ -3,19 +3,17 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box } from '@mui/material';
-import Typography from '@mui/material/Typography';
-
-import '../../styles/style.css';
+import { Box, Typography } from '@mui/material';
 
 import $ from 'jquery';
+import SlimSelect from 'slim-select';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
 import 'datatables.net-rowgroup';
-import SlimSelect from 'slim-select';
 
 import { Consts } from '../../consts/consts.ts';
+import '../../styles/style.css';
 
 
 

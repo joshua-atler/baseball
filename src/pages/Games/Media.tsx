@@ -5,15 +5,13 @@ import ReactDOM from 'react-dom/client';
 
 import { Box } from '@mui/material';
 
-import '../../styles/style.css';
-
 import $ from 'jquery';
-import { Consts } from './consts.ts';
 
+import { Consts } from './consts.ts';
+import '../../styles/style.css';
 
 
 export default function Media({ gamePk }) {
-
 
     React.useEffect(() => {
         (async () => {

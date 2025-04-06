@@ -4,16 +4,14 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { Box } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
-
-import '../../styles/style.css';
-import '../../styles/dtStyle.css';
-import '../../styles/datepickerStyle.css';
-import '../../styles/slimSelectStyle.css';
 
 import $ from 'jquery';
 
 import { Consts } from '../../consts/consts.ts';
+import '../../styles/style.css';
+import '../../styles/dtStyle.css';
+import '../../styles/datepickerStyle.css';
+import '../../styles/slimSelectStyle.css';
 
 
 export default function Plays({ selectedGame, setHighlightedPlayer }) {

@@ -3,13 +3,22 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Box, Button, Typography, InputLabel, MenuItem, FormControl, Select, SelectChangeEvent } from '@mui/material';
+import {
+    Box,
+    Button,
+    Typography,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+    SelectChangeEvent
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import $ from 'jquery';
-import '../styles/style.css';
 
 import { Consts } from '../consts/consts.ts';
+import '../styles/style.css';
 
 
 export default function Settings() {

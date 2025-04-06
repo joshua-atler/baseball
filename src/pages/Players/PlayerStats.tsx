@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 
 import {
@@ -18,21 +19,18 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
 
+import $ from 'jquery';
+import 'datatables.net-dt';
+import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
+import Chart from 'chart.js/auto';
+import SlimSelect from 'slim-select';
+
+import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
-
-import $ from 'jquery';
-import 'datatables.net-dt';
-import Chart from 'chart.js/auto';
-import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
-import SlimSelect from 'slim-select';
-
-import { Consts } from '../../consts/consts.ts';
-
 
 
 function AwardCard({ award, teams, dates }) {

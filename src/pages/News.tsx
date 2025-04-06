@@ -3,15 +3,24 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Box, Button, Typography, Card, CardActionArea, CardActions, CardMedia, CardContent } from '@mui/material';
+import {
+    Box,
+    Button,
+    Typography,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardMedia,
+    CardContent
+} from '@mui/material';
 
 import $ from 'jquery';
-import '../styles/style.css';
-import '../styles/slimSelectStyle.css';
 import SlimSelect from 'slim-select';
 import { XMLParser } from 'fast-xml-parser';
 
 import { Consts } from '../consts/consts.ts';
+import '../styles/style.css';
+import '../styles/slimSelectStyle.css';
 
 
 const parseXMLtoJSON = (xmlString) => {
@@ -31,7 +40,6 @@ function NewsCard({ title, link, pubDate, imageUrl }) {
                 <CardMedia
                     component='image'
                     sx={{ height: 225, objectFit: 'fill' }}
-                    // image="https://placecats.com/300/200"
                     image={imageUrl}
                     title={title}
                 />
