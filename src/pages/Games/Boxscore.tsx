@@ -44,10 +44,12 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         const recapSpan = $(document.querySelector('#recap'));
 
         const linescoreTable = $(document.querySelector('#linescore'));
+        const pitchingTable = $(document.querySelector('#pitching'));
         const boxscoreTable = $(document.querySelector('#boxscore'));
         const subsDiv = $(document.querySelector('#subs'));
         const infoDiv = $(document.querySelector('#info'));
         const pitchersTable = $(document.querySelector('#pitchers'));
+        const probablePitchersDiv = $(document.querySelector('#probable-pitchers'));
         const detailsDiv = $(document.querySelector('#details'));
 
         var headerRow = linescoreTable.find('thead').find('tr:nth-of-type(1)');
@@ -74,7 +76,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         var activeData = false;
         var selectedSide = 'away';
 
-        // var gameData = null;
 
         function clearTable() {
             var boxscoreTableRows = boxscoreTable.find('tr');
@@ -150,6 +151,15 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         }
 
         if (selectedGame === null) {
+            pitchingTable.show();
+            boxscoreTable.show();
+            subsDiv.show();
+            infoDiv.show();
+            pitchersTable.show();
+
+            probablePitchersDiv.empty();
+            probablePitchersDiv.hide();
+
             dateSpan.text('');
             recapSpan.text('');
 
@@ -191,6 +201,112 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             // var contentEvent = new CustomEvent('content', { detail: null });
             // document.dispatchEvent(contentEvent);
         } else {
+            if (detailedState == 'Scheduled') {
+                pitchingTable.hide();
+                boxscoreTable.hide();
+                subsDiv.hide();
+                infoDiv.hide();
+                pitchersTable.hide();
+
+                probablePitchersDiv.hide();
+                probablePitchersDiv.empty();
+
+                var probablePitchers = selectedGame['gameData']['probablePitchers'];
+                const isEmpty = (obj) => Object.keys(obj).length === 0;
+                if (!isEmpty(probablePitchers)) {
+                    // console.log('probablePitchers');
+                    // console.log(probablePitchers);
+                    probablePitchersDiv.append(`<p class="probable-pitchers-title probable-pitchers-label">PROBABLE PITCHERS</p>`);
+
+                    function probablePitcherText(side) {
+                        return `<img class="probable-pitcher-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${probablePitchers[side]['id']}/headshot/silo/current">
+                        ${playerLink(probablePitchers[side]['id'], probablePitchers[side]['fullName'])}`;
+                    }
+
+                    var pitchersData = {};
+
+                    ['away', 'home'].forEach(side => {
+                        pitchersData[side] = {};
+                        pitchersData[side]['winsLosses'] = '---';
+                        pitchersData[side]['ERA'] = '---';
+                        pitchersData[side]['WHIP'] = '---';
+                        pitchersData[side]['IP'] = '---';
+                        pitchersData[side]['K/9'] = '---';
+                        pitchersData[side]['BB/9'] = '---';
+
+                        if (side in probablePitchers) {
+                            pitchersData[side]['name'] = probablePitcherText(side);
+
+                            fetch(`https://statsapi.mlb.com/api/v1/people/${probablePitchers[side]['id']}?hydrate=stats(group=[pitching],type=[season,seasonAdvanced,career,careerAdvanced])`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    data = data['people'][0];
+                                    // console.log(data);
+                                    var pitchHand = data['pitchHand']['code'];
+                                    pitchersData[side]['name'] = `${pitchersData[side]['name']} (${pitchHand})`;
+
+                                    var seasonStats = data['stats'][0]['splits'][0]['stat'];
+                                    // console.log(seasonStats);
+
+                                    pitchersData[side]['winsLosses'] = `${seasonStats['wins']}-${seasonStats['losses']}`;
+                                    pitchersData[side]['ERA'] = `${seasonStats['era']}`;
+                                    pitchersData[side]['WHIP'] = `${seasonStats['whip']}`;
+                                    pitchersData[side]['IP'] = `${seasonStats['inningsPitched']}`;
+                                    pitchersData[side]['K/9'] = `${seasonStats['strikeoutsPer9Inn']}`;
+                                    pitchersData[side]['BB/9'] = `${seasonStats['walksPer9Inn']}`;
+
+                                })
+                        } else {
+                            pitchersData[side]['name'] = 'TBD';
+                        }
+                    });
+
+                    // console.log('pitchersData');
+                    // console.log(pitchersData);
+
+                    setTimeout(() => {
+                        probablePitchersDiv.append(`<table>
+                            <tr><td colSpan="3">${pitchersData['away']['name']}</td><td colSpan="3">${pitchersData['home']['name']}</td></tr>
+                            <tr>
+                                <td>W-L: ${pitchersData['away']['winsLosses']}</td><td>ERA: ${pitchersData['away']['ERA']}</td><td>WHIP: ${pitchersData['away']['WHIP']}</td>
+                                <td>W-L: ${pitchersData['home']['winsLosses']}</td><td>ERA: ${pitchersData['home']['ERA']}</td><td>WHIP: ${pitchersData['home']['WHIP']}</td>
+                            </tr>
+                            <tr>
+                                <td>IP: ${pitchersData['away']['IP']}</td><td>K/9: ${pitchersData['away']['K/9']}</td><td>BB/9: ${pitchersData['away']['BB/9']}</td>
+                                <td>IP: ${pitchersData['home']['IP']}</td><td>K/9: ${pitchersData['home']['K/9']}</td><td>BB/9: ${pitchersData['home']['BB/9']}</td>
+                            </tr>
+                        </table>`);
+                        
+                        setTimeout(() => {
+                            probablePitchersDiv.show();
+                        }, 100);
+                    }, 200);
+                }
+
+                // var details = selectedGame['liveData']['boxscore']['info'];
+                // detailsDiv.append(`<p class="details-title details-label">GAME NOTES</p>`);
+                // for (let i = 0; i < details.length; i++) {
+                //     if ('value' in details[i]) {
+                //         detailsDiv.append(`<p><span class="details-label">${details[i]['label']}:</span> ${details[i]['value']}</p>`);
+                //     } else {
+                //         detailsDiv.append(`<p><span class="details-label">${details[i]['label']}</span></p>`);
+                //     }
+                // }
+
+            } else {
+                pitchingTable.show();
+                boxscoreTable.show();
+                subsDiv.show();
+                infoDiv.show();
+                pitchersTable.show();
+                probablePitchersDiv.hide();
+            }
+
             activeData = true;
             if (selectedSide == 'away') {
                 $(awayTab).css('background-color', '#0416c0');
@@ -301,7 +417,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 } else {
                     pitchingRow.find('td').eq(2).html('-');
                 }
-            } catch { }
+            } catch {
+                pitchingRow.find('td').eq(0).text('-');
+                pitchingRow.find('td').eq(1).text('-');
+                pitchingRow.find('td').eq(2).text('-');
+            }
 
             var awayTeamID = awayTeam['id'];
             var homeTeamID = homeTeam['id'];
@@ -760,6 +880,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <tbody>
                 </tbody>
             </table>
+            <div id="probable-pitchers"></div>
             <div id="details"></div>
         </>
     )
