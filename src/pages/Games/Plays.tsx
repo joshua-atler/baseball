@@ -276,10 +276,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                                     speed = `${pitch['pitchData']['startSpeed']} mph`;
                                 }
                             }
-                            var pitchLink = '';
-                            try {
-                                pitchLink = `<a href="https://baseballsavant.mlb.com/sporty-videos?playId=${pitch['playId']}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#374bfb"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h528v-264h72v264q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm171-192-51-51 357-357H576v-72h240v240h-72v-117L387-336Z"/></svg></a>`;
-                            } catch { }
 
                             var playDetails = `
                             <td>
@@ -290,7 +286,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                                 ${pitchType}
                             </td>
                             <td><span class="pitch-bold">${count}</span></td>
-                            <td>${pitchLink}</td>
                             `;
 
                             if ('pitchData' in pitch) {
@@ -330,8 +325,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                         }
 
                         if (desc !== undefined) {
-
-
                             if (desc.includes('steals')) {
                                 icon = Consts.pitchIcons['steals'];
                             } else if (desc.includes('error')) {
@@ -356,11 +349,18 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                             }
                         }
 
-
                         playDetails = `<td class="play-icon">${icon}<td>${desc}</td>`;
                     }
-
+                    
+                    if ('playId' in playEvent) {
+                        var pitchLink = `<a href="https://baseballsavant.mlb.com/sporty-videos?playId=${playEvent['playId']}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#374bfb"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h528v-264h72v264q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm171-192-51-51 357-357H576v-72h240v240h-72v-117L387-336Z"/></svg></a>`;
+                        if (!playEvent['isPitch']) {
+                            playDetails = `${playDetails}<td></td>`;
+                        }
+                        playDetails = `${playDetails}<td>${pitchLink}</td>`;
+                    }
                     playString += `<tr>${playDetails}</tr>`;
+
                 }
 
                 playString += '</tbody></table>';
