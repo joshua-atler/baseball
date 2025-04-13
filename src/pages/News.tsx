@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
     Box,
@@ -30,42 +29,49 @@ const parseXMLtoJSON = (xmlString) => {
     return parser.parse(xmlString);
 };
 
-function NewsCard({ title, link, pubDate, imageUrl }) {
-    const navigate = useNavigate();
-
+function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
     return (
-        // <Card sx={{ maxWidth: 345 }}>
-        <Card sx={{ width: 400 }}>
-            <CardActionArea onClick={() => window.open(link, '_blank')}>
-                <CardMedia
-                    component='image'
-                    sx={{ height: 225, objectFit: 'fill' }}
-                    image={imageUrl}
-                    title={title}
-                />
-                <CardContent>
-                    <Typography gutterBottom variant='h6' component='div'>
-                        {title}
-                    </Typography>
-                    <Typography variant='body1'>{pubDate}</Typography>
-                    {/* {teams.map((team, index) => (
-                    <Box key={index} display="flex" gap={2} justifyContent="space-between" alignItems="center">
-                        <Typography variant="body1">{team}</Typography>
-                        <Typography variant="body1">{dates[index]}</Typography>
-                    </Box>
-                ))} */}
-                    {/* <Box sx={{ width: 250 }} display="flex" justifyContent="space-between" alignItems="center"> */}
-                    {/* <Box display="flex" gap={2} justifyContent="space-between" alignItems="center">
-                    <Typography variant="body">{teams}</Typography>
-                    <Typography variant="body">{months}</Typography>
-                </Box> */}
-                </CardContent>
-                {/* <CardActions>
-                    <Button size="small">Share</Button>
-                    <Button size="small">Learn More</Button>
-                </CardActions> */}
-            </CardActionArea>
-        </Card>
+        <>
+            {isMobileDevice ? (
+                <>
+                    <Card>
+                        <CardActionArea onClick={() => window.open(link, '_blank')}>
+                            <CardMedia
+                                component='image'
+                                sx={{ height: 225, objectFit: 'fill' }}
+                                image={imageUrl}
+                                title={title}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant='h6' component='div'>
+                                    {title}
+                                </Typography>
+                                <Typography variant='body1'>{pubDate}</Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </>
+            ) : (
+                <>
+                    <Card sx={{ width: 400 }}>
+                        <CardActionArea onClick={() => window.open(link, '_blank')}>
+                            <CardMedia
+                                component='image'
+                                sx={{ height: 225, objectFit: 'fill' }}
+                                image={imageUrl}
+                                title={title}
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant='h6' component='div'>
+                                    {title}
+                                </Typography>
+                                <Typography variant='body1'>{pubDate}</Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </>
+            )}
+        </>
     );
 }
 
@@ -238,48 +244,102 @@ export default function News() {
     }, []);
 
 
+    const isMobileDevice = () => {
+        return (
+            /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)
+        );
+    };
+
 
     return (
         <>
-            <Box sx={{ width: 1200 }}>
-                {/* <Typography variant="h5" noWrap component="div">
+
+            {isMobileDevice() ? (
+                <>
+                    <Box>
+                        {/* <Typography variant="h5" noWrap component="div">
                     MLB News
                 </Typography>
                 <Box id="news-teams-select-container">
                     <select id="news-teams-select"></select>
                 </Box> */}
-                <Typography variant="h5" noWrap component="div">
-                    MLB News
-                </Typography>
-                <div style={{ height: '100px' }}>
-                    <span id="news-team-logo"></span>
-                    <span id="news-team-label"></span>
-                    <div id="news-teams-select-container">
-                        <select id="news-teams-select"></select>
-                    </div>
-                </div>
-                <div className="news-team-color-banner" style={{ height: '30px' }}></div>
-                <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
-            </Box>
+                        <Typography variant="h5" noWrap component="div">
+                            MLB News
+                        </Typography>
+                        <div style={{ height: '250px' }}>
+                            <span id="news-team-logo" style={{ all: 'unset !important' }}></span>
+                            <span id="news-team-label"></span>
+                            <div className="news-team-color-banner" style={{ height: '30px' }}></div>
+                            <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
+                            <div id="news-teams-select-container" style={{ all: 'unset !important' }}>
+                                <select id="news-teams-select"></select>
+                            </div>
+                        </div>
+                    </Box>
 
-            {/* <Box width={400} display="flex" flexDirection="column" gap={2}> */}
-            <Box sx={{ alignItems: "center" }} display="flex">
-                <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
-                    {articles.map((article, index) => (
-                        <NewsCard
-                            key={index}
-                            title={article.title}
-                            description={article.description}
-                            link={article.link}
-                            pubDate={article.pubDate}
-                            imageUrl={article.imageUrl}
-                        />
-                    ))}
-                    {/* <NewsCard title="news" description="description" date="02/25/2025" />
+                    {/* <Box width={400} display="flex" flexDirection="column" gap={2}> */}
+                    <Box sx={{ alignItems: "center" }} display="flex">
+                        <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
+                            {articles.map((article, index) => (
+                                <NewsCard
+                                    key={index}
+                                    title={article.title}
+                                    description={article.description}
+                                    link={article.link}
+                                    pubDate={article.pubDate}
+                                    imageUrl={article.imageUrl}
+                                    isMobileDevice={isMobileDevice()}
+                                />
+                            ))}
+                            {/* <NewsCard title="news" description="description" date="02/25/2025" />
                 <NewsCard title="news" description="description" date="02/25/2025" />
                 <NewsCard title="news" description="description" date="02/25/2025" /> */}
-                </Box>
-            </Box>
+                        </Box>
+                    </Box>
+                </>
+            ) : (
+                <>
+                    <Box sx={{ width: 1200 }}>
+                        {/* <Typography variant="h5" noWrap component="div">
+                    MLB News
+                </Typography>
+                <Box id="news-teams-select-container">
+                    <select id="news-teams-select"></select>
+                </Box> */}
+                        <Typography variant="h5" noWrap component="div">
+                            MLB News
+                        </Typography>
+                        <div style={{ height: '100px' }}>
+                            <span id="news-team-logo"></span>
+                            <span id="news-team-label"></span>
+                            <div id="news-teams-select-container">
+                                <select id="news-teams-select"></select>
+                            </div>
+                        </div>
+                        <div className="news-team-color-banner" style={{ height: '30px' }}></div>
+                        <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
+                    </Box>
+
+                    {/* <Box width={400} display="flex" flexDirection="column" gap={2}> */}
+                    <Box sx={{ alignItems: "center" }} display="flex">
+                        <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
+                            {articles.map((article, index) => (
+                                <NewsCard
+                                    key={index}
+                                    title={article.title}
+                                    description={article.description}
+                                    link={article.link}
+                                    pubDate={article.pubDate}
+                                    imageUrl={article.imageUrl}
+                                />
+                            ))}
+                            {/* <NewsCard title="news" description="description" date="02/25/2025" />
+                <NewsCard title="news" description="description" date="02/25/2025" />
+                <NewsCard title="news" description="description" date="02/25/2025" /> */}
+                        </Box>
+                    </Box>
+                </>
+            )}
         </>
     );
 }
