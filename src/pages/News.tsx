@@ -78,7 +78,6 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
 export default function News() {
     console.log('news');
 
-    // const [selectedNewsTeam, setSelectedNewsTeam] = React.useState('');
     const [articles, setArticles] = React.useState([]);
 
     function fetchRss(team) {
@@ -96,17 +95,10 @@ export default function News() {
         }
 
         fetch(apiUrl)
-            // fetch("http://localhost:5000/rss")
-            // fetch('/api/rss')
             .then(response => response.text())
             .then(data => {
                 const json = parseXMLtoJSON(data);
                 var articles = json['rss']['channel']['item'];
-                // if (Array.isArray(articles)) {
-                //     articles = articles.slice(0, 50);
-                // } else {
-                //     articles = [articles];
-                // }
                 console.log(articles);
 
                 setArticles([]);
@@ -250,19 +242,12 @@ export default function News() {
         );
     };
 
-
     return (
         <>
 
             {isMobileDevice() ? (
                 <>
                     <Box>
-                        {/* <Typography variant="h5" noWrap component="div">
-                    MLB News
-                </Typography>
-                <Box id="news-teams-select-container">
-                    <select id="news-teams-select"></select>
-                </Box> */}
                         <Typography variant="h5" noWrap component="div">
                             MLB News
                         </Typography>
@@ -277,7 +262,6 @@ export default function News() {
                         </div>
                     </Box>
 
-                    {/* <Box width={400} display="flex" flexDirection="column" gap={2}> */}
                     <Box sx={{ alignItems: "center" }} display="flex">
                         <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
                             {articles.map((article, index) => (
@@ -291,21 +275,12 @@ export default function News() {
                                     isMobileDevice={isMobileDevice()}
                                 />
                             ))}
-                            {/* <NewsCard title="news" description="description" date="02/25/2025" />
-                <NewsCard title="news" description="description" date="02/25/2025" />
-                <NewsCard title="news" description="description" date="02/25/2025" /> */}
                         </Box>
                     </Box>
                 </>
             ) : (
                 <>
                     <Box sx={{ width: 1200 }}>
-                        {/* <Typography variant="h5" noWrap component="div">
-                    MLB News
-                </Typography>
-                <Box id="news-teams-select-container">
-                    <select id="news-teams-select"></select>
-                </Box> */}
                         <Typography variant="h5" noWrap component="div">
                             MLB News
                         </Typography>
@@ -320,8 +295,7 @@ export default function News() {
                         <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
                     </Box>
 
-                    {/* <Box width={400} display="flex" flexDirection="column" gap={2}> */}
-                    <Box sx={{ alignItems: "center" }} display="flex">
+                    <Box sx={{ width: '80%', alignItems: "center" }} display="flex">
                         <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
                             {articles.map((article, index) => (
                                 <NewsCard
@@ -333,9 +307,6 @@ export default function News() {
                                     imageUrl={article.imageUrl}
                                 />
                             ))}
-                            {/* <NewsCard title="news" description="description" date="02/25/2025" />
-                <NewsCard title="news" description="description" date="02/25/2025" />
-                <NewsCard title="news" description="description" date="02/25/2025" /> */}
                         </Box>
                     </Box>
                 </>
