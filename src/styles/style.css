@@ -561,17 +561,13 @@ div.ss-values {
     font-size: 14px;
 }
 
-div.ss-option {
+.roster-select div.ss-option {
     display: table-cell !important;
 }
 
-div.ss-content.ss-open-below {
+div.roster-select.ss-content.ss-open-below {
     min-height: 450px;
 }
-
-/* div.ss-main.ss-open-below {
-    min-height: 100px;
-} */
 
 #live-switch-container {
     width: 100px;
@@ -1230,7 +1226,6 @@ table#hitting-stats colgroup col:nth-child(7) {
 /* ********** */
 
 #all-years-switch-container {
-    width: 100px;
     margin-bottom: 20px;
     clear: both;
 }

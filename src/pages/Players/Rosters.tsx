@@ -221,12 +221,11 @@ export default function Rosters({ setSelectedPlayer }) {
             var teamsDropdown = new SlimSelect({
                 select: teamsSelect,
                 data: selectData,
-
                 settings: {
                     showSearch: false,
                     placeholderText: 'Select a team',
                     closeOnSelect: true,
-                    allowDeselect: true,
+                    allowDeselect: true
                 },
                 events: {
                     beforeChange: (newVal, oldVal) => {
@@ -345,7 +344,8 @@ export default function Rosters({ setSelectedPlayer }) {
                         return true;
                     }
                 }
-            })
+            });
+            document.querySelector('.ss-content').classList.add('roster-select');
         }, 50);
     }, []);
 
