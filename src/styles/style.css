@@ -775,6 +775,10 @@ table.pitches div.pitch-circle {
     text-align: center;
 }
 
+.table-highlight {
+    background-color: #555555;
+}
+
 div.play-data canvas.strike-zone {
     border: 1px solid gray;
 }

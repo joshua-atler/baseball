@@ -17,7 +17,9 @@ import {
     AccordionSummary,
     AccordionDetails,
     Switch,
-    FormControlLabel
+    FormControlLabel,
+    Modal,
+    Button
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -53,6 +55,36 @@ function AwardCard({ award, teams, dates }) {
     );
 }
 
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+
+function StatsModal({ open, handleClose, modalData }) {
+    console.log('modalData');
+    console.log(modalData);
+
+    return (
+        <Modal open={open} onClose={handleClose}>
+            {/* <Box sx={{ p: 4, backgroundColor: 'white', width: 300, margin: '100px auto' }}> */}
+            <Box sx={style}>
+                <h2>{modalData.statTitle}</h2>
+                {/* <span>{modalData.years}</span><br /><br /> */}
+                <span>{modalData.columnData}</span><br />
+                <Button onClick={handleClose}>Close</Button>
+            </Box>
+        </Modal>
+    );
+}
+
 export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const navigate = useNavigate();
     const awardsContainerRef = React.useRef(null);
@@ -63,6 +95,12 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const [careerPitching, setCareerPitching] = React.useState({});
     const [selectedYear, setSelectedYear] = React.useState(2025);
     const [allYearsChecked, setAllYearsChecked] = React.useState(false);
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalData, setModalData] = React.useState({});
+
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => setModalOpen(false);
+
     var pitchingStatsDT;
 
     var playerID = null;
@@ -251,6 +289,52 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         }
 
         pitchingStatsDT.draw(true);
+
+        $('#pitching-stats th, #pitching-stats td').off('click').on('click', function () {
+            var colIndex = $(this).index();
+            if (colIndex >= 2) {
+                var clickedColumn = pitchingStatsDT.column($(this).index());
+                var columnData = pitchingStatsDT.column($(this).index()).data().toArray();
+                var years = pitchingStatsDT.column(0).data().toArray();
+                var statTitle = clickedColumn.header().querySelector('span.tooltip').getAttribute('data-tooltip');
+
+                const seen = new Set();
+                const resultIndexes = [];
+                years.forEach((item, index) => {
+                    const match = item.match(/\b\d{4}\b/);
+                    if (match) {
+                        const year = match[0];
+                        if (!seen.has(year)) {
+                            seen.add(year);
+                            resultIndexes.push(index);
+                        }
+                    }
+                });
+                years = resultIndexes.map(index => years[index]);
+                years = years.map(year => year.slice(0, 4));
+                columnData = resultIndexes.map(index => columnData[index]);
+
+                setModalData({
+                    statTitle: statTitle,
+                    years: years,
+                    columnData: columnData
+                });
+                setModalOpen(true);
+            }
+        });
+
+        $('#pitching-stats th, #pitching-stats td').off('mouseenter').off('mouseleave').on('mouseenter', function () {
+            if (($(this).index() >= 2)) {
+                const colIndex = $(this).index();
+                $('#pitching-stats tr').each(function () {
+                    $(this).find('td, th').eq(colIndex).addClass('table-highlight');
+                });
+            }
+        }).on('mouseleave', function () {
+            if (($(this).index() >= 2)) {
+                $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
+            }
+        });
 
         let dropdownRows = pitchingStatsDT.rows(dropdownRowIndices).nodes();
         let subRows = pitchingStatsDT.rows(subRowIndices).nodes();
@@ -2083,6 +2167,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
     return (
         <>
+            <StatsModal open={modalOpen} handleClose={handleModalClose} modalData={modalData} />
             <Box sx={{ width: 1200 }}>
                 <Typography variant="h5" noWrap component="div">
                     Player Stats
