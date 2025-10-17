@@ -619,6 +619,7 @@ div.roster-select.ss-content.ss-open-below {
 table#boxscore th,
 table#pitchers th,
 table#pitching-stats th,
+table#pitching-game-log th,
 table#hitting-stats th {
     user-select: none;
 }

@@ -160,6 +160,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     }
 
     var pitchingStatsDT;
+    var pitchingGameLogDT;
 
     var playerID = null;
     var playerStats = null;
@@ -445,6 +446,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         const pitchingStatsDiv = $(document.querySelector('#pitching-stats-container'));
         const hittingStatsDiv = $(document.querySelector('#hitting-stats-container'));
         const genericStatsDiv = $(document.querySelector('#generic-stats-container'));
+        const missingStatsDiv = $(document.querySelector('#missing-stats-container'));
 
         // pitching charts
         const pitchesPieChartCanvas = $(document.querySelector('#pitches-pie-chart canvas'));
@@ -472,6 +474,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         // var activeStatusTimePlot = null;
 
         var pitchingStatsTable = document.querySelector('#pitching-stats');
+        var pitchingGameLogTable = document.querySelector('#pitching-game-log');
 
         if ($.fn.dataTable.isDataTable(pitchingStatsTable)) {
             pitchingStatsDT = $(pitchingStatsTable).DataTable();
@@ -480,6 +483,22 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 // select: true,
                 pageLength: 50,
                 dom: 't',
+                columnDefs: [],
+                ordering: false,
+                buttons: [],
+                scrollCollapse: true
+            });
+        }
+
+        if ($.fn.dataTable.isDataTable(pitchingGameLogTable)) {
+            pitchingGameLogDT = $(pitchingGameLogTable).DataTable();
+        } else {
+            pitchingGameLogDT = $(pitchingGameLogTable).DataTable({
+                select: {
+                    info: false
+                },
+                paging: true,
+                dom: 'tip',
                 columnDefs: [],
                 ordering: false,
                 buttons: [],
@@ -530,6 +549,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             pitchingStatsDiv.hide();
             hittingStatsDiv.hide();
             genericStatsDiv.hide();
+            missingStatsDiv.hide();
 
             gameLogSummary.html('');
             gameLogDetails.html('<br><br><br><br>');
@@ -689,160 +709,146 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     var position = playerStats['primaryPosition']['name'];
                     setPlayerPosition(position);
 
+                    console.log('playerStats');
+                    console.log(playerStats);
+
                     var stats = playerStats['stats'];
 
-                    if (position == 'Pitcher') {
-                        var seasonPitching = stats.find(item =>
-                            item.type.displayName === 'season' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var seasonAdvancedPitching = stats.find(item =>
-                            item.type.displayName === 'seasonAdvanced' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var careerPitching = stats.find(item =>
-                            item.type.displayName === 'career' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var careerAdvancedPitching = stats.find(item =>
-                            item.type.displayName === 'careerAdvanced' &&
-                            item.group.displayName === 'pitching'
-                        );
-
-                        // console.log('pitching');
-                        // console.log(seasonPitching);
-                        // console.log(seasonAdvancedPitching);
-                        // console.log(careerPitching);
-                        // console.log(careerAdvancedPitching);
-
-                        var validYears = [];
-
-                        // get seasonPitching for all years
-                        var seasonPitchingForAllYears = [];
-                        for (let i = 0; i < combinedData.length; i++) {
-                            var playerStatsForYear = combinedData[i];
-                            // console.log(playerStatsForYear);
-                            playerStatsForYear = playerStatsForYear['people'][0];
-
-                            var statsForYear = playerStatsForYear['stats'];
-                            var seasonPitchingForYear = statsForYear.find(item =>
+                    if (stats === undefined) {
+                        missingStatsDiv.show();
+                    } else {
+                        if (position == 'Pitcher') {
+                            var seasonPitching = stats.find(item =>
                                 item.type.displayName === 'season' &&
                                 item.group.displayName === 'pitching'
                             );
+                            var seasonAdvancedPitching = stats.find(item =>
+                                item.type.displayName === 'seasonAdvanced' &&
+                                item.group.displayName === 'pitching'
+                            );
+                            var careerPitching = stats.find(item =>
+                                item.type.displayName === 'career' &&
+                                item.group.displayName === 'pitching'
+                            );
+                            var careerAdvancedPitching = stats.find(item =>
+                                item.type.displayName === 'careerAdvanced' &&
+                                item.group.displayName === 'pitching'
+                            );
 
-                            if (seasonPitchingForYear != undefined) {
-                                seasonPitchingForAllYears.push(seasonPitchingForYear);
+                            // console.log('pitching');
+                            // console.log(seasonPitching);
+                            // console.log(seasonAdvancedPitching);
+                            // console.log(careerPitching);
+                            // console.log(careerAdvancedPitching);
 
-                                validYears.push(seasonPitchingForYear['splits'][0]['season']);
+                            var validYears = [];
+
+                            // get seasonPitching for all years
+                            var seasonPitchingForAllYears = [];
+                            for (let i = 0; i < combinedData.length; i++) {
+                                var playerStatsForYear = combinedData[i];
+                                // console.log(playerStatsForYear);
+                                playerStatsForYear = playerStatsForYear['people'][0];
+
+                                var statsForYear = playerStatsForYear['stats'];
+                                var seasonPitchingForYear = statsForYear.find(item =>
+                                    item.type.displayName === 'season' &&
+                                    item.group.displayName === 'pitching'
+                                );
+
+                                if (seasonPitchingForYear != undefined) {
+                                    seasonPitchingForAllYears.push(seasonPitchingForYear);
+
+                                    validYears.push(seasonPitchingForYear['splits'][0]['season']);
+                                }
                             }
+                            setSeasonPitching(seasonPitching);
+                            setSeasonPitchingForAllYears(seasonPitchingForAllYears);
+                            setCareerPitching(careerPitching);
+
+                            yearDropdown.setData(
+                                validYears.map(year => ({
+                                    text: year,
+                                    value: year
+                                }))
+                            );
+
+                            updatePitchingStatsTable(seasonPitching !== undefined
+                                ? [seasonPitching, careerPitching]
+                                : [careerPitching]);
+
+                            pitchingStatsDiv.show();
+                            hittingStatsDiv.hide();
+                        } else {
+                            var seasonHitting = stats.find(item =>
+                                item.type.displayName === 'season' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var seasonAdvancedHitting = stats.find(item =>
+                                item.type.displayName === 'seasonAdvanced' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var careerHitting = stats.find(item =>
+                                item.type.displayName === 'career' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var careerAdvancedHitting = stats.find(item =>
+                                item.type.displayName === 'careerAdvanced' &&
+                                item.group.displayName === 'hitting'
+                            );
+
+                            console.log('hitting');
+                            console.log(seasonHitting);
+                            console.log(seasonAdvancedHitting);
+                            console.log(careerHitting);
+                            console.log(careerAdvancedHitting);
+
+                            hittingStatsDT.clear();
+
+                            seasonHitting = seasonHitting['splits'][0];
+                            careerHitting = careerHitting['splits'][0];
+
+                            hittingStatsDT.row.add([
+                                // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonHitting['team']['name']][0]}"><span>${seasonHitting['season']}</span>`,
+                                `${seasonHitting['season']}`,
+                                seasonHitting['stat']['atBats'],
+                                seasonHitting['stat']['runs'],
+                                seasonHitting['stat']['hits'],
+                                seasonHitting['stat']['homeRuns'],
+                                seasonHitting['stat']['rbi'],
+                                seasonHitting['stat']['stolenBases'],
+                                seasonHitting['stat']['avg'],
+                                seasonHitting['stat']['obp'],
+                                seasonHitting['stat']['slg'],
+                                seasonHitting['stat']['ops']
+                            ]);
+
+                            hittingStatsDT.row.add([
+                                'Career',
+                                careerHitting['stat']['atBats'],
+                                careerHitting['stat']['runs'],
+                                careerHitting['stat']['hits'],
+                                careerHitting['stat']['homeRuns'],
+                                careerHitting['stat']['rbi'],
+                                careerHitting['stat']['stolenBases'],
+                                careerHitting['stat']['avg'],
+                                careerHitting['stat']['obp'],
+                                careerHitting['stat']['slg'],
+                                careerHitting['stat']['ops']
+                            ]); //: TODO: do this for hitting also
+
+                            // createHitsScatterPlot();
+
+                            hittingStatsDT.draw(true);
+
+                            pitchingStatsDiv.hide();
+                            hittingStatsDiv.show();
                         }
-                        setSeasonPitching(seasonPitching);
-                        setSeasonPitchingForAllYears(seasonPitchingForAllYears);
-                        setCareerPitching(careerPitching);
 
-                        yearDropdown.setData(
-                            validYears.map(year => ({
-                                text: year,
-                                value: year
-                            }))
-                        );
-
-                        updatePitchingStatsTable(seasonPitching !== undefined
-                            ? [seasonPitching, careerPitching]
-                            : [careerPitching]);
-                        // updatePitchingStatsTable([seasonPitching, careerPitching]);
-                        // updatePitchingStatsTable([...seasonPitchingForAllYears, careerPitching]);
-
-                        pitchingStatsDiv.show();
-                        hittingStatsDiv.hide();
-                    } else {
-                        var seasonHitting = stats.find(item =>
-                            item.type.displayName === 'season' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var seasonAdvancedHitting = stats.find(item =>
-                            item.type.displayName === 'seasonAdvanced' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var careerHitting = stats.find(item =>
-                            item.type.displayName === 'career' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var careerAdvancedHitting = stats.find(item =>
-                            item.type.displayName === 'careerAdvanced' &&
-                            item.group.displayName === 'hitting'
-                        );
-
-                        console.log('hitting');
-                        console.log(seasonHitting);
-                        console.log(seasonAdvancedHitting);
-                        console.log(careerHitting);
-                        console.log(careerAdvancedHitting);
-
-                        hittingStatsDT.clear();
-
-                        seasonHitting = seasonHitting['splits'][0];
-                        careerHitting = careerHitting['splits'][0];
-
-                        hittingStatsDT.row.add([
-                            // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonHitting['team']['name']][0]}"><span>${seasonHitting['season']}</span>`,
-                            `${seasonHitting['season']}`,
-                            seasonHitting['stat']['atBats'],
-                            seasonHitting['stat']['runs'],
-                            seasonHitting['stat']['hits'],
-                            seasonHitting['stat']['homeRuns'],
-                            seasonHitting['stat']['rbi'],
-                            seasonHitting['stat']['stolenBases'],
-                            seasonHitting['stat']['avg'],
-                            seasonHitting['stat']['obp'],
-                            seasonHitting['stat']['slg'],
-                            seasonHitting['stat']['ops']
-                        ]);
-
-                        hittingStatsDT.row.add([
-                            'Career',
-                            careerHitting['stat']['atBats'],
-                            careerHitting['stat']['runs'],
-                            careerHitting['stat']['hits'],
-                            careerHitting['stat']['homeRuns'],
-                            careerHitting['stat']['rbi'],
-                            careerHitting['stat']['stolenBases'],
-                            careerHitting['stat']['avg'],
-                            careerHitting['stat']['obp'],
-                            careerHitting['stat']['slg'],
-                            careerHitting['stat']['ops']
-                        ]); //: TODO: do this for hitting also
-
-                        // createHitsScatterPlot();
-
-                        hittingStatsDT.draw(true);
-
-                        pitchingStatsDiv.hide();
-                        hittingStatsDiv.show();
+                        genericStatsDiv.show();
+                        missingStatsDiv.hide();
                     }
 
-                    // var allYearsSwitch = allYearsSwitchDiv.find('input').get(0);
-                    // function () {
-                    //     if (allYearsSwitch.checked) {
-                    //         if (playerPosition == 'Pitcher') {
-                    //             updatePitchingStatsTable([...seasonPitchingForAllYears, careerPitching]);
-                    //         } else {
-
-                    //         }
-                    //     } else {
-                    //         if (playerPosition == 'Pitcher') {
-                    //             updatePitchingStatsTable(seasonPitching !== undefined
-                    //                 ? [seasonPitching, careerPitching]
-                    //                 : [careerPitching]);
-                    //             // updatePitchingStatsTable([seasonPitching, careerPitching]);
-                    //         } else {
-
-                    //         }
-                    //     }
-                    // }
-
-                    // createGenericCharts(selectedYear);
-                    genericStatsDiv.show();
                 })
         }
 
@@ -858,8 +864,28 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     var gameLog = data['people'][0]['stats'][1]['splits'];
                     var gameURLs = [];
 
+                    console.log('gameLog');
+                    console.log(gameLog);
+
+                    pitchingGameLogDT.clear();
                     for (let i = 0; i < gameLog.length; i++) {
-                        // console.log(gameLog[i]['stat']['summary']);
+                        var date = gameLog[i]['date'];
+                        var team = gameLog[i]['team']['name'];
+                        var opponent = gameLog[i]['opponent']['name'];
+                        var summary = gameLog[i]['stat']['summary'];
+                        var pitches = gameLog[i]['stat']['numberOfPitches'];
+                        var inningsPitched = gameLog[i]['stat']['inningsPitched'];
+                        var era = gameLog[i]['stat']['era'];
+                        var strikeouts = gameLog[i]['stat']['strikeOuts'];
+                        var whip = gameLog[i]['stat']['whip'];
+                        var other = 1;
+                        console.log(gameLog[i]);
+                        pitchingGameLogDT.row.add([date, team, opponent, summary, pitches, inningsPitched, era, strikeouts, whip, 6]);
+
+                        // highlight team that won
+
+                        pitchingGameLogDT.draw(true);
+
                         gameURLs.push(`https://statsapi.mlb.com/${gameLog[i]['game']['link']}`);
                     }
 
@@ -2269,6 +2295,25 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <div id="innings-pitched-bar-chart">
                         <canvas></canvas>
                     </div>
+                    <h2>Game Log</h2>
+                    <table id="pitching-game-log">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Team</th>
+                                <th>Opponent</th>
+                                <th>Summary</th>
+                                <th>Pitches</th>
+                                <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
+                                <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
+                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
+                                <th>...</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
                 <div id="hitting-stats-container">
                     <table id="hitting-stats">
@@ -2310,6 +2355,11 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                             <br /><br /><br /><br />
                         </Box>
                     </div>
+                </div>
+                <div id="missing-stats-container">
+                    <Typography variant="h5" noWrap component="div" sx={{ mt: 5 }}>
+                        No stats
+                    </Typography>
                 </div>
             </Box>
         </>
