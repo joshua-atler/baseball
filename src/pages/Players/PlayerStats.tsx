@@ -69,16 +69,72 @@ const style = {
 
 
 function StatsModal({ open, handleClose, modalData }) {
-    console.log('modalData');
-    console.log(modalData);
+
+    const canvasRef = React.useRef(null);
+
+    React.useEffect(() => {
+        console.log('canvasRef.current');
+        console.log(canvasRef.current);
+        if (!open || !canvasRef.current) return;
+
+        const statsModalLineChartCanvas = canvasRef.current.getContext('2d');
+        var statsModalLineChart = null;
+
+        console.log('statsModalLineChartCanvas');
+        console.log(statsModalLineChartCanvas);
+
+        if (Object.keys(modalData).length === 0) {
+            console.log('empty, destroy chart');
+            statsModalLineChart?.destroy();
+        } else {
+            console.log('create chart');
+            console.log(statsModalLineChartCanvas);
+            statsModalLineChart = new Chart(statsModalLineChartCanvas, {
+                type: 'line',
+                data: {
+                    // labels: sortedPitches,
+                    // datasets: [{
+                    // data: sortedCounts,
+                    // backgroundColor: backgroundColors
+                    // }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            bottom: 20
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pitch Types',
+                            color: 'white',
+                            font: {
+                                size: 21
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 18
+                                }
+                            },
+                        }
+                    }
+                }
+            });
+        }
+    }, [open, modalData]);
+
 
     return (
         <Modal open={open} onClose={handleClose}>
-            {/* <Box sx={{ p: 4, backgroundColor: 'white', width: 300, margin: '100px auto' }}> */}
             <Box sx={style}>
                 <h2>{modalData.statTitle}</h2>
-                {/* <span>{modalData.years}</span><br /><br /> */}
-                <span>{modalData.columnData}</span><br />
+                <div id="stats-modal-chart">
+                    <canvas ref={canvasRef}></canvas>
+                </div>
                 <Button onClick={handleClose}>Close</Button>
             </Box>
         </Modal>
@@ -99,7 +155,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const [modalData, setModalData] = React.useState({});
 
     const handleModalOpen = () => setModalOpen(true);
-    const handleModalClose = () => setModalOpen(false);
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setModalData({});
+    }
 
     var pitchingStatsDT;
 
@@ -320,6 +379,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     columnData: columnData
                 });
                 setModalOpen(true);
+                $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
             }
         });
 
@@ -331,9 +391,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 });
             }
         }).on('mouseleave', function () {
-            if (($(this).index() >= 2)) {
-                $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
-            }
+            $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
         });
 
         let dropdownRows = pitchingStatsDT.rows(dropdownRowIndices).nodes();
