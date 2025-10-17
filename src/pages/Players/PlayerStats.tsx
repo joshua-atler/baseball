@@ -60,7 +60,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 800,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -73,60 +73,59 @@ function StatsModal({ open, handleClose, modalData }) {
     const canvasRef = React.useRef(null);
 
     React.useEffect(() => {
-        console.log('canvasRef.current');
-        console.log(canvasRef.current);
-        if (!open || !canvasRef.current) return;
+        if (!open) return;
+        setTimeout(() => {
+            const statsModalLineChartCanvas = document.querySelector('#stats-modal-chart canvas');
+            var statsModalLineChart = null;
 
-        const statsModalLineChartCanvas = canvasRef.current.getContext('2d');
-        var statsModalLineChart = null;
-
-        console.log('statsModalLineChartCanvas');
-        console.log(statsModalLineChartCanvas);
-
-        if (Object.keys(modalData).length === 0) {
-            console.log('empty, destroy chart');
-            statsModalLineChart?.destroy();
-        } else {
-            console.log('create chart');
-            console.log(statsModalLineChartCanvas);
-            statsModalLineChart = new Chart(statsModalLineChartCanvas, {
-                type: 'line',
-                data: {
-                    // labels: sortedPitches,
-                    // datasets: [{
-                    // data: sortedCounts,
-                    // backgroundColor: backgroundColors
-                    // }]
-                },
-                options: {
-                    layout: {
-                        padding: {
-                            bottom: 20
-                        }
+            if (Object.keys(modalData).length === 0) {
+                statsModalLineChart?.destroy();
+            } else {
+                statsModalLineChart = new Chart(statsModalLineChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: [...modalData.years].reverse(),
+                        datasets: [{
+                            data: [...modalData.columnData].reverse(),
+                            label: ''
+                        }]
                     },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Pitch Types',
-                            color: 'white',
-                            font: {
-                                size: 21
-                            }
-                        },
-                        legend: {
-                            labels: {
-                                color: 'white',
-                                font: {
-                                    size: 18
+                    options: {
+                        scales: {
+                            x: {
+                                border: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'white',
+                                    font: {
+                                        size: 18
+                                    }
+                                },
+                                grid: {
+                                    color: 'white',
+                                    z: 1
                                 }
                             },
+                            y: {
+                                ticks: {
+                                    color: 'white',
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                            }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+        }, 50);
     }, [open, modalData]);
-
 
     return (
         <Modal open={open} onClose={handleClose}>
@@ -284,14 +283,13 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     function updatePitchingStatsTable(seasonsPitching) {
         pitchingStatsDT = $(document.querySelector('#pitching-stats')).DataTable();
         pitchingStatsDT.clear();
-        console.log(pitchingStatsDT);
 
         var dropdownRowIndices = [];
         var subRowIndices = [];
         var rowIndex = 0;
 
-        console.log('seasonsPitching');
-        console.log(seasonsPitching);
+        // console.log('seasonsPitching');
+        // console.log(seasonsPitching);
 
         for (let i = 0; i < seasonsPitching.length; i++) {
             var splits;
@@ -351,7 +349,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
         $('#pitching-stats th, #pitching-stats td').off('click').on('click', function () {
             var colIndex = $(this).index();
-            if (colIndex >= 2) {
+            if (colIndex >= 2 && allYearsChecked) {
                 var clickedColumn = pitchingStatsDT.column($(this).index());
                 var columnData = pitchingStatsDT.column($(this).index()).data().toArray();
                 var years = pitchingStatsDT.column(0).data().toArray();
@@ -434,7 +432,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
 
     React.useEffect(() => {
-
         const playerStatsPhoto = $(document.querySelector('#player-stats-photo'));
         const playerStatsLabel = $(document.querySelector('#player-stats-label'));
         const playerDetails = $(document.querySelector('#player-details'));
@@ -630,7 +627,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             });
 
             var statsURLs = [];
-            for (let i = selectedYear; i >= startYear; i--) {
+            const baseYear = 2025;
+            for (let i = baseYear; i >= startYear; i--) {
                 // console.log(gameLog[i]['stat']['summary']);
                 statsURLs.push(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,career,careerAdvanced],season=${i})`);
             }
@@ -723,6 +721,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         var seasonPitchingForAllYears = [];
                         for (let i = 0; i < combinedData.length; i++) {
                             var playerStatsForYear = combinedData[i];
+                            // console.log(playerStatsForYear);
                             playerStatsForYear = playerStatsForYear['people'][0];
 
                             var statsForYear = playerStatsForYear['stats'];
@@ -846,7 +845,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     genericStatsDiv.show();
                 })
         }
-
 
         function createPitchingCharts(year) {
             fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})`)
@@ -1024,19 +1022,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                 inningsPitched[inningNumber] /= 3;
                             });
 
-                            // console.log('pie chart');
-                            // console.log(sortedCounts);
-                            // console.log(sortedPitches);
-                            // console.log(sortedPitchCodes);
-
-                            // console.log('scatter plot');
-                            // console.log(total);
-                            // console.log(pitchDatasets);
-
-                            // console.log('bar chart');
-                            // console.log(inningsPitched);
-                            // console.log(Object.keys(inningsPitched));
-                            // console.log(Object.values(inningsPitched));
                             var totalIP = Object.values(inningsPitched).reduce((a, b) => a + b, 0);
                             totalIP = formatInnings(totalIP);
 
@@ -1536,7 +1521,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         }
 
         function createGenericCharts(year) {
-            console.log('---- createGenericCharts ----');
             fetch(`https://statsapi.mlb.com/api/v1/seasons/${year}?sportId=1`)
                 .then(response => {
                     if (!response.ok) {
