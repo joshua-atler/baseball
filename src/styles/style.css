@@ -1388,3 +1388,29 @@ table.wild-card {
 table.wild-card tbody tr:nth-child(3) {
     border-bottom: 3px solid white;
 }
+
+table#pitching-game-log td img.winner {
+    box-shadow: 0 0 8px 2px lightgreen;
+    border-radius: 0%;
+}
+
+table#pitching-game-log th:nth-child(1),
+table#pitching-game-log td:nth-child(1) {
+    width: 100px !important;
+    max-width: 100px !important;
+    text-align: left;
+}
+
+table#pitching-game-log th:nth-child(2),
+table#pitching-game-log td:nth-child(2) {
+    width: 150px !important;
+    max-width: 150px !important;
+    text-align: left;
+}
+
+table#pitching-game-log th:nth-child(3),
+table#pitching-game-log td:nth-child(3) {
+    width: 200px !important;
+    max-width: 200px !important;
+    text-align: left;
+}

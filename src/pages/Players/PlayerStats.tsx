@@ -502,7 +502,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 columnDefs: [],
                 ordering: false,
                 buttons: [],
-                scrollCollapse: true
+                scrollCollapse: true,
+                columnDefs: [
+                    { targets: 10, visible: false }
+                ]
             });
         }
 
@@ -875,19 +878,62 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         var summary = gameLog[i]['stat']['summary'];
                         var pitches = gameLog[i]['stat']['numberOfPitches'];
                         var inningsPitched = gameLog[i]['stat']['inningsPitched'];
+                        var er = gameLog[i]['stat']['earnedRuns'];
                         var era = gameLog[i]['stat']['era'];
+                        var hits = gameLog[i]['stat']['hits'];
                         var strikeouts = gameLog[i]['stat']['strikeOuts'];
+                        var walks = gameLog[i]['stat']['baseOnBalls'];
                         var whip = gameLog[i]['stat']['whip'];
-                        var other = 1;
-                        console.log(gameLog[i]);
-                        pitchingGameLogDT.row.add([date, team, opponent, summary, pitches, inningsPitched, era, strikeouts, whip, 6]);
+                        var link = gameLog[i]['game']['link'];
 
-                        // highlight team that won
+                        date = `${date.split('-')[1]}/${date.split('-')[2]}`;
+
+                        var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
+                        var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
+                        var matchup = `${team}${vsOrAt}${opponent}`;
+
+                        console.log(gameLog[i]);
+                        pitchingGameLogDT.row.add([
+                            date,
+                            matchup,
+                            pitches,
+                            inningsPitched,
+                            er,
+                            era,
+                            hits,
+                            strikeouts,
+                            walks,
+                            whip,
+                            link
+                        ]);
 
                         pitchingGameLogDT.draw(true);
 
                         gameURLs.push(`https://statsapi.mlb.com/${gameLog[i]['game']['link']}`);
                     }
+
+                    pitchingGameLogDT.on('select', function (e, dt, type, indexes) {
+                        var selectedIndex = indexes[0];
+                        var gameLink = dt.row(selectedIndex).data()[10];
+
+                        var link = `https://statsapi.mlb.com/${gameLink}`;
+                        fetch(link)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(gameResponse => {
+                                gameDataToSend = gameResponse;
+                                console.log(gameDataToSend);
+                                setSelectedGame(gameDataToSend);
+                                navigate('/games');
+                            })
+                    });
 
                     var promises = gameURLs.map(url =>
                         fetch(url)
@@ -2300,15 +2346,16 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Team</th>
-                                <th>Opponent</th>
-                                <th>Summary</th>
+                                <th>Matchup</th>
                                 <th>Pitches</th>
                                 <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
+                                <th><span className="tooltip" data-tooltip="Earned runs">ER</span></th>
                                 <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
+                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
                                 <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
                                 <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
-                                <th>...</th>
+                                <th>link</th>
                             </tr>
                         </thead>
                         <tbody>
