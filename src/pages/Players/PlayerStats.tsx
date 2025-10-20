@@ -895,7 +895,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
                         var matchup = `${team}${vsOrAt}${opponent}`;
 
-                        console.log(gameLog[i]);
                         pitchingGameLogDT.row.add([
                             date,
                             matchup,
