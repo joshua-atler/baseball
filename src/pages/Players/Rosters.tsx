@@ -345,7 +345,8 @@ export default function Rosters({ setSelectedPlayer }) {
                         return true;
                     }
                 }
-            })
+            });
+            document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
         }, 50);
     }, []);
 

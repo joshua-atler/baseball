@@ -159,6 +159,7 @@ export default function GamesList({
                 }
             }
         })
+        document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
 
         function updateTable(reset) {
             var selectedIndex = dt.row({ selected: true }).index();

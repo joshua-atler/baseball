@@ -231,6 +231,7 @@ export default function News() {
                 }
             }
         });
+        document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
 
         resetLabels();
     }, []);
