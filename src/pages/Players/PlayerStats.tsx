@@ -145,10 +145,15 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const awardsContainerRef = React.useRef(null);
     const awardsRef = React.useRef(null);
     const [playerPosition, setPlayerPosition] = React.useState('');
+
     const [seasonPitchingForAllYears, setSeasonPitchingForAllYears] = React.useState([]);
     const [seasonPitching, setSeasonPitching] = React.useState({});
     const [careerPitching, setCareerPitching] = React.useState({});
-    const [selectedYear, setSelectedYear] = React.useState(2025);
+
+    const [seasonHittingForAllYears, setSeasonHittingForAllYears] = React.useState([]);
+    const [seasonHitting, setSeasonHitting] = React.useState({});
+    const [careerHitting, setCareerHitting] = React.useState({});
+
     const [allYearsChecked, setAllYearsChecked] = React.useState(false);
     const [modalOpen, setModalOpen] = React.useState(false);
     const [modalData, setModalData] = React.useState({});
@@ -281,7 +286,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     }
     openCloseAllYears(allYearsChecked);
 
-    function updatePitchingStatsTable(seasonsPitching) {
+    function updatePitchingStatsTable(allPitching) {
+        if (allPitching.every(obj => Object.keys(obj).length === 0)) {
+            return;
+        };
         pitchingStatsDT = $(document.querySelector('#pitching-stats')).DataTable();
         pitchingStatsDT.clear();
 
@@ -292,12 +300,12 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         // console.log('seasonsPitching');
         // console.log(seasonsPitching);
 
-        for (let i = 0; i < seasonsPitching.length; i++) {
+        for (let i = 0; i < allPitching.length; i++) {
             var splits;
-            if (seasonsPitching[i]['splits'].length > 1) {
-                splits = [seasonsPitching[i]['splits'][0], ...seasonsPitching[i]['splits'].slice(1)];
+            if (allPitching[i]['splits'].length > 1) {
+                splits = [allPitching[i]['splits'][0], ...allPitching[i]['splits'].slice(1)];
             } else {
-                splits = seasonsPitching[i]['splits'];
+                splits = allPitching[i]['splits'];
             }
 
             for (let j = 0; j < splits.length; j++) {
@@ -603,6 +611,14 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         if (playerID == null) {
             // console.log('hiding');
             // hideAllStats();
+            setPlayerPosition('');
+            setSeasonPitchingForAllYears([]);
+            setSeasonPitching({});
+            setCareerPitching({});
+
+            setSeasonHittingForAllYears([]);
+            setSeasonHitting({});
+            setCareerHitting({});
         } else {
             teamColorBanners.eq(0).css('background-color', teamColor[0]);
             teamColorBanners.eq(1).css('background-color', teamColor[1]);
