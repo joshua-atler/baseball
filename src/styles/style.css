@@ -1130,8 +1130,7 @@ table#hitting-stats td {
     text-align: left;
 }
 
-table#hitting-stats colgroup col:nth-child(1),
-table#hitting-stats colgroup col:nth-child(7) {
+table#hitting-stats colgroup col:nth-child(2) {
     border-right: 5px solid #e1e8ed;
 }
 
@@ -1207,6 +1206,18 @@ table#hitting-stats colgroup col:nth-child(7) {
 } */
 
 /* hitting charts */
+#hits-pie-chart {
+    width: 600px;
+    height: 600px;
+    background-color: #2c323a;
+    float: left;
+}
+
+#hits-pie-chart canvas {
+    width: 600px !important;
+    height: 600px !important;
+}
+
 #hits-scatter-plot {
     width: 600px;
     height: 600px;
@@ -1244,11 +1255,9 @@ div.container-margin {
     margin-right: 20px;
 }
 
-#player-stats-year-select-container {
+#pitching-stats-year-select-container,
+#hitting-stats-year-select-container {
     width: 300px;
-    /* float: right; */
-    /* margin-top: 25px; */
-    /* margin-right: 50px; */
 }
 
 tr.stats-subrow {
