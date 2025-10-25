@@ -10,7 +10,28 @@ import Boxscore from './Boxscore';
 import Plays from './Plays';
 import News from './News';
 import Media from './Media';
+import WinProb from './WinProb';
 
+
+
+const useScreenWidth = () => {
+    const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            setScreenWidth(window.innerWidth);
+        };
+
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    return screenWidth;
+};
 
 export default function Games({
     dates,
@@ -36,6 +57,7 @@ export default function Games({
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
     };
+    const screenWidth = useScreenWidth();
 
     return (
         <>
@@ -59,27 +81,53 @@ export default function Games({
                     />
                 </Grid>
                 {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
-                <Grid>
-                    <Boxscore
-                        selectedGame={selectedGame}
-                        highlightedPlayer={highlightedPlayer}
-                        setSelectedPlayer={setSelectedPlayer}
-                        lastTimeZone={lastTimeZone}
-                    />
-                </Grid>
-                <Grid>
-                    <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
-                        <Tab label="Plays" value={0} />
-                        <Tab label="News" value={1} />
-                        <Tab label="Media" value={2} />
-                    </Tabs>
-                    <Box sx={{ width: '100%' }}>
-                        {tabValue === 0 && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
-                        {tabValue === 1 && <News gamePk={selectedGame?.['gamePk'] || null} />}
-                        {tabValue === 2 && <Media gamePk={selectedGame?.['gamePk'] || null} />}
-                    </Box>
-
-                </Grid>
+                {screenWidth > 2550 ?
+                    <>
+                        <Grid>
+                            <Boxscore
+                                selectedGame={selectedGame}
+                                highlightedPlayer={highlightedPlayer}
+                                setSelectedPlayer={setSelectedPlayer}
+                                lastTimeZone={lastTimeZone}
+                            />
+                        </Grid>
+                        <Grid>
+                            <Tabs value={["Plays", "News", "Media", "Win Prob"].includes(tabValue) ? tabValue : "Plays"} onChange={handleChange} sx={{ mb: 4.5 }}>
+                                <Tab label="Plays" value={"Plays"} />
+                                <Tab label="News" value={"News"} />
+                                <Tab label="Media" value={"Media"} />
+                                <Tab label="Win Prob" value={"Win Prob"} />
+                            </Tabs>
+                            <Box sx={{ width: '100%' }}>
+                                {tabValue === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
+                                {tabValue === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
+                                {tabValue === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
+                                {tabValue === "Win Prob" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
+                            </Box>
+                        </Grid>
+                    </> : <>
+                        <Grid>
+                            <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
+                                <Tab label="Boxscore" value={"Boxscore"} />
+                                <Tab label="Plays" value={"Plays"} />
+                                <Tab label="News" value={"News"} />
+                                <Tab label="Media" value={"Media"} />
+                                <Tab label="Win Prob" value={"Win Prob"} />
+                            </Tabs>
+                            <Box sx={{ width: '100%' }}>
+                                {tabValue === "Boxscore" && <Boxscore
+                                    selectedGame={selectedGame}
+                                    highlightedPlayer={highlightedPlayer}
+                                    setSelectedPlayer={setSelectedPlayer}
+                                    lastTimeZone={lastTimeZone}
+                                />}
+                                {tabValue === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
+                                {tabValue === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
+                                {tabValue === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
+                                {tabValue === "Win Prob" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
+                            </Box>
+                        </Grid>
+                    </>}
             </Grid>
         </>
     )
