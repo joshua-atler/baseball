@@ -121,8 +121,8 @@ export default function App() {
         );
     };
 
-    console.log(isMobileDevice());
-    console.log(navigator.userAgent);
+    // console.log(isMobileDevice());
+    // console.log(navigator.userAgent);
 
     return (
         <>

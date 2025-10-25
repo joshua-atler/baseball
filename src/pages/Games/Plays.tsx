@@ -41,10 +41,17 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
             var gameChanged;
 
             if (selectedGame == null) {
+                newsDiv.html('<p>Select a game</p>');
+                newsDiv.show();
                 currentGameID = null;
+                playsOuterDiv.hide();
+                playsDiv.html('');
+                return;
             } else {
                 var gameDataWithBases = await fetch('https://statsapi.mlb.com' + `${selectedGame['link']}?hydrate=alignment`);
                 gameDataWithBases = await gameDataWithBases.json();
+                console.log('gameDataWithBases');
+                console.log(gameDataWithBases);
                 currentGameID = gameDataWithBases['gameData']['game']['pk'];
             }
 
@@ -62,6 +69,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
             strikeZoneData = [];
             if (gameDataWithBases == null || gameDataWithBases['liveData']['plays']['playsByInning'].length == 0) {
+                newsDiv.html('<p>No content</p>');
                 newsDiv.show();
                 playsOuterDiv.hide();
                 playsDiv.html('');

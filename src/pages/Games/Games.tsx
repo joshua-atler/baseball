@@ -59,6 +59,10 @@ export default function Games({
     };
     const screenWidth = useScreenWidth();
 
+    const getTabValue = (value) => {
+        return ["Plays", "News", "Media", "Win Probability"].includes(value) ? value : "Plays";
+    }
+
     return (
         <>
             <Grid container spacing={2} id="games-grid">
@@ -92,17 +96,17 @@ export default function Games({
                             />
                         </Grid>
                         <Grid>
-                            <Tabs value={["Plays", "News", "Media", "Win Prob"].includes(tabValue) ? tabValue : "Plays"} onChange={handleChange} sx={{ mb: 4.5 }}>
+                            <Tabs value={getTabValue(tabValue)} onChange={handleChange} sx={{ mb: 4.5 }}>
                                 <Tab label="Plays" value={"Plays"} />
                                 <Tab label="News" value={"News"} />
                                 <Tab label="Media" value={"Media"} />
-                                <Tab label="Win Prob" value={"Win Prob"} />
+                                <Tab label="Win Probability" value={"Win Probability"} />
                             </Tabs>
                             <Box sx={{ width: '100%' }}>
-                                {tabValue === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
-                                {tabValue === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
-                                {tabValue === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
-                                {tabValue === "Win Prob" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
+                                {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
+                                {getTabValue(tabValue) === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
+                                {getTabValue(tabValue) === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
+                                {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
                             </Box>
                         </Grid>
                     </> : <>
@@ -112,7 +116,7 @@ export default function Games({
                                 <Tab label="Plays" value={"Plays"} />
                                 <Tab label="News" value={"News"} />
                                 <Tab label="Media" value={"Media"} />
-                                <Tab label="Win Prob" value={"Win Prob"} />
+                                <Tab label="Win Probability" value={"Win Probability"} />
                             </Tabs>
                             <Box sx={{ width: '100%' }}>
                                 {tabValue === "Boxscore" && <Boxscore
@@ -124,7 +128,7 @@ export default function Games({
                                 {tabValue === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
                                 {tabValue === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
                                 {tabValue === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
-                                {tabValue === "Win Prob" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
+                                {tabValue === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
                             </Box>
                         </Grid>
                     </>}

@@ -967,14 +967,19 @@ div#roster-dt_wrapper div.dt-search {
     background-color: #2c323a;
     border-radius: 20px;
     padding: 2rem;
-    /* padding-bottom: 50px; */
     margin: 0 auto;
-    /* text-align: justify; */
-    /* max-width: 75ch; */
     width: 600px;
     max-height: 900px;
     overflow-y: auto;
 }
+
+#win-prob-chart {
+    background-color: #2c323a;
+    border-radius: 20px;
+    margin: 0 auto;
+    width: 600px;
+}
+
 
 /* .news-active {
     overflow-y: scroll;

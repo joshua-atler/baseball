@@ -44,6 +44,9 @@ export default function WinProb({ gamePk }) {
                 fetch(`https://statsapi.mlb.com/api/v1/game/${gamePk}/winProbability`)
                     .then(response => {
                         if (!response.ok) {
+                            newsDiv.html('<p>No content</p>');
+                            newsDiv.show();
+                            $(document.querySelector('#win-prob-chart')).hide();
                             throw new Error('Network response was not ok');
                         }
                         return response.json();
