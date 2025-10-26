@@ -150,7 +150,7 @@ export default function Stats({
                         var shutouts = teamStats['stat']['shutouts'];
                         var saves = teamStats['stat']['saves'];
 
-                        pitchingStatsDT.row.add([teamName, era, hits, inningsPitched, hits, runs, homeRuns, strikeOuts, walks, avg, whip, shutouts, saves]);
+                        pitchingStatsDT.row.add([teamName, era, inningsPitched, hits, runs, homeRuns, strikeOuts, walks, avg, whip, shutouts, saves]);
                     }
                     pitchingStatsDT.draw(true);
                 })
