@@ -1393,3 +1393,21 @@ table.wild-card {
 table.wild-card tbody tr:nth-child(3) {
     border-bottom: 3px solid white;
 }
+
+table#hitting-stats-dt colgroup col:nth-child(1),
+table#pitching-stats-dt colgroup col:nth-child(1) {
+    width: 350px !important;
+    max-width: 350px !important;
+}
+
+table#hitting-stats-dt colgroup col:not(:nth-child(1)),
+table#pitching-stats-dt colgroup col:not(:nth-child(1)) {
+    width: 200px !important;
+    max-width: 200px !important;
+}
+
+/* table.pitches th:nth-child(1),
+table.pitches td:nth-child(1) {
+    width: 30px !important;
+    max-width: 30px !important;
+} */

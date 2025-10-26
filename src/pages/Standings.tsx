@@ -248,12 +248,12 @@ export default function Standings() {
     return (
         <Box>
             <Grid container spacing={2} id="standings-grid" alignItems="center" mt={2} ml={2} mb={3}>
-                <Grid>
+                <Grid item>
                     <Typography variant="h6" noWrap component="div">
                         Year
                     </Typography>
                 </Grid>
-                <Grid>
+                <Grid item>
                     <Box sx={{ minWidth: 120, width: 200 }}>
                         <FormControl fullWidth>
                             <Select defaultValue={30} displayEmpty
@@ -269,7 +269,7 @@ export default function Standings() {
                         </FormControl>
                     </Box>
                 </Grid>
-                <Grid>
+                <Grid item>
                     <ToggleButtonGroup
                         color="primary"
                         value={standingsMode}
@@ -282,7 +282,7 @@ export default function Standings() {
                         <ToggleButton value="spring training">Spring Training</ToggleButton>
                     </ToggleButtonGroup>
                 </Grid>
-                <Grid>
+                <Grid item>
                     <Tooltip
                         title={
                             <Typography variant="body1" sx={{ fontSize: "1rem" }}>

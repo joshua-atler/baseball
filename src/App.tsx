@@ -36,6 +36,7 @@ import Home from './pages/Home';
 import Games from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
 import News from './pages/News.tsx';
+import Stats from './pages/Stats.tsx';
 import Standings from './pages/Standings.tsx';
 import Settings from './pages/Settings.tsx';
 
@@ -261,7 +262,7 @@ export default function App() {
                                                 setSelectedGame={setSelectedGame}
                                             />} />
                                             <Route path="/news" element={<News />} />
-                                            <Route path="/stats" element={<p>stats<br />(no content yet)</p>} />
+                                            <Route path="/stats" element={<Stats />} />
                                             <Route path="/standings" element={<Standings />} />
                                             <Route path="/settings" element={<Settings />} />
                                         </Routes>
