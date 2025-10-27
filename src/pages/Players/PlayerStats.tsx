@@ -410,7 +410,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         let subRows = pitchingStatsDT.rows(subRowIndices).nodes();
 
         $(dropdownRows).each(function (index, dropdownRow) {
-            $(dropdownRow).on('click', function () {
+            $(dropdownRow).find('td').first().on('click', function () {
                 let svgArrow = $(dropdownRow).find('td:first svg');
                 var direction = svgArrow.attr('data-direction');
 
@@ -560,7 +560,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         let subRows = hittingStatsDT.rows(subRowIndices).nodes();
 
         $(dropdownRows).each(function (index, dropdownRow) {
-            $(dropdownRow).on('click', function () {
+            $(dropdownRow).find('td').first().on('click', function () {
                 let svgArrow = $(dropdownRow).find('td:first svg');
                 var direction = svgArrow.attr('data-direction');
 
@@ -599,12 +599,9 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         const playerDetails = $(document.querySelector('#player-details'));
         const teamColorBanners = $(document.querySelectorAll('.player-team-color-banner'));
 
-        // const allYearsSwitchDiv = $(document.querySelector('#all-years-switch-container'));
         const allYearsSwitch = $(document.querySelector('#all-years-switch'));
         const pitchingYearSelectDiv = $(document.querySelector('#pitching-stats-year-select-container'));
         const hittingYearSelectDiv = $(document.querySelector('#hitting-stats-year-select-container'));
-
-        // const teamsSelect = document.querySelector('#player-stats-year-select');
 
         const pitchingStatsDiv = $(document.querySelector('#pitching-stats-container'));
         const hittingStatsDiv = $(document.querySelector('#hitting-stats-container'));
@@ -643,7 +640,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             pitchingStatsDT = $(pitchingStatsTable).DataTable();
         } else {
             pitchingStatsDT = $(pitchingStatsTable).DataTable({
-                // select: true,
                 pageLength: 50,
                 dom: 't',
                 columnDefs: [],
@@ -673,17 +669,37 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         }
 
         var hittingStatsTable = document.querySelector('#hitting-stats');
+        var hittingGameLogTable = document.querySelector('#hitting-game-log');
+
         if ($.fn.dataTable.isDataTable(hittingStatsTable)) {
             var hittingStatsDT = $(hittingStatsTable).DataTable();
         } else {
             var hittingStatsDT = $(hittingStatsTable).DataTable({
-                // select: true,
                 pageLength: 50,
                 dom: 't',
                 columnDefs: [],
                 ordering: false,
                 buttons: [],
                 scrollCollapse: true
+            });
+        }
+
+        if ($.fn.dataTable.isDataTable(hittingGameLogTable)) {
+            hittingGameLogDT = $(hittingGameLogTable).DataTable();
+        } else {
+            hittingGameLogDT = $(hittingGameLogTable).DataTable({
+                select: {
+                    info: false
+                },
+                paging: true,
+                dom: 'tip',
+                columnDefs: [],
+                ordering: false,
+                buttons: [],
+                scrollCollapse: true,
+                columnDefs: [
+                    { targets: 10, visible: false }
+                ]
             });
         }
 
@@ -1095,9 +1111,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 .then(data => {
                     var gameLog = data['people'][0]['stats'][1]['splits'];
                     var gameURLs = [];
-
-                    console.log('gameLog');
-                    console.log(gameLog);
 
                     pitchingGameLogDT.clear();
                     for (let i = 0; i < gameLog.length; i++) {
@@ -1552,11 +1565,70 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     var gameLog = data['people'][0]['stats'][2]['splits'];
                     var gameURLs = [];
 
+                    hittingGameLogDT.clear();
                     for (let i = 0; i < gameLog.length; i++) {
-                        // console.log(gameLog[i]['stat']['summary']);
-                        gameURLs.push(`https://statsapi.mlb.com${gameLog[i]['game']['link']}`);
+                        console.log(gameLog[i]);
+                        var date = gameLog[i]['date'];
+                        var team = gameLog[i]['team']['name'];
+                        var opponent = gameLog[i]['opponent']['name'];
+                        var summary = gameLog[i]['stat']['summary'];
+                        var atBats = gameLog[i]['stat']['atBats'];
+                        var hits = gameLog[i]['stat']['hits'];
+                        var homeRuns = gameLog[i]['stat']['homeRuns'];
+                        var walks = gameLog[i]['stat']['baseOnBalls'];
+                        var strikeouts = gameLog[i]['stat']['strikeOuts'];
+                        var rbi = gameLog[i]['stat']['rbi'];
+                        var totalBases = gameLog[i]['stat']['totalBases'];
+                        var link = gameLog[i]['game']['link'];
+
+                        date = `${date.split('-')[1]}/${date.split('-')[2]}`;
+
+                        var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
+                        var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
+                        var matchup = `${team}${vsOrAt}${opponent}`;
+
+                        hittingGameLogDT.row.add([
+                            date,
+                            matchup,
+                            summary,
+                            atBats,
+                            hits,
+                            homeRuns,
+                            walks,
+                            strikeouts,
+                            rbi,
+                            totalBases,
+                            link
+                        ]);
+                        // summary, hits, runs, walks, strikeouts
+
+                        hittingGameLogDT.draw(true);
+
+                        gameURLs.push(`https://statsapi.mlb.com/${gameLog[i]['game']['link']}`);
                     }
-                    // console.log(gameURLs);
+
+                    hittingGameLogDT.on('select', function (e, dt, type, indexes) {
+                        var selectedIndex = indexes[0];
+                        var gameLink = dt.row(selectedIndex).data()[10];
+
+                        var link = `https://statsapi.mlb.com/${gameLink}`;
+                        fetch(link)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(gameResponse => {
+                                gameDataToSend = gameResponse;
+                                console.log(gameDataToSend);
+                                setSelectedGame(gameDataToSend);
+                                navigate('/games');
+                            })
+                    });
 
                     var promises = gameURLs.map(url =>
                         fetch(url)
@@ -2616,6 +2688,26 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <div id="hits-scatter-plot">
                         <canvas></canvas>
                     </div>
+                    <h2>Game Log</h2>
+                    <table id="hitting-game-log">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>Summary</th>
+                                <th><span className="tooltip" data-tooltip="At bats">AB</span></th>
+                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
+                                <th><span className="tooltip" data-tooltip="Home runs">HR</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
+                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="RBI">RBI</span></th>
+                                <th>Total Bases</th>
+                                <th>link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
                 <div id="generic-stats-container">
                     <h2 style={{ marginTop: '0px' }}>More Stats</h2>

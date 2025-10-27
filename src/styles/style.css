@@ -620,7 +620,8 @@ table#boxscore th,
 table#pitchers th,
 table#pitching-stats th,
 table#pitching-game-log th,
-table#hitting-stats th {
+table#hitting-stats th,
+table#hitting-game-log th {
     user-select: none;
 }
 
@@ -1390,14 +1391,6 @@ table.pitches td:nth-child(2) {
     vertical-align: middle;
 }
 
-table.wild-card {
-    border: none !important;
-}
-
-table.wild-card tbody tr:nth-child(3) {
-    border-bottom: 3px solid white;
-}
-
 table#pitching-game-log td img.winner {
     box-shadow: 0 0 8px 2px lightgreen;
     border-radius: 0%;
@@ -1417,8 +1410,27 @@ table#pitching-game-log td:nth-child(2) {
     text-align: left;
 }
 
-table#pitching-game-log th:nth-child(3),
-table#pitching-game-log td:nth-child(3) {
+table#hitting-game-log td img.winner {
+    box-shadow: 0 0 8px 2px lightgreen;
+    border-radius: 0%;
+}
+
+table#hitting-game-log th:nth-child(1),
+table#hitting-game-log td:nth-child(1) {
+    width: 100px !important;
+    max-width: 100px !important;
+    text-align: left;
+}
+
+table#hitting-game-log th:nth-child(2),
+table#hitting-game-log td:nth-child(2) {
+    width: 150px !important;
+    max-width: 150px !important;
+    text-align: left;
+}
+
+table#hitting-game-log th:nth-child(3),
+table#hitting-game-log td:nth-child(3) {
     width: 200px !important;
     max-width: 200px !important;
     text-align: left;
