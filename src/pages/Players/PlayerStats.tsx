@@ -619,11 +619,17 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
         const strikeZonesDiv = $(document.querySelector('#strike-zones'));
 
+        const eraLineChartCanvas = $(document.querySelector('#era-line-chart canvas'));
+        var eraLineChart = Chart.getChart(eraLineChartCanvas);
+
         const inningsPitchedBarChartCanvas = $(document.querySelector('#innings-pitched-bar-chart canvas'));
         var inningsPitchedBarChart = Chart.getChart(inningsPitchedBarChartCanvas);
         // var inningsPitchedBarChart = null;
 
         // hitting charts
+        const hitsPiePlotCanvas = $(document.querySelector('#hits-pie-plot canvas'));
+        var hitsPiePlot = Chart.getChart(hitsPiePlotCanvas);
+
         const hitsScatterPlotCanvas = $(document.querySelector('#hits-scatter-plot canvas'));
         var hitsScatterPlot = Chart.getChart(hitsScatterPlotCanvas);
         // var hitsScatterPlot = null;
@@ -762,7 +768,9 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             var charts = [
                 pitchesPieChart,
                 pitchesScatterPlot,
+                eraLineChart,
                 inningsPitchedBarChart,
+                hitsPiePlot,
                 hitsScatterPlot,
                 activeStatusTimePlot];
 
@@ -902,16 +910,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     playerDetails.find('li:nth-child(1) span:nth-child(2)').html(playerStats['currentAge']);
                     playerDetails.find('li:nth-child(2) span:nth-child(2)').html(playerStats['primaryPosition']['abbreviation']);
 
-                    var debutDate = '---';
-                    if (playerStats['mlbDebutDate'] != undefined) {
-                        debutDate = formatDate(playerStats['mlbDebutDate']);
-                    }
-                    playerDetails.find('li:nth-child(3) span:nth-child(2)').html(debutDate);
-
                     if ('birthStateProvince' in playerStats) {
-                        playerDetails.find('li:nth-child(4) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthStateProvince']}`);
+                        playerDetails.find('li:nth-child(3) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthStateProvince']}`);
                     } else {
-                        playerDetails.find('li:nth-child(4) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthCountry']}`);
+                        playerDetails.find('li:nth-child(3) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthCountry']}`);
                     }
 
                     playerDetails.show();
@@ -1452,6 +1454,113 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     }
                                 }
                             });
+
+                            fetch(`https://statsapi.mlb.com/api/v1/seasons/${year}?sportId=1`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(seasonInfo => {
+                                    var seasonEndDate = seasonInfo['seasons'][0]['regularSeasonEndDate'];
+
+                                    var eraLineChartDataCumulative = [];
+                                    var eraLineChartDataGame = [];
+
+                                    for (var game of gameLog) {
+                                        eraLineChartDataCumulative.push(
+                                            { x: game['date'], y: game['stat']['era'] }
+                                        )
+                                    }
+
+                                    eraLineChart = new Chart(eraLineChartCanvas, {
+                                        type: 'line',
+                                        data: {
+                                            datasets: [
+                                                {
+                                                    label: 'ERA',
+                                                    data: eraLineChartDataCumulative
+                                                },
+                                            ]
+                                        },
+                                        options: {
+                                            layout: {
+                                                padding: {
+                                                    left: 15,
+                                                    right: 30
+                                                }
+                                            },
+                                            scales: {
+                                                x: {
+                                                    min: new Date(`${seasonInfo['seasons'][0]['regularSeasonStartDate']}T00:00:00`), // TODO: use months as ticks
+                                                    max: seasonEndDate,
+                                                    border: {
+                                                        display: false
+                                                    },
+                                                    ticks: {
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    grid: {
+                                                        color: 'white'
+                                                    },
+                                                    type: 'time',
+                                                    time: {
+                                                        unit: 'day'
+                                                    }
+                                                },
+                                                y: {
+                                                    title: {
+                                                        display: true,
+                                                        text: 'ERA',
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    border: {
+                                                        display: false
+                                                    },
+                                                    ticks: {
+                                                        display: true,
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    grid: {
+                                                        display: false
+                                                    }
+                                                }
+                                            },
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Cumulative ERA',
+                                                    color: 'white',
+                                                    font: {
+                                                        size: 21
+                                                    }
+                                                },
+                                                legend: {
+                                                    display: false
+                                                },
+                                                tooltip: {
+                                                    callbacks: {
+                                                        title: function(context) {
+                                                            return context[0]['label'].split(',').slice(0, 2).join(',');
+                                                        }
+                                                    },
+                                                    mode: 'index',
+                                                    intersect: false
+                                                },
+                                            }
+                                        }
+                                    });
+                                })
 
                             inningsPitchedBarChart = new Chart(inningsPitchedBarChartCanvas, {
                                 type: 'bar',
@@ -2590,11 +2699,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <span id="player-stats-label"></span>
                 </div>
                 {/* <div style={{ position: 'absolute', left: '600px' }}> */}
-                <div style={{ position: 'absolute', left: '1800px' }}>
+                <div style={{ position: 'absolute', left: '2000px' }}>
                     <ul id="player-details">
                         <li><span style={{ fontWeight: 'bold' }}>Age:</span> <span></span></li>
                         <li><span style={{ fontWeight: 'bold' }}>Position:</span> <span></span></li>
-                        <li><span style={{ fontWeight: 'bold' }}>Debut:</span> <span></span></li>
                         <li><span style={{ fontWeight: 'bold' }}>Birthplace:</span> <span></span></li>
                     </ul>
                 </div>
@@ -2633,6 +2741,9 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <div style={{ clear: 'both' }}></div>
                     <h2>Pitch Locations</h2>
                     <div id="strike-zones"></div>
+                    <div id="era-line-chart">
+                        <canvas></canvas>
+                    </div>
                     <div id="innings-pitched-bar-chart">
                         <canvas></canvas>
                     </div>

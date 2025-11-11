@@ -1160,6 +1160,18 @@ table#hitting-stats colgroup col:nth-child(2) {
     height: 400px !important;
 }
 
+#era-line-chart {
+    width: 800px;
+    height: 400px;
+    background-color: #2c323a;
+    margin-bottom: 40px;
+}
+
+#era-line-chart canvas {
+    width: 800px !important;
+    height: 400px !important;
+}
+
 #innings-pitched-bar-chart {
     width: 800px;
     height: 400px;
