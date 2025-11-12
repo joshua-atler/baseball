@@ -627,12 +627,11 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         // var inningsPitchedBarChart = null;
 
         // hitting charts
-        const hitsPiePlotCanvas = $(document.querySelector('#hits-pie-plot canvas'));
-        var hitsPiePlot = Chart.getChart(hitsPiePlotCanvas);
+        const hitsPieChartCanvas = $(document.querySelector('#hits-pie-chart canvas'));
+        var hitsPieChart = Chart.getChart(hitsPieChartCanvas);
 
         const hitsScatterPlotCanvas = $(document.querySelector('#hits-scatter-plot canvas'));
         var hitsScatterPlot = Chart.getChart(hitsScatterPlotCanvas);
-        // var hitsScatterPlot = null;
 
         // generic charts
         const activeStatusTimePlotCanvas = $(document.querySelector('#active-status-time-plot canvas'));
@@ -770,7 +769,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                 pitchesScatterPlot,
                 eraLineChart,
                 inningsPitchedBarChart,
-                hitsPiePlot,
+                hitsPieChart,
                 hitsScatterPlot,
                 activeStatusTimePlot];
 
@@ -1370,7 +1369,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                 font: {
                                                     size: 18
                                                 }
-                                            },
+                                            }
                                         }
                                     }
                                 }
@@ -1891,6 +1890,57 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     console.log('hitDatasets');
                                     console.log(hitDatasets);
 
+                                    const allowedHits = ['Single', 'Double', 'Triple', 'Home Run'];
+                                    const hitCounts = allHitTypes.reduce((acc, item) => {
+                                        const key = allowedHits.includes(item) ? item : 'Out';
+                                        acc[key] = (acc[key] || 0) + 1;
+                                        return acc;
+                                    }, {});
+                                    console.log('counts');
+                                    console.log(hitCounts);
+
+                                    hitsPieChart = new Chart(hitsPieChartCanvas, {
+                                        type: 'pie',
+                                        // labels: ['Singles', 'Doubles', 'Triples', 'Home Runs'],
+                                        data: {
+                                            labels: ['Outs', 'Singles', 'Doubles', 'Triples', 'Home Runs'],
+                                            datasets: [{
+                                                data: [hitCounts['Out'], hitCounts['Single'], hitCounts['Double'], hitCounts['Triple'], hitCounts['Home Run']],
+                                                // backgroundColor: [
+                                                    // 'rgb(200, 200, 20)',
+                                                    // 'rgb(20, 200, 200)',
+                                                    // 'rgb(200, 100, 100)',
+                                                    // 'rgb(50, 10, 200)',
+                                                // ]
+                                            }],
+                                        },
+                                        options: {
+                                            layout: {
+                                                padding: {
+                                                    bottom: 20
+                                                }
+                                            },
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'At bat results',
+                                                    color: 'white',
+                                                    font: {
+                                                        size: 21
+                                                    }
+                                                },
+                                                legend: {
+                                                    labels: {
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+
                                     hitsScatterPlot = new Chart(hitsScatterPlotCanvas, {
                                         type: 'scatter',
                                         data: {
@@ -1966,34 +2016,15 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                 },
                                                 title: {
                                                     display: true,
-                                                    text: 'All hits',
+                                                    text: 'Hit locations',
                                                     color: 'white',
                                                     font: {
                                                         size: 21
                                                     }
                                                 },
-                                                // legend: {
-                                                //     labels: {
-                                                //         color: 'white',
-                                                //         font: {
-                                                //             size: 18
-                                                //         }
-                                                //     },
-                                                // }
-                                                // tooltip: {
-                                                //   callbacks: {
-                                                //     label: function (context) {
-                                                //       var label = context.dataset.label;
-                                                //       var speed = context.parsed.x;
-                                                //       return `${label}, ${speed} mph`;
-                                                //     }
-                                                //   }
-                                                // }
                                             }
                                         }
                                     });
-
-                                    console.log(hitsScatterPlot);
                                 })
                         })
                 })
@@ -2793,9 +2824,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <div id="hits-pie-chart">
                         <canvas></canvas>
                     </div>
-                    {/* <div id="hits-scatter-plot">
-                        <canvas></canvas>
-                    </div> */}
                     <div id="hits-scatter-plot">
                         <canvas></canvas>
                     </div>
