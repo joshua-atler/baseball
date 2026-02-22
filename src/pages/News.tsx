@@ -35,9 +35,14 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
             {isMobileDevice ? (
                 <>
                     <Card>
-                        <CardActionArea onClick={() => window.open(link, '_blank')}>
+                        <CardActionArea
+                            href={link}
+                            target={"_blank"}
+                        >
                             <CardMedia
-                                component='image'
+                                component='img'
+                                href={link}
+                                target={"_blank"}
                                 sx={{ height: 225, objectFit: 'fill' }}
                                 image={imageUrl}
                                 title={title}
@@ -54,9 +59,12 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
             ) : (
                 <>
                     <Card sx={{ width: 400 }}>
-                        <CardActionArea onClick={() => window.open(link, '_blank')}>
+                        <CardActionArea
+                            href={link}
+                            target={"_blank"}
+                        >
                             <CardMedia
-                                component='image'
+                                component='img'
                                 sx={{ height: 225, objectFit: 'fill' }}
                                 image={imageUrl}
                                 title={title}
@@ -76,15 +84,10 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
 }
 
 export default function News() {
-    console.log('news');
-
     const [articles, setArticles] = React.useState([]);
 
     function fetchRss(team) {
-        console.log(`fetching ${team}`);
-
         var apiUrl;
-        console.log(import.meta.env.VITE_LOCAL);
         if (import.meta.env.VITE_LOCAL === 'LOCAL') {
             apiUrl = `http://localhost:5000/rss`;
         } else {
@@ -99,7 +102,6 @@ export default function News() {
             .then(data => {
                 const json = parseXMLtoJSON(data);
                 var articles = json['rss']['channel']['item'];
-                console.log(articles);
 
                 setArticles([]);
                 articles.map((article, index) => {
@@ -154,7 +156,6 @@ export default function News() {
         });
 
         $('head').append(newStylesheet);
-        // just include?
 
         var selectOptions = [];
         const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
@@ -166,7 +167,7 @@ export default function News() {
                     var teamPadded = team.padEnd(3, '\u00A0');
                     return {
                         text: team,
-                        html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]][0]}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
+                        html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]].logo}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
                         value: [Consts.teams[league][i][index], Consts.teamNicknames[league][i][index]]
                     };
                 });
@@ -200,13 +201,11 @@ export default function News() {
                 },
                 afterChange: (newVal, oldVal) => {
                     var selectedTeam = teamsDropdown.getSelected()[0];
-                    console.log('selected');
-                    console.log(selectedTeam);
 
                     if (selectedTeam == 'Select a team') {
                         resetLabels();
                     } else {
-                        newsTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamsDetails[selectedTeam[0]][0]}" />`);
+                        newsTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamsDetails[selectedTeam[0]].logo}" />`);
                         if (selectedTeam[0] == 'Oakland Athletics') {
                             newsTeamLabel.html('Athletics');
                         } else {

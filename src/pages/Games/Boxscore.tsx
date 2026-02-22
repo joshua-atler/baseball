@@ -19,7 +19,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     React.useEffect(() => {
         var timeZone = localStorage.getItem('timeZone') || 'ET';
         if (timeZone !== lastTimeZone) {
-
             console.log('should update times');
         }
     }, [location]);
@@ -62,8 +61,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
         var pitchingRow = $(document.querySelector('#pitching')).find('tbody').find('tr');
 
-        // var awayBoxscoreTeamLabel = boxscoreTable.find('tr').eq(0).find('th').eq(0).find('span').eq(0);
-        // var homeBoxscoreTeamLabel = boxscoreTable.find('tr').eq(0).find('th').eq(0).find('span').eq(1);
         var awayBoxscoreTeamLabel = $(document.querySelector('#away-tab'));
         var homeBoxscoreTeamLabel = $(document.querySelector('#home-tab'));
 
@@ -246,12 +243,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                 })
                                 .then(data => {
                                     data = data['people'][0];
-                                    // console.log(data);
                                     var pitchHand = data['pitchHand']['code'];
                                     pitchersData[side]['name'] = `${pitchersData[side]['name']} (${pitchHand})`;
 
                                     var seasonStats = data['stats'][0]['splits'][0]['stat'];
-                                    // console.log(seasonStats);
 
                                     pitchersData[side]['winsLosses'] = `${seasonStats['wins']}-${seasonStats['losses']}`;
                                     pitchersData[side]['ERA'] = `${seasonStats['era']}`;
@@ -265,9 +260,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                             pitchersData[side]['name'] = 'TBD';
                         }
                     });
-
-                    // console.log('pitchersData');
-                    // console.log(pitchersData);
 
                     setTimeout(() => {
                         probablePitchersDiv.append(`<table>
@@ -287,16 +279,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         }, 100);
                     }, 200);
                 }
-
-                // var details = selectedGame['liveData']['boxscore']['info'];
-                // detailsDiv.append(`<p class="details-title details-label">GAME NOTES</p>`);
-                // for (let i = 0; i < details.length; i++) {
-                //     if ('value' in details[i]) {
-                //         detailsDiv.append(`<p><span class="details-label">${details[i]['label']}:</span> ${details[i]['value']}</p>`);
-                //     } else {
-                //         detailsDiv.append(`<p><span class="details-label">${details[i]['label']}</span></p>`);
-                //     }
-                // }
 
             } else {
                 pitchingTable.show();
@@ -324,10 +306,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
             dateSpan.text(`${date} ${time}`);
 
-            // recapSpan.html(`<a href="https://stories.mlb.com/live/${gameData['gameData']['game']['pk']}.html" target="_blank">Video recap</a>`);
             recapSpan.html(`<a href="https://www.mlb.com/stories/game/${selectedGame['gameData']['game']['pk']}" target="_blank">Video recap</a>`);
-
-            // https://www.mlb.com/stories/game/746430
 
             var awayTeamRuns = Array(numInnings).fill('-');
             var homeTeamRuns = Array(numInnings).fill('-');
@@ -377,11 +356,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             $(homeRow.find('td')[0]).text(homeTeamAbbr);
 
             if (awayTeamName in Consts.teamsDetails) {
-                $(awayRow.find('td')[0]).html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName][0]}"><span>${awayTeamAbbr}</span>`);
+                $(awayRow.find('td')[0]).html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName].logo}"><span>${awayTeamAbbr}</span>`);
             }
 
             if (homeTeamName in Consts.teamsDetails) {
-                $(homeRow.find('td')[0]).html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName][0]}"><span>${homeTeamAbbr}</span>`);
+                $(homeRow.find('td')[0]).html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName].logo}"><span>${homeTeamAbbr}</span>`);
             }
 
             if (status == 'Live') {
@@ -450,21 +429,19 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 }
 
                 if (awayTeamName in Consts.teamsDetails) {
-                    awayBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName][0]}"><span>${awayTeamClubName} ${awayTeamRecord}</span>`);
+                    awayBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName].logo}"><span>${awayTeamClubName} ${awayTeamRecord}</span>`);
                 } else {
                     awayBoxscoreTeamLabel.text(awayTeamName);
                 }
 
                 if (homeTeamName in Consts.teamsDetails) {
-                    homeBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName][0]}"><span>${homeTeamClubName} ${homeTeamRecord}</span>`);
+                    homeBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName].logo}"><span>${homeTeamClubName} ${homeTeamRecord}</span>`);
                 } else {
                     homeBoxscoreTeamLabel.text(homeTeamName);
                 }
             })();
 
             boxscore(selectedGame, selectedSide);
-
-            // console.log(selectedGame['gameData']['game']['pk']);
 
             var playsEvent = new CustomEvent('plays', { detail: selectedGame });
             document.dispatchEvent(playsEvent);
@@ -686,41 +663,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     navigate('/players');
                 })
         });
-
-
-        // console.log(selectedPlayer);
-        // if (selectedPlayer !== null) {
-
-        //     boxscoreTable.find('tr td a').each(function () {
-        //         if ($(this).text() == selectedPlayer) {
-        //             $(this).closest('tr').addClass('selected-batter');
-        //         }
-        //     });
-        // } else {
-        //     boxscoreTable.find('tr td a').each(function () {
-        //         if ($(this).text() == selectedPlayer) {
-        //             $(this).closest('tr').removeClass('selected-batter');
-        //         }
-        //     });
-        // }
-
-        // document.addEventListener('gameDetailsEvent', receiveData);
-
-        // document.onpanelwillunmount = () => {
-        //     document.removeEventListener('gameDetailsEvent', receiveData);
-        // };
-
-        // document.addEventListener('startPlayerHover', receiveStartPlayerHover);
-
-        // document.onpanelwillunmount = () => {
-        //     document.removeEventListener('startPlayerHover', receiveStartPlayerHover);
-        // };
-
-        // document.addEventListener('stopPlayerHover', receiveStopPlayerHover);
-
-        // document.onpanelwillunmount = () => {
-        //     document.removeEventListener('stopPlayerHover', receiveStopPlayerHover);
-        // };
     }, [selectedGame]);
 
     React.useEffect(() => {

@@ -18,19 +18,12 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
     React.useEffect(() => {
         (async () => {
-
-
-            // var playsLegend = $(htmlNode.querySelector('#plays-legend'));
             var newsDiv = $(document.querySelector('#news-content'));
             var playsOuterDiv = $(document.querySelector('#plays-outer'));
             var playsDiv = $(document.querySelector('#plays'));
             var inningCollapsibles;
 
-            // var root = ReactDOM.createRoot(playsDiv.get(0));
-
             var strikeZoneData = [];
-            // const strikeZoneWidth = 150;
-            // const strikeZoneHeight = 200;
             const strikeZoneWidth = 180;
             const strikeZoneHeight = 240;
 
@@ -50,19 +43,13 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
             } else {
                 var gameDataWithBases = await fetch('https://statsapi.mlb.com' + `${selectedGame['link']}?hydrate=alignment`);
                 gameDataWithBases = await gameDataWithBases.json();
-                console.log('gameDataWithBases');
-                console.log(gameDataWithBases);
                 currentGameID = gameDataWithBases['gameData']['game']['pk'];
             }
 
-            // if game was live and is no longer live, then set lastGameID to false as if a new game was just selected
-
             if (currentGameID != lastGameID) {
-                // console.log(`game changed from ${lastGameID} to ${currentGameID}`);
                 inningCollapsedState = [];
                 gameChanged = true;
             } else {
-                // console.log(`game still ${currentGameID}`);
                 gameChanged = false;
             }
             lastGameID = currentGameID;
@@ -84,10 +71,8 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
                 if (gameChanged) {
                     collapsibleScript(null);
-                    // all set to collapsed
                 } else {
                     collapsibleScript(inningCollapsedState);
-                    // set based on previous state
                 }
             }
 
@@ -116,7 +101,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                         if (playsInHalf.length > 0) {
                             var awayTeamName = gameData['gameData']['teams']['away']['name'];
                             playsContent += `
-                            <button class="collapsible"><img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName][0]}"> &#9650; Top ${i + 1}</button>
+                            <button class="collapsible"><img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName].logo}"> &#9650; Top ${i + 1}</button>
                             <div class="inning-content">
                                 ${playsInHalf}
                             </div>`;
@@ -139,7 +124,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                         if (playsInHalf.length > 0) {
                             var homeTeamName = gameData['gameData']['teams']['home']['name'];
                             playsContent += `
-                            <button class="collapsible"><img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName][0]}"> &#9660; Bottom ${i + 1}</button>
+                            <button class="collapsible"><img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName].logo}"> &#9660; Bottom ${i + 1}</button>
                             <div class="inning-content">
                                 ${playsInHalf}
                             </div>`;
@@ -150,9 +135,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
                 playsDiv.find('div.inning-content button').each(function () {
                     var batter = $(this).data('batter');
-
-                    // $(this).on('mouseenter', setSelectedPlayer(batter));
-                    // $(this).next().on('mouseenter', setSelectedPlayer(batter));
 
                     $(this).on('mouseenter', async () => {
                         setHighlightedPlayer(batter);
@@ -167,9 +149,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     $(this).next().on('mouseleave', async () => {
                         setHighlightedPlayer(null);
                     });
-
-                    // $(this).on('mouseleave', setSelectedPlayer(null));
-                    // $(this).next().on('mouseleave', setSelectedPlayer(null));
                 });
             }
 
@@ -186,8 +165,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     playEvent = 'In progress';
                     playDescription = `${play['matchup']['batter']['fullName']} currently at bat`;
                 }
-                // if (playDescription === undefined) {
-                // }
 
                 var baseRunnersSvg = '';
                 if (nextPlay !== undefined) {
@@ -256,16 +233,11 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     }
                 }
                 var pitchIndex = 1;
-                // for (let i = 0; i < play['pitchIndex'].length; i++) {
                 for (let i = 0; i < play['playEvents'].length; i++) {
                     var playEvent = play['playEvents'][i];
-                    // console.log('');
-                    // console.log(i, playEvent);
                     var playDetails = '';
 
                     if (playEvent['isPitch']) {
-                        // console.log(play['pitchIndex'][i]);
-                        // var pitch = play['playEvents'][play['pitchIndex'][i]];
                         var pitch = playEvent;
                         var pitchDesc = '';
                         try {
@@ -314,8 +286,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                             ]);
                             pitchIndex += 1;
                         } catch (error) {
-                            // console.log(pitch);
-                            // console.log(error);
                             var pitchDesc = pitch['details']['description'];
                             playDetails = `${pitchDesc}`;
                         }
@@ -352,8 +322,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                             } else if (desc.includes('Timer Violation')) {
                                 icon = Consts.pitchIcons['timer'];
                             } else {
-                                // console.log(playEvent);
-                                // console.log(desc);
                             }
                         }
 
@@ -461,7 +429,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
                         strikeZone.beginPath();
                         strikeZone.arc(pitchX, pitchY, 8, 0, 2 * Math.PI);
-                        // strikeZone.arc(pitchX, pitchY, 10, 0, 2 * Math.PI);
                         strikeZone.fillStyle = strikeZoneData[i][j][2]['ballColor'];
                         strikeZone.fill();
                         strikeZone.lineWidth = 2;
@@ -473,20 +440,6 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                     }
                 }
             }
-
-            // function startPlayerHover(batter) {
-            //     return function () {
-            //         var playsEvent = new CustomEvent('startPlayerHover', { detail: batter });
-            //         document.dispatchEvent(playsEvent);
-            //     }
-            // }
-
-            // function stopPlayerHover(batter) {
-            //     return function () {
-            //         var playsEvent = new CustomEvent('stopPlayerHover', { detail: batter });
-            //         document.dispatchEvent(playsEvent);
-            //     }
-            // }
         })();
     }, [selectedGame]);
 
@@ -496,9 +449,7 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
                 <p>Select a game</p>
             </div>
             <div id="plays-outer" style={{ display: 'none' }}>
-                {/* <div id="plays-outer"> */}
                 <div id="plays-inner">
-                    {/* <p>Plays <span id="plays-legend">(Legend: <span style="color: black; padding: 10px; border-radius: 10px; background-color: #ffa1a1;">Out</span> <span style="color: black; padding: 10px; background-color: #abff91; border-radius: 10px;">Scoring play</span>)</span></p> */}
                     <div id="plays"></div>
                 </div>
             </div>

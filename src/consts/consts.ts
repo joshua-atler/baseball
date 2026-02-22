@@ -11,6 +11,9 @@ Object.keys(svgs).forEach(key => {
     svgs[key] = 'data:image/svg+xml;base64,' + btoa(svgs[key])
 });
 
+const createTeam = (logoCode) => ({
+    logo: `/teamLogos/${logoCode}.svg`
+});
 
 class Consts {
     static teams = {
@@ -103,195 +106,37 @@ class Consts {
     };
 
     static teamsDetails = {
-        'Texas Rangers': [
-            svgs['texasRangers'],
-            'https://en.wikipedia.org/wiki/Globe_Life_Field',
-            'Globe Life Field',
-            [32.750156, -97.081117]
-        ],
-        'Houston Astros': [
-            svgs['houstonAstros'],
-            'https://en.wikipedia.org/wiki/Minute_Maid_Park',
-            'Minute Maid Park',
-            [29.76045, -95.369784]
-        ],
-        'Los Angeles Angels': [
-            svgs['losAngelesAngels'],
-            'https://en.wikipedia.org/wiki/Angel_Stadium',
-            'Angel Stadium',
-            [33.799572, -117.889031]
-        ],
-        'Seattle Mariners': [
-            svgs['seattleMariners'],
-            'https://en.wikipedia.org/wiki/Minute_Maid_Park',
-            'T-Mobile Park',
-            [47.60174, -122.330829]
-        ],
-        'Oakland Athletics': [
-            svgs['oaklandAthletics'],
-            'https://en.wikipedia.org/wiki/Oakland_Coliseum',
-            'Oakland Coliseum',
-            [37.74923, -122.196487]
-        ],
-        'Athletics': [
-            svgs['oaklandAthletics'],
-            'https://en.wikipedia.org/wiki/Oakland_Coliseum',
-            'Oakland Coliseum',
-            [37.74923, -122.196487]
-        ],
-        'Cleveland Guardians': [
-            svgs['clevelandGuardians'],
-            'https://en.wikipedia.org/wiki/Progressive_Field',
-            'Progressive Field',
-            [41.495149, -81.68709]
-        ],
-        'Kansas City Royals': [
-            svgs['kansasCityRoyals'],
-            'https://en.wikipedia.org/wiki/Kauffman_Stadium',
-            'Kauffman Stadium',
-            [39.10222, -94.583559]
-        ],
-        'Detroit Tigers': [
-            svgs['detroitTigers'],
-            'https://en.wikipedia.org/wiki/Comerica_Park',
-            'Comerica Park',
-            [42.346354, -83.059619]
-        ],
-        'Minnesota Twins': [
-            svgs['minnesotaTwins'],
-            'https://en.wikipedia.org/wiki/Target_Field',
-            'Target Field',
-            [44.974346, -93.259616]
-        ],
-        'Chicago White Sox': [
-            svgs['chicagoWhiteSox'],
-            'https://en.wikipedia.org/wiki/Guaranteed_Rate_Field',
-            'Guaranteed Rate Field',
-            [41.830883, -87.635083]
-        ],
-        'New York Yankees': [
-            svgs['newYorkYankees'],
-            'https://en.wikipedia.org/wiki/Yankee_Stadium',
-            'Yankee Stadium',
-            [40.819782, -73.929939]
-        ],
-        'Baltimore Orioles': [
-            svgs['baltimoreOrioles'],
-            'https://en.wikipedia.org/wiki/Oriole_Park_at_Camden_Yards',
-            'Oriole Park at Camden Yards',
-            [39.285243, -76.620103]
-        ],
-        'Boston Red Sox': [
-            svgs['bostonRedSox'],
-            'https://en.wikipedia.org/wiki/Fenway_Park',
-            'Fenway Park',
-            [42.346613, -71.098817]
-        ],
-        'Tampa Bay Rays': [
-            svgs['tampaBayRays'],
-            'https://en.wikipedia.org/wiki/Tropicana_Field',
-            'Tropicana Field',
-            [27.768487, -82.648191]
-        ],
-        'Toronto Blue Jays': [
-            // 'https://upload.wikimedia.org/wikipedia/en/6/68/Toronto_Blue_Jays_cap.svg',
-            svgs['torontoBlueJays'],
-            'https://en.wikipedia.org/wiki/Rogers_Centre',
-            'Rogers Centre',
-            [43.641653, -79.3917]
-        ],
-        'Los Angeles Dodgers': [
-            // 'https://upload.wikimedia.org/wikipedia/commons/f/f6/LA_Dodgers.svg',
-            svgs['losAngelesDodgers'],
-            'https://en.wikipedia.org/wiki/Dodger_Stadium',
-            'Dodger Stadium',
-            [34.072437, -118.246879]
-        ],
-        'San Diego Padres': [
-            svgs['sanDiegoPadres'],
-            'https://en.wikipedia.org/wiki/Petco_Park',
-            'Petco Park',
-            [32.752148, -117.143635]
-        ],
-        'San Francisco Giants': [
-            // 'https://upload.wikimedia.org/wikipedia/commons/4/49/San_Francisco_Giants_Cap_Insignia.svg',
-            svgs['sanFranciscoGiants'],
-            'https://en.wikipedia.org/wiki/Oracle_Park',
-            'Oracle Park',
-            [37.77987, -122.389754]
-        ],
-        'Arizona Diamondbacks': [
-            svgs['arizonaDiamondbacks'],
-            'https://en.wikipedia.org/wiki/Chase_Field',
-            'Chase Field',
-            [33.452922, -112.038669]
-        ],
-        'Colorado Rockies': [
-            svgs['coloradoRockies'],
-            'https://en.wikipedia.org/wiki/Coors_Field',
-            'Coors Field',
-            [39.75698, -104.965329]
-        ],
-        'Milwaukee Brewers': [
-            svgs['milwaukeeBrewers'],
-            'https://en.wikipedia.org/wiki/American_Family_Field',
-            'American Family Field',
-            [43.04205, -87.905599]
-        ],
-        'Chicago Cubs': [
-            svgs['chicagoCubs'],
-            'https://en.wikipedia.org/wiki/Wrigley_Field',
-            'Wrigley Field',
-            [41.947201, -87.656413]
-        ],
-        'Cincinnati Reds': [
-            svgs['cincinnatiReds'],
-            'https://en.wikipedia.org/wiki/Great_American_Ball_Park',
-            'Great American Ball Park',
-            [39.107183, -84.507713]
-        ],
-        'St. Louis Cardinals': [
-            svgs['stLouisCardinals'],
-            'https://en.wikipedia.org/wiki/Busch_Stadium',
-            'Busch Stadium',
-            [38.629683, -90.188247]
-        ],
-        'Pittsburgh Pirates': [
-            svgs['pittsburghPirates'],
-            'https://en.wikipedia.org/wiki/PNC_Park',
-            'PNC Park',
-            [40.461503, -80.008924]
-        ],
-        'Atlanta Braves': [
-            svgs['atlantaBraves'],
-            'https://en.wikipedia.org/wiki/Truist_Park',
-            'Truist Park',
-            [33.74691, -84.391239]
-        ],
-        'Philadelphia Phillies': [
-            svgs['philadelphiaPhillies'],
-            'https://en.wikipedia.org/wiki/Citizens_Bank_Park',
-            'Citizens Bank Park',
-            [39.952313, -75.162392]
-        ],
-        'New York Mets': [
-            svgs['newYorkMets'],
-            'https://en.wikipedia.org/wiki/Citi_Field',
-            'Citi Field',
-            [40.75535, -73.843219]
-        ],
-        'Washington Nationals': [
-            svgs['washingtonNationals'],
-            'https://en.wikipedia.org/wiki/Nationals_Park',
-            'Nationals Park',
-            [38.872596, -77.007658]
-        ],
-        'Miami Marlins': [
-            svgs['miamiMarlins'],
-            'https://en.wikipedia.org/wiki/LoanDepot_Park',
-            'loanDepot park',
-            [25.954428, -80.238164]
-        ]
+        'Texas Rangers': createTeam('TEX'),
+        'Houston Astros': createTeam('HOU'),
+        'Los Angeles Angels': createTeam('LAA'),
+        'Seattle Mariners': createTeam('SEA'),
+        'Oakland Athletics': createTeam('ATH'),
+        'Athletics': createTeam('ATH'),
+        'Cleveland Guardians': createTeam('CLE'),
+        'Kansas City Royals': createTeam('KC'),
+        'Detroit Tigers': createTeam('DET'),
+        'Minnesota Twins': createTeam('MIN'),
+        'Chicago White Sox': createTeam('CWS'),
+        'New York Yankees': createTeam('NYY'),
+        'Baltimore Orioles': createTeam('BAL'),
+        'Boston Red Sox': createTeam('BOS'),
+        'Tampa Bay Rays': createTeam('TB'),
+        'Toronto Blue Jays': createTeam('TOR'),
+        'Los Angeles Dodgers': createTeam('LAD'),
+        'San Diego Padres': createTeam('SD'),
+        'San Francisco Giants': createTeam('SF'),
+        'Arizona Diamondbacks': createTeam('AZ'),
+        'Colorado Rockies': createTeam('COL'),
+        'Milwaukee Brewers': createTeam('MIL'),
+        'Chicago Cubs': createTeam('CHC'),
+        'Cincinnati Reds': createTeam('CIN'),
+        'St. Louis Cardinals': createTeam('STL'),
+        'Pittsburgh Pirates': createTeam('PIT'),
+        'Atlanta Braves': createTeam('ATL'),
+        'Philadelphia Phillies': createTeam('PHI'),
+        'New York Mets': createTeam('NYM'),
+        'Washington Nationals': createTeam('WSH'),
+        'Miami Marlins': createTeam('MIA')
     };
 
     static fieldBackground = svgs['fieldBackground'];

@@ -100,7 +100,7 @@ export default function Stats({
 
                         var teamName = teamStats['team']['name'];
                         var teamIndex = Consts.findTeamIndex(teamName);
-                        teamName = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[teamIndex[0]][teamIndex[1]][teamIndex[2]]][0]}" /><span>${teamName}</span>`;
+                        teamName = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[teamIndex[0]][teamIndex[1]][teamIndex[2]]].logo}" /><span>${teamName}</span>`;
 
                         var runs = teamStats['stat']['runs'];
                         var hits = teamStats['stat']['hits'];
@@ -136,7 +136,7 @@ export default function Stats({
 
                         var teamName = teamStats['team']['name'];
                         var teamIndex = Consts.findTeamIndex(teamName);
-                        teamName = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[teamIndex[0]][teamIndex[1]][teamIndex[2]]][0]}" /><span>${teamName}</span>`;
+                        teamName = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[teamIndex[0]][teamIndex[1]][teamIndex[2]]].logo}" /><span>${teamName}</span>`;
 
                         var era = teamStats['stat']['era'];
                         var inningsPitched = teamStats['stat']['inningsPitched'];

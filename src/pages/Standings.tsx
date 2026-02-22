@@ -151,7 +151,7 @@ export default function Standings() {
                             clinched = `-${record['clinchIndicator']}`;
                         }
 
-                        teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName][0]}"><span>${teamName} ${clinched}</span>`;
+                        teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName].logo}"><span>${teamName} ${clinched}</span>`;
 
                         dts[i].row.add([teamName, wins, losses, gamesBack, homeRecord, awayRecord, runsScored, runsAllowed, streak, lastTen]);
                     }
@@ -208,7 +208,7 @@ export default function Standings() {
                             streak = record['streak']['streakCode'];
                         }
 
-                        teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName][0]}"><span>${teamName}</span>`;
+                        teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName].logo}"><span>${teamName}</span>`;
 
 
                         dts[i].row.add([teamName, wins, losses, gamesBack, homeRecord, awayRecord, runsScored, runsAllowed, streak, lastTen]);

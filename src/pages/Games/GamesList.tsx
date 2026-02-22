@@ -69,9 +69,7 @@ export default function GamesList({
     }, [dates]);
 
     const resetProgress = () => {
-        // setDisableAnimation(true);
         setProgress(0);
-        // setTimeout(() => setDisableAnimation(false), 100);
     };
 
     React.useEffect(() => {
@@ -96,7 +94,6 @@ export default function GamesList({
         });
 
         $('head').append(newStylesheet);
-        // just include?
 
         var selectOptions = [];
         const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
@@ -108,7 +105,7 @@ export default function GamesList({
                     var teamPadded = team.padEnd(3, '\u00A0');
                     return {
                         text: team,
-                        html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]][0]}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
+                        html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]].logo}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
                         value: Consts.teams[league][i][index]
                     };
                 });
@@ -141,16 +138,25 @@ export default function GamesList({
                     return true
                 },
                 afterChange: (newVal, oldVal) => {
-                    // selectedTeams = teamsDropdown.getSelected();
                     setTeamsFilter(teamsDropdown.getSelected());
                     teamsFilterRef.current = teamsDropdown.getSelected();
 
                     var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
                     for (let i = 0; i < box.length; i++) {
-                        if (!box[i].innerHTML.includes('<img')) {
-                            var teamPadded = box[i].innerHTML.padEnd(4, '\u00A0');
-                            box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
+                        const currentText = box[i].textContent.trim();
+                        const foundOption = selectOptions.flat().find(opt => opt.text === currentText);
+
+                        if (foundOption && !box[i].querySelector('img')) {
+                            const teamData = Consts.teamsDetails[foundOption.value];
+                            if (teamData) {
+                                box[i].innerHTML = `
+                                    <img width="30" height="30" 
+                                        style="vertical-align: middle; margin-right: 10px;" 
+                                        src="${teamData.logo}" />
+                                    <span>${currentText}</span>
+                                `;
+                            }
                         }
                     }
 
@@ -168,13 +174,7 @@ export default function GamesList({
                 reset = true;
                 setNewSettings(false);
             }
-            // console.log('updateTable');
-            // console.log(reset);
 
-            // if (newDates.length === 2) {
-            // if (start.getRange()['start'] == undefined || end.getRange()[    'end'] == undefined) {
-
-            // } else {
             if (reset) {
                 setIsLoading(true);
                 $(document.querySelector('#dt_wrapper')).hide();
@@ -184,8 +184,6 @@ export default function GamesList({
             resetProgress();
 
             (async () => {
-                // console.log(start.getRange()['start']);
-                // var allData = await fillTableWithDates(start.getRange()['start'].toLocaleDateString('en-US'), start.getRange()['end'].toLocaleDateString('en-US'), reset);
                 var allData = await fillTableWithDates(datesRef.current[0], datesRef.current[1], reset);
 
                 dt.draw(false);
@@ -211,13 +209,6 @@ export default function GamesList({
             } else {
                 detail = gamesDetails[selectedIndex];
             }
-            // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: detail });
-            // document.dispatchEvent(gameDetailsEvent);
-
-            // if (selectedGame !== null) {
-            //     console.log('-----');
-            //     dt.row(0).select();
-            // }
         }
 
         datesButton.onclick = function () {
@@ -313,9 +304,6 @@ export default function GamesList({
 
             const response = await fetch(Consts.baseURL + `/schedule?sportId=1&startDate=${startDate}&endDate=${endDate}`);
             const gamesJson = await response.json();
-            // fetch(Consts.baseURL + `/schedule?sportId=1&startDate=${startDate}&endDate=${endDate}`)
-            // .then((response) => response.json())
-            // .then((gamesJson) => {
             var gamesForDates = [];
             for (let i = 0; i < gamesJson['dates'].length; i++) {
                 for (let j = 0; j < gamesJson['dates'][i]['games'].length; j++) {
@@ -365,10 +353,6 @@ export default function GamesList({
 
                 const gameResponse = await fetch('https://statsapi.mlb.com' + url);
                 const data = await gameResponse.json();
-                // fetch('https://statsapi.mlb.com' + url)
-                //     .then((response) => response.json())
-                //     .then((data) => {
-                // console.log(i);
                 var row_i = gamesList.indexOf(data['gameData']['game']['pk']);
                 gamesDetails[row_i] = data;
 
@@ -451,13 +435,13 @@ export default function GamesList({
                 currData[0] = dateString;
                 currData[1] = timeString;
                 if (awayTeam in Consts.teamsDetails) {
-                    currData[2] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam][0]}"><span>${awayTeam}</span>`;
+                    currData[2] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam].logo}"><span>${awayTeam}</span>`;
                 } else {
                     currData[2] = awayTeam;
                 }
                 currData[3] = awayScore;
                 if (homeTeam in Consts.teamsDetails) {
-                    currData[4] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam][0]}"><span>${homeTeam}</span>`;
+                    currData[4] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam].logo}"><span>${homeTeam}</span>`;
                 } else {
                     currData[4] = homeTeam;
                 }
@@ -484,7 +468,6 @@ export default function GamesList({
                 progressAmount += 1;
                 setProgress(100 * progressAmount / gamesForDates.length);
             }
-            // });
             setTableData((prev) => ({ ...prev, gamesDetails: gamesDetails }));
             return allData;
         }
@@ -494,15 +477,11 @@ export default function GamesList({
             var selectedIndex = indexes[0];
             setSelectedGame(gamesDetails[selectedIndex]);
             setTableData((prev) => ({ ...prev, selectedIndex: selectedIndex }));
-            // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: gamesDetails[selectedIndex] });
-            // document.dispatchEvent(gameDetailsEvent);
         });
 
         dt.on('deselect', function (e, dt, type, indexes) {
             setSelectedGame(null);
             setTableData((prev) => ({ ...prev, selectedIndex: null }));
-            // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: null });
-            // document.dispatchEvent(gameDetailsEvent);
         });
 
         dt.on('page', function (e, dt2, type, indexes) {
@@ -552,14 +531,10 @@ export default function GamesList({
 
     return (
         <>
-            {/* <div id="container"> */}
-            {/* <div id="games-filters"> */}
             <Box sx={{ display: "flex", alignItems: "stretch", mb: 2, gap: 0 }} id="games-filters">
                 <DatePicker
-                    // multiple
                     value={dates}
                     format="MM/DD/YY"
-                    // inputValue={formatDate}
                     minDate="01/01/20"
                     onChange={handleDateChange}
                     className="bg-dark"
@@ -567,34 +542,7 @@ export default function GamesList({
                     dateSeparator=" - "
                     range
                     showOtherDays
-                // render={(value) => {
-                //     // console.log('value');
-                //     // console.log(typeof value);
-                //     // if (Array.isArray(value) && value.length === 2 && value[0] === value[1]) {
-                //     //     return value[0];
-                //     // }
-                //     // // return value.join(" - ");
-                //     // return value;
-                //     return value;
-                // }}
-                // onOpen={() => setOpen(true)}
-                // onClose={() => setOpen(false)}
-                // open={open}
-                // animations={[
-                //     transition({ duration: 800, from: 35 })
-                // ]}
                 />
-                {/* <DatePicker sx={{ mr: 2 }} label="Start"
-                    value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
-                    renderInput={(params) => <TextField {...params} />} />
-                <DatePicker sx={{ mr: 2 }} label="End"
-                    value={endDate}
-                    minDate={startDate}
-                    onChange={(newValue) => setEndDate(newValue)}
-                    renderInput={(params) => <TextField {...params} />} /> */}
-                {/* <input id="calendar1" className="margin" placeholder="start date" /> */}
-                {/* <input id="calendar2" className="margin" placeholder="end date" /> */}
                 <ButtonGroup variant="contained" sx={{ mr: 2 }}>
                     <Button id="yesterday-button" disabled={isLoading}>Yesterday</Button>
                     <Button id="today-button" disabled={isLoading}>Today</Button>
@@ -603,8 +551,6 @@ export default function GamesList({
                 <Button variant="contained" id="dates-button" className="margin" disabled={isLoading}>Update</Button>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'stretch', mb: 2, gap: 0 }}>
-                {/* dropdown select */}
-                {/* <Select /> */}
                 <Box sx={{ mr: 3 }} id="teams-select-container">
                     <select id="teams-select" multiple></select>
                 </Box>
@@ -613,37 +559,11 @@ export default function GamesList({
             </Box>
             <Box id="games-progress" hidden={!isLoading}>
                 <LinearProgress variant="determinate" color="success" value={progress}
-                    // sx={{
-                    //     transition: disableAnimation ? "none" : "all 0.3s ease-in-out",
-                    // }} />
                     sx={{
                         transition: "none",
                     }} />
             </Box>
             <div style={{ display: 'flex', marginBottom: '16px' }}>
-
-                {/* <div id="live-switch-container">
-                    <label className="switch-light switch-ios" onClick={() => { }}>
-                        <input id="live-games" type="checkbox" />
-                        <strong>Live games</strong>
-                        <span>
-                            <span>Off</span>
-                            <span>On</span>
-                            <a></a>
-                        </span>
-                    </label>
-                </div>
-                <div id="auto-update-container">
-                    <label className="switch-light switch-ios" onClick={() => { }}>
-                        <input id="auto-update" type="checkbox" />
-                        <strong>Auto update</strong>
-                        <span>
-                            <span>Off</span>
-                            <span>On</span>
-                            <a></a>
-                        </span>
-                    </label>
-                </div> */}
             </div>
             <span id="dates-error" hidden>Select both a start and end date</span>
             <Box id="dt-box">
@@ -664,7 +584,6 @@ export default function GamesList({
                     </tbody>
                 </table>
             </Box>
-            {/* </div> */}
         </>
     );
 }
