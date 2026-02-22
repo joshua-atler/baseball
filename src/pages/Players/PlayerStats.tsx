@@ -15,7 +15,11 @@ import {
     CardMedia,
     Accordion,
     AccordionSummary,
-    AccordionDetails
+    AccordionDetails,
+    Switch,
+    FormControlLabel,
+    Modal,
+    Button
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -34,9 +38,6 @@ import '../../styles/cssToggleSwitchStyle.css';
 
 
 function AwardCard({ award, teams, dates }) {
-    console.log(award);
-    console.log(teams);
-    console.log(dates);
     return (
         <Card>
             <CardContent>
@@ -54,10 +55,128 @@ function AwardCard({ award, teams, dates }) {
     );
 }
 
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 800,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+
+function StatsModal({ open, handleClose, modalData }) {
+
+    const canvasRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (!open) return;
+        setTimeout(() => {
+            const statsModalLineChartCanvas = document.querySelector('#stats-modal-chart canvas');
+            var statsModalLineChart = null;
+
+            if (Object.keys(modalData).length === 0) {
+                statsModalLineChart?.destroy();
+            } else {
+                statsModalLineChart = new Chart(statsModalLineChartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: [...modalData.years].reverse(),
+                        datasets: [{
+                            data: [...modalData.columnData].reverse(),
+                            label: ''
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                border: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'white',
+                                    font: {
+                                        size: 18
+                                    }
+                                },
+                                grid: {
+                                    color: 'white',
+                                    z: 1
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'white',
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                            }
+                        }
+                    }
+                });
+            }
+        }, 50);
+    }, [open, modalData]);
+
+    return (
+        <Modal open={open} onClose={handleClose}>
+            <Box sx={style}>
+                <h2>{modalData.statTitle}</h2>
+                <div id="stats-modal-chart">
+                    <canvas ref={canvasRef}></canvas>
+                </div>
+                <Button onClick={handleClose}>Close</Button>
+            </Box>
+        </Modal>
+    );
+}
+
 export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
     const navigate = useNavigate();
     const awardsContainerRef = React.useRef(null);
     const awardsRef = React.useRef(null);
+    const [playerPosition, setPlayerPosition] = React.useState('');
+
+    const [seasonPitchingForAllYears, setSeasonPitchingForAllYears] = React.useState([]);
+    const [seasonPitching, setSeasonPitching] = React.useState({});
+    const [careerPitching, setCareerPitching] = React.useState({});
+
+    const [seasonHittingForAllYears, setSeasonHittingForAllYears] = React.useState([]);
+    const [seasonHitting, setSeasonHitting] = React.useState({});
+    const [careerHitting, setCareerHitting] = React.useState({});
+
+    const [allYearsChecked, setAllYearsChecked] = React.useState(false);
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalData, setModalData] = React.useState({});
+
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setModalData({});
+    }
+
+    var pitchingStatsDT;
+    var pitchingGameLogDT;
+
+    var hittingStatsDT;
+    var hittingGameLogDT;
+
+    var playerID = null;
+    var playerStats = null;
+    var teamColor = null;
+
+    const svgUpArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="up"><path d="m280-400 200-200 200 200H280Z"/></svg>';
+
+    const svgDownArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="down"><path d="M480-360 280-560h400L480-360Z"/></svg>';
 
     function formatDate(originalDate) {
         const date = new Date(originalDate);
@@ -146,27 +265,348 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         });
     }
 
+    function allYearsToggle(event) {
+        setAllYearsChecked(event.target.checked);
+        openCloseAllYears(event.target.checked);
+    }
+
+    function openCloseAllYears(allYears) {
+        if (allYears) {
+            if (playerPosition == 'Pitcher') {
+                updatePitchingStatsTable([...seasonPitchingForAllYears, careerPitching]);
+            } else {
+                updateHittingStatsTable([...seasonHittingForAllYears, careerHitting]);
+            }
+        } else {
+            if (playerPosition == 'Pitcher') {
+                updatePitchingStatsTable(seasonPitching !== undefined
+                    ? [seasonPitching, careerPitching]
+                    : [careerPitching]);
+            } else {
+                updateHittingStatsTable(seasonHitting !== undefined
+                    ? [seasonHitting, careerHitting]
+                    : [careerHitting]);
+            }
+        }
+    }
+    openCloseAllYears(allYearsChecked);
+
+    function updatePitchingStatsTable(allPitching) {
+        if (allPitching.every(obj => Object.keys(obj).length === 0)) {
+            return;
+        };
+        pitchingStatsDT = $(document.querySelector('#pitching-stats')).DataTable();
+        pitchingStatsDT.clear();
+
+        var dropdownRowIndices = [];
+        var subRowIndices = [];
+        var rowIndex = 0;
+
+        // console.log('seasonsPitching');
+        // console.log(seasonsPitching);
+
+        for (let i = 0; i < allPitching.length; i++) {
+            var splits;
+            if (allPitching[i]['splits'].length > 1) {
+                splits = [allPitching[i]['splits'][0], ...allPitching[i]['splits'].slice(1)];
+            } else {
+                splits = allPitching[i]['splits'];
+            }
+
+            for (let j = 0; j < splits.length; j++) {
+                var pitchingRow = splits[j];
+                var seasonYear;
+                if ('season' in pitchingRow) {
+                    seasonYear = pitchingRow['season'];
+                } else {
+                    seasonYear = 'Career';
+                }
+
+                var team;
+                if (seasonYear == 'Career') {
+                    team = '';
+                } else if ('team' in pitchingRow) {
+                    team = pitchingRow['team']['name'];
+                    team = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[team][0]}">`;
+                } else {
+                    team = pitchingRow['numTeams'];
+                }
+
+                if (j == 0 && splits.length > 1) {
+                    seasonYear += `&nbsp; ${svgDownArrow}`;
+                    dropdownRowIndices.push(rowIndex);
+                }
+
+                pitchingStatsDT.row.add([
+                    `${seasonYear}`,
+                    `${team}`,
+                    pitchingRow['stat']['wins'],
+                    pitchingRow['stat']['losses'],
+                    pitchingRow['stat']['era'],
+                    pitchingRow['stat']['gamesPitched'],
+                    pitchingRow['stat']['gamesStarted'],
+                    pitchingRow['stat']['saves'],
+                    pitchingRow['stat']['inningsPitched'],
+                    pitchingRow['stat']['strikeOuts'],
+                    pitchingRow['stat']['whip'],
+                ]);
+
+                if (j > 0) {
+                    subRowIndices.push(rowIndex);
+                }
+
+                rowIndex += 1;
+            }
+        }
+
+        pitchingStatsDT.draw(true);
+
+        $('#pitching-stats th, #pitching-stats td').off('click').on('click', function () {
+            var colIndex = $(this).index();
+            if (colIndex >= 2 && allYearsChecked) {
+                var clickedColumn = pitchingStatsDT.column($(this).index());
+                var columnData = pitchingStatsDT.column($(this).index()).data().toArray();
+                var years = pitchingStatsDT.column(0).data().toArray();
+                var statTitle = clickedColumn.header().querySelector('span.tooltip').getAttribute('data-tooltip');
+
+                const seen = new Set();
+                const resultIndexes = [];
+                years.forEach((item, index) => {
+                    const match = item.match(/\b\d{4}\b/);
+                    if (match) {
+                        const year = match[0];
+                        if (!seen.has(year)) {
+                            seen.add(year);
+                            resultIndexes.push(index);
+                        }
+                    }
+                });
+                years = resultIndexes.map(index => years[index]);
+                years = years.map(year => year.slice(0, 4));
+                columnData = resultIndexes.map(index => columnData[index]);
+
+                setModalData({
+                    statTitle: statTitle,
+                    years: years,
+                    columnData: columnData
+                });
+                setModalOpen(true);
+                $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
+            }
+        });
+
+        $('#pitching-stats th, #pitching-stats td').off('mouseenter').off('mouseleave').on('mouseenter', function () {
+            if (($(this).index() >= 2)) {
+                const colIndex = $(this).index();
+                $('#pitching-stats tr').each(function () {
+                    $(this).find('td, th').eq(colIndex).addClass('table-highlight');
+                });
+            }
+        }).on('mouseleave', function () {
+            $('#pitching-stats td, #pitching-stats th').removeClass('table-highlight');
+        });
+
+        let dropdownRows = pitchingStatsDT.rows(dropdownRowIndices).nodes();
+        let subRows = pitchingStatsDT.rows(subRowIndices).nodes();
+
+        $(dropdownRows).each(function (index, dropdownRow) {
+            $(dropdownRow).find('td').first().on('click', function () {
+                let svgArrow = $(dropdownRow).find('td:first svg');
+                var direction = svgArrow.attr('data-direction');
+
+                if (direction == 'up') {
+                    svgArrow.replaceWith(svgDownArrow);
+                } else {
+                    svgArrow.replaceWith(svgUpArrow);
+                }
+
+                let nextRows = $(dropdownRow).nextAll('tr');
+                let matchingRows = [];
+
+                nextRows.each(function (i, nextRow) {
+                    if ($(nextRow).hasClass('stats-subrow')) {
+                        matchingRows.push(nextRow);
+                    } else {
+                        return false;
+                    }
+                });
+
+                $(matchingRows).each(function (i, subRow) {
+                    $(subRow).toggleClass('stats-subrow-hidden');
+                });
+            });
+        });
+
+        $(subRows).each(function (index, subRow) {
+            $(subRow).addClass('stats-subrow');
+            $(subRow).addClass('stats-subrow-hidden');
+        });
+    }
+
+    function updateHittingStatsTable(allHitting) {
+        if (allHitting.every(obj => Object.keys(obj).length === 0)) {
+            return;
+        };
+        hittingStatsDT = $(document.querySelector('#hitting-stats')).DataTable();
+        hittingStatsDT.clear();
+
+        var dropdownRowIndices = [];
+        var subRowIndices = [];
+        var rowIndex = 0;
+
+        for (let i = 0; i < allHitting.length; i++) {
+            var splits;
+            if (allHitting[i]['splits'].length > 1) {
+                splits = [allHitting[i]['splits'][0], ...allHitting[i]['splits'].slice(1)];
+            } else {
+                splits = allHitting[i]['splits'];
+            }
+
+            for (let j = 0; j < splits.length; j++) {
+                var hittingRow = splits[j];
+                var seasonYear;
+                if ('season' in hittingRow) {
+                    seasonYear = hittingRow['season'];
+                } else {
+                    seasonYear = 'Career';
+                }
+
+                var team;
+                if (seasonYear == 'Career') {
+                    team = '';
+                } else if ('team' in hittingRow) {
+                    team = hittingRow['team']['name'];
+                    team = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[team][0]}">`;
+                } else {
+                    team = hittingRow['numTeams'];
+                }
+
+                if (j == 0 && splits.length > 1) {
+                    seasonYear += `&nbsp; ${svgDownArrow}`;
+                    dropdownRowIndices.push(rowIndex);
+                }
+
+                hittingStatsDT.row.add([
+                    `${seasonYear}`,
+                    `${team}`,
+                    hittingRow['stat']['atBats'],
+                    hittingRow['stat']['runs'],
+                    hittingRow['stat']['hits'],
+                    hittingRow['stat']['homeRuns'],
+                    hittingRow['stat']['rbi'],
+                    hittingRow['stat']['stolenBases'],
+                    hittingRow['stat']['avg'],
+                    hittingRow['stat']['obp'],
+                    hittingRow['stat']['slg'],
+                    hittingRow['stat']['ops']
+                ]);
+
+                if (j > 0) {
+                    subRowIndices.push(rowIndex);
+                }
+
+                rowIndex += 1;
+            }
+        }
+
+        hittingStatsDT.draw(true);
+
+        $('#hitting-stats th, #hitting-stats td').off('click').on('click', function () {
+            var colIndex = $(this).index();
+            if (colIndex >= 2 && allYearsChecked) {
+                var clickedColumn = hittingStatsDT.column($(this).index());
+                var columnData = hittingStatsDT.column($(this).index()).data().toArray();
+                var years = hittingStatsDT.column(0).data().toArray();
+                var statTitle = clickedColumn.header().querySelector('span.tooltip').getAttribute('data-tooltip');
+
+                const seen = new Set();
+                const resultIndexes = [];
+                years.forEach((item, index) => {
+                    const match = item.match(/\b\d{4}\b/);
+                    if (match) {
+                        const year = match[0];
+                        if (!seen.has(year)) {
+                            seen.add(year);
+                            resultIndexes.push(index);
+                        }
+                    }
+                });
+                years = resultIndexes.map(index => years[index]);
+                years = years.map(year => year.slice(0, 4));
+                columnData = resultIndexes.map(index => columnData[index]);
+
+                setModalData({
+                    statTitle: statTitle,
+                    years: years,
+                    columnData: columnData
+                });
+                setModalOpen(true);
+                $('#hitting-stats td, #hitting-stats th').removeClass('table-highlight');
+            }
+        });
+
+        $('#hitting-stats th, #hitting-stats td').off('mouseenter').off('mouseleave').on('mouseenter', function () {
+            if (($(this).index() >= 2)) {
+                const colIndex = $(this).index();
+                $('#hitting-stats tr').each(function () {
+                    $(this).find('td, th').eq(colIndex).addClass('table-highlight');
+                });
+            }
+        }).on('mouseleave', function () {
+            $('#hitting-stats td, #hitting-stats th').removeClass('table-highlight');
+        });
+
+        let dropdownRows = hittingStatsDT.rows(dropdownRowIndices).nodes();
+        let subRows = hittingStatsDT.rows(subRowIndices).nodes();
+
+        $(dropdownRows).each(function (index, dropdownRow) {
+            $(dropdownRow).find('td').first().on('click', function () {
+                let svgArrow = $(dropdownRow).find('td:first svg');
+                var direction = svgArrow.attr('data-direction');
+
+                if (direction == 'up') {
+                    svgArrow.replaceWith(svgDownArrow);
+                } else {
+                    svgArrow.replaceWith(svgUpArrow);
+                }
+
+                let nextRows = $(dropdownRow).nextAll('tr');
+                let matchingRows = [];
+
+                nextRows.each(function (i, nextRow) {
+                    if ($(nextRow).hasClass('stats-subrow')) {
+                        matchingRows.push(nextRow);
+                    } else {
+                        return false;
+                    }
+                });
+
+                $(matchingRows).each(function (i, subRow) {
+                    $(subRow).toggleClass('stats-subrow-hidden');
+                });
+            });
+        });
+
+        $(subRows).each(function (index, subRow) {
+            $(subRow).addClass('stats-subrow');
+            $(subRow).addClass('stats-subrow-hidden');
+        });
+    }
 
     React.useEffect(() => {
-
-        // console.log('---');
-
-        var playerID = null;
-        var playerStats = null;
-        var teamColor = null;
-
         const playerStatsPhoto = $(document.querySelector('#player-stats-photo'));
         const playerStatsLabel = $(document.querySelector('#player-stats-label'));
         const playerDetails = $(document.querySelector('#player-details'));
         const teamColorBanners = $(document.querySelectorAll('.player-team-color-banner'));
 
-        const allYearsSwitchDiv = $(document.querySelector('#all-years-switch-container'));
-        const yearSelectDiv = $(document.querySelector('#player-stats-year-select-container'));
-        // const teamsSelect = document.querySelector('#player-stats-year-select');
+        const allYearsSwitch = $(document.querySelector('#all-years-switch'));
+        const pitchingYearSelectDiv = $(document.querySelector('#pitching-stats-year-select-container'));
+        const hittingYearSelectDiv = $(document.querySelector('#hitting-stats-year-select-container'));
 
         const pitchingStatsDiv = $(document.querySelector('#pitching-stats-container'));
         const hittingStatsDiv = $(document.querySelector('#hitting-stats-container'));
         const genericStatsDiv = $(document.querySelector('#generic-stats-container'));
+        const missingStatsDiv = $(document.querySelector('#missing-stats-container'));
 
         // pitching charts
         const pitchesPieChartCanvas = $(document.querySelector('#pitches-pie-chart canvas'));
@@ -179,14 +619,19 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
         const strikeZonesDiv = $(document.querySelector('#strike-zones'));
 
+        const eraLineChartCanvas = $(document.querySelector('#era-line-chart canvas'));
+        var eraLineChart = Chart.getChart(eraLineChartCanvas);
+
         const inningsPitchedBarChartCanvas = $(document.querySelector('#innings-pitched-bar-chart canvas'));
         var inningsPitchedBarChart = Chart.getChart(inningsPitchedBarChartCanvas);
         // var inningsPitchedBarChart = null;
 
         // hitting charts
+        const hitsPieChartCanvas = $(document.querySelector('#hits-pie-chart canvas'));
+        var hitsPieChart = Chart.getChart(hitsPieChartCanvas);
+
         const hitsScatterPlotCanvas = $(document.querySelector('#hits-scatter-plot canvas'));
         var hitsScatterPlot = Chart.getChart(hitsScatterPlotCanvas);
-        // var hitsScatterPlot = null;
 
         // generic charts
         const activeStatusTimePlotCanvas = $(document.querySelector('#active-status-time-plot canvas'));
@@ -194,11 +639,12 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         // var activeStatusTimePlot = null;
 
         var pitchingStatsTable = document.querySelector('#pitching-stats');
+        var pitchingGameLogTable = document.querySelector('#pitching-game-log');
+
         if ($.fn.dataTable.isDataTable(pitchingStatsTable)) {
-            var pitchingStatsDT = $(pitchingStatsTable).DataTable();
+            pitchingStatsDT = $(pitchingStatsTable).DataTable();
         } else {
-            var pitchingStatsDT = $(pitchingStatsTable).DataTable({
-                // select: true,
+            pitchingStatsDT = $(pitchingStatsTable).DataTable({
                 pageLength: 50,
                 dom: 't',
                 columnDefs: [],
@@ -208,18 +654,57 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             });
         }
 
+        if ($.fn.dataTable.isDataTable(pitchingGameLogTable)) {
+            pitchingGameLogDT = $(pitchingGameLogTable).DataTable();
+        } else {
+            pitchingGameLogDT = $(pitchingGameLogTable).DataTable({
+                select: {
+                    info: false
+                },
+                paging: true,
+                dom: 'tip',
+                columnDefs: [],
+                ordering: false,
+                buttons: [],
+                scrollCollapse: true,
+                columnDefs: [
+                    { targets: 10, visible: false }
+                ]
+            });
+        }
+
         var hittingStatsTable = document.querySelector('#hitting-stats');
+        var hittingGameLogTable = document.querySelector('#hitting-game-log');
+
         if ($.fn.dataTable.isDataTable(hittingStatsTable)) {
             var hittingStatsDT = $(hittingStatsTable).DataTable();
         } else {
             var hittingStatsDT = $(hittingStatsTable).DataTable({
-                // select: true,
                 pageLength: 50,
                 dom: 't',
                 columnDefs: [],
                 ordering: false,
                 buttons: [],
                 scrollCollapse: true
+            });
+        }
+
+        if ($.fn.dataTable.isDataTable(hittingGameLogTable)) {
+            hittingGameLogDT = $(hittingGameLogTable).DataTable();
+        } else {
+            hittingGameLogDT = $(hittingGameLogTable).DataTable({
+                select: {
+                    info: false
+                },
+                paging: true,
+                dom: 'tip',
+                columnDefs: [],
+                ordering: false,
+                buttons: [],
+                scrollCollapse: true,
+                columnDefs: [
+                    { targets: 10, visible: false }
+                ]
             });
         }
 
@@ -234,12 +719,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             awardsRef.current = ReactDOM.createRoot(awardsContainerRef.current);
         }
 
-        var year;
         const startYear = 2015;
-
-        const svgUpArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="up"><path d="m280-400 200-200 200 200H280Z"/></svg>';
-
-        const svgDownArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="down"><path d="M480-360 280-560h400L480-360Z"/></svg>';
 
         function hideAllStats() {
             playerStatsPhoto.html('');
@@ -256,6 +736,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             pitchingStatsDiv.hide();
             hittingStatsDiv.hide();
             genericStatsDiv.hide();
+            missingStatsDiv.hide();
 
             gameLogSummary.html('');
             gameLogDetails.html('<br><br><br><br>');
@@ -277,49 +758,65 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         playerID = selectedPlayer.playerID;
         teamColor = selectedPlayer.color;
 
-        allYearsSwitchDiv.html('');
-        yearSelectDiv.html('');
+        allYearsSwitch.hide();
+        // allYearsSwitchDiv.html('');
+        pitchingYearSelectDiv.html('');
+        hittingYearSelectDiv.html('');
 
-        var charts = [
-            pitchesPieChart,
-            pitchesScatterPlot,
-            inningsPitchedBarChart,
-            hitsScatterPlot,
-            activeStatusTimePlot];
+        function destroyCharts() {
+            var charts = [
+                pitchesPieChart,
+                pitchesScatterPlot,
+                eraLineChart,
+                inningsPitchedBarChart,
+                hitsPieChart,
+                hitsScatterPlot,
+                activeStatusTimePlot];
 
-        charts.forEach(chart => {
-            if (chart) {
-                try {
-                    chart.destroy();
-                } catch (error) {
-                    console.error("Failed to destroy chart:", error);
+            charts.forEach(chart => {
+                if (chart) {
+                    try {
+                        chart.destroy();
+                    } catch (error) {
+                        console.error("Failed to destroy chart:", error);
+                    }
                 }
-            }
-        });
+            });
+        }
+        destroyCharts();
 
         strikeZonesDiv.html('');
 
         if (playerID == null) {
-            hideAllStats();
+            // console.log('hiding');
+            // hideAllStats();
+            setPlayerPosition('');
+            setSeasonPitchingForAllYears([]);
+            setSeasonPitching({});
+            setCareerPitching({});
 
+            setSeasonHittingForAllYears([]);
+            setSeasonHitting({});
+            setCareerHitting({});
         } else {
             teamColorBanners.eq(0).css('background-color', teamColor[0]);
             teamColorBanners.eq(1).css('background-color', teamColor[1]);
 
-            allYearsSwitchDiv.html(`
-        <label class="switch-light switch-ios" onclick="">
-            <input id="all-years" type="checkbox">
-            <strong>All years</strong>
-            <span>
-                <span>No</span>
-                <span>Yes</span>
-                <a></a>
-            </span>
-        </label>
-        `);
+            //     allYearsSwitchDiv.html(`
+            // <label class="switch-light switch-ios" onclick="">
+            //     <input id="all-years" type="checkbox">
+            //     <strong>All years</strong>
+            //     <span>
+            //         <span>No</span>
+            //         <span>Yes</span>
+            //         <a></a>
+            //     </span>
+            // </label>
+            // `);
+            allYearsSwitch.show();
 
-            yearSelectDiv.html('<select id="player-stats-year-select"></select>');
-            var yearSelect = yearSelectDiv.find('select').get(0);
+            pitchingYearSelectDiv.html('<select id="player-stats-year-select"></select>');
+            hittingYearSelectDiv.html('<select id="hitter-stats-year-select"></select>');
 
             var newStylesheet = $('<link>', {
                 rel: 'stylesheet',
@@ -328,32 +825,47 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
             $('head').append(newStylesheet);
 
-            // console.log(yearSelectDiv.html());
-            // console.log(yearSelect);
-
-            var selectData = [
-                { text: '2024', value: '2024' },
-                { text: '2023', value: '2023' },
-                { text: '2022', value: '2022' }
-            ];
-
-            var yearDropdown = new SlimSelect({
-                select: yearSelect,
-                data: selectData,
-
+            var pitcherYearDropdown = new SlimSelect({
+                select: pitchingYearSelectDiv.find('select').get(0),
                 settings: {
                     showSearch: false,
                     placeholderText: 'Year',
                     closeOnSelect: true,
-                    allowDeselect: true,
+                    allowDeselect: false,
                 },
-                // events
+                events: {
+                    afterChange: (newVal, oldVal) => {
+                        console.log('pitching charts change');
+                        destroyCharts();
+                        var newYear = pitcherYearDropdown.getSelected()[0];
+                        createPitchingCharts(newYear);
+                        createGenericCharts(newYear);
+                    }
+                }
             });
 
-            year = 2024;
+            var hittingYearDropdown = new SlimSelect({
+                select: hittingYearSelectDiv.find('select').get(0),
+                settings: {
+                    showSearch: false,
+                    placeholderText: 'Year',
+                    closeOnSelect: true,
+                    allowDeselect: false,
+                },
+                events: {
+                    afterChange: (newVal, oldVal) => {
+                        console.log('hitting charts change');
+                        destroyCharts();
+                        var newYear = hittingYearDropdown.getSelected()[0];
+                        createHittingCharts(newYear);
+                        createGenericCharts(newYear);
+                    }
+                }
+            });
 
             var statsURLs = [];
-            for (let i = year; i >= startYear; i--) {
+            const baseYear = 2025;
+            for (let i = baseYear; i >= startYear; i--) {
                 // console.log(gameLog[i]['stat']['summary']);
                 statsURLs.push(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,career,careerAdvanced],season=${i})`);
             }
@@ -378,9 +890,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     // var seasonHittingForAllYears;
                     // var careerHitting;
 
-                    console.log('combinedData');
-                    console.log(combinedData);
-
                     playerStats = combinedData[0];
 
                     // playerStats = await fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,career,careerAdvanced],season=${year})`);
@@ -394,229 +903,203 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     if ('primaryNumber' in playerStats) {
                         playerNumber = `&bull; #${playerStats['primaryNumber']}`;
                     }
-                    // console.log(playerStats['fullName']);
-                    // console.log(fixName(playerStats['fullName']));
                     playerName = `${playerStats['fullName']} ${playerNumber} &bull; <a href="https://www.mlb.com/player/${fixName(playerStats['fullName'])}-${playerID}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF" style="vertical-align: middle; margin-bottom: 5px;"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/></svg></a>`;
                     playerStatsLabel.html(playerName);
 
                     playerDetails.find('li:nth-child(1) span:nth-child(2)').html(playerStats['currentAge']);
                     playerDetails.find('li:nth-child(2) span:nth-child(2)').html(playerStats['primaryPosition']['abbreviation']);
 
-                    var debutDate = '---';
-                    if (playerStats['mlbDebutDate'] != undefined) {
-                        debutDate = formatDate(playerStats['mlbDebutDate']);
-                    }
-                    playerDetails.find('li:nth-child(3) span:nth-child(2)').html(debutDate);
-
                     if ('birthStateProvince' in playerStats) {
-                        playerDetails.find('li:nth-child(4) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthStateProvince']}`);
+                        playerDetails.find('li:nth-child(3) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthStateProvince']}`);
                     } else {
-                        playerDetails.find('li:nth-child(4) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthCountry']}`);
+                        playerDetails.find('li:nth-child(3) span:nth-child(2)').html(`${playerStats['birthCity']}, ${playerStats['birthCountry']}`);
                     }
 
                     playerDetails.show();
 
-                    var playerPosition = playerStats['primaryPosition']['name'];
+                    var position = playerStats['primaryPosition']['name'];
+                    setPlayerPosition(position);
+
+                    console.log('playerStats');
+                    console.log(playerStats);
 
                     var stats = playerStats['stats'];
-                    console.log(stats);
 
-                    if (playerPosition == 'Pitcher') {
-                        var seasonPitching = stats.find(item =>
-                            item.type.displayName === 'season' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var seasonAdvancedPitching = stats.find(item =>
-                            item.type.displayName === 'seasonAdvanced' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var careerPitching = stats.find(item =>
-                            item.type.displayName === 'career' &&
-                            item.group.displayName === 'pitching'
-                        );
-                        var careerAdvancedPitching = stats.find(item =>
-                            item.type.displayName === 'careerAdvanced' &&
-                            item.group.displayName === 'pitching'
-                        );
-
-                        console.log('pitching');
-                        console.log(seasonPitching);
-                        console.log(seasonAdvancedPitching);
-                        console.log(careerPitching);
-                        console.log(careerAdvancedPitching);
-
-                        var validYears = [];
-
-                        // get seasonPitching for all years
-                        var seasonPitchingForAllYears = [];
-                        for (let i = 0; i < combinedData.length; i++) {
-                            var playerStatsForYear = combinedData[i];
-                            playerStatsForYear = playerStatsForYear['people'][0];
-
-                            var statsForYear = playerStatsForYear['stats'];
-                            var seasonPitchingForYear = statsForYear.find(item =>
+                    if (stats === undefined) {
+                        console.log('missingStatsDiv');
+                        missingStatsDiv.show();
+                    } else {
+                        if (position == 'Pitcher') {
+                            var seasonPitching = stats.find(item =>
                                 item.type.displayName === 'season' &&
                                 item.group.displayName === 'pitching'
                             );
+                            var seasonAdvancedPitching = stats.find(item =>
+                                item.type.displayName === 'seasonAdvanced' &&
+                                item.group.displayName === 'pitching'
+                            );
+                            var careerPitching = stats.find(item =>
+                                item.type.displayName === 'career' &&
+                                item.group.displayName === 'pitching'
+                            );
+                            var careerAdvancedPitching = stats.find(item =>
+                                item.type.displayName === 'careerAdvanced' &&
+                                item.group.displayName === 'pitching'
+                            );
 
-                            if (seasonPitchingForYear != undefined) {
-                                seasonPitchingForAllYears.push(seasonPitchingForYear);
+                            // console.log('pitching');
+                            // console.log(seasonPitching);
+                            // console.log(seasonAdvancedPitching);
+                            // console.log(careerPitching);
+                            // console.log(careerAdvancedPitching);
 
-                                // TODO: add to list of years for dropdown
-                                validYears.push(seasonPitchingForYear['splits'][0]['season']);
+                            var validYears = [];
+
+                            // get seasonPitching for all years
+                            var seasonPitchingForAllYears = [];
+                            for (let i = 0; i < combinedData.length; i++) {
+                                var playerStatsForYear = combinedData[i];
+                                // console.log(playerStatsForYear);
+                                playerStatsForYear = playerStatsForYear['people'][0];
+
+                                var statsForYear = playerStatsForYear['stats'];
+                                var seasonPitchingForYear = statsForYear.find(item =>
+                                    item.type.displayName === 'season' &&
+                                    item.group.displayName === 'pitching'
+                                );
+
+                                if (seasonPitchingForYear != undefined) {
+                                    seasonPitchingForAllYears.push(seasonPitchingForYear);
+
+                                    validYears.push(seasonPitchingForYear['splits'][0]['season']);
+                                }
                             }
-                        }
-                        console.log('seasonPitchingForAllYears');
-                        console.log(seasonPitchingForAllYears);
-                        console.log(validYears);
-                        console.log(validYears.map(year => ({
-                            text: year,
-                            value: year
-                        })));
+                            setSeasonPitching(seasonPitching);
+                            setSeasonPitchingForAllYears(seasonPitchingForAllYears);
+                            setCareerPitching(careerPitching);
 
-                        yearDropdown.setData(
-                            validYears.map(year => ({
-                                text: year,
-                                value: year
-                            }))
-                        );
+                            pitcherYearDropdown.setData(
+                                validYears.map(year => ({
+                                    text: year,
+                                    value: year
+                                }))
+                            );
 
-                        // seasonPitching = seasonPitching['splits'][0];
-                        // careerPitching = careerPitching['splits'][0];
-                        // pitchingStatsDT.clear();
+                            updatePitchingStatsTable(seasonPitching !== undefined
+                                ? [seasonPitching, careerPitching]
+                                : [careerPitching]);
 
-                        updatePitchingStatsTable(seasonPitching !== undefined
-                            ? [seasonPitching, careerPitching]
-                            : [careerPitching]);
-                        // updatePitchingStatsTable([seasonPitching, careerPitching]);
-                        // updatePitchingStatsTable([...seasonPitchingForAllYears, careerPitching]);
-
-
-                        // pitchingStatsDT.row.add([
-                        //     // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonPitching['team']['name']][0]}"><span>${seasonPitching['season']}</span>`,
-                        //     `${seasonPitching['season']}`,
-                        //     seasonPitching['stat']['wins'],
-                        //     seasonPitching['stat']['losses'],
-                        //     seasonPitching['stat']['era'],
-                        //     seasonPitching['stat']['gamesPitched'],
-                        //     seasonPitching['stat']['gamesStarted'],
-                        //     seasonPitching['stat']['saves'],
-                        //     seasonPitching['stat']['inningsPitched'],
-                        //     seasonPitching['stat']['strikeOuts'],
-                        //     seasonPitching['stat']['whip'],
-                        // ]);
-
-                        // pitchingStatsDT.row.add([
-                        //     'Career',
-                        //     careerPitching['stat']['wins'],
-                        //     careerPitching['stat']['losses'],
-                        //     careerPitching['stat']['era'],
-                        //     careerPitching['stat']['gamesPitched'],
-                        //     careerPitching['stat']['gamesStarted'],
-                        //     careerPitching['stat']['saves'],
-                        //     careerPitching['stat']['inningsPitched'],
-                        //     careerPitching['stat']['strikeOuts'],
-                        //     careerPitching['stat']['whip'],
-                        // ]);
-
-                        // pitchingStatsDT.draw(true);
-
-                        createPitchingCharts(year);
-
-                        pitchingStatsDiv.show();
-                        hittingStatsDiv.hide();
-                    } else {
-                        var seasonHitting = stats.find(item =>
-                            item.type.displayName === 'season' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var seasonAdvancedHitting = stats.find(item =>
-                            item.type.displayName === 'seasonAdvanced' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var careerHitting = stats.find(item =>
-                            item.type.displayName === 'career' &&
-                            item.group.displayName === 'hitting'
-                        );
-                        var careerAdvancedHitting = stats.find(item =>
-                            item.type.displayName === 'careerAdvanced' &&
-                            item.group.displayName === 'hitting'
-                        );
-
-                        console.log('hitting');
-                        console.log(seasonHitting);
-                        console.log(seasonAdvancedHitting);
-                        console.log(careerHitting);
-                        console.log(careerAdvancedHitting);
-
-                        hittingStatsDT.clear();
-
-                        seasonHitting = seasonHitting['splits'][0];
-                        careerHitting = careerHitting['splits'][0];
-
-                        hittingStatsDT.row.add([
-                            // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonHitting['team']['name']][0]}"><span>${seasonHitting['season']}</span>`,
-                            `${seasonHitting['season']}`,
-                            seasonHitting['stat']['atBats'],
-                            seasonHitting['stat']['runs'],
-                            seasonHitting['stat']['hits'],
-                            seasonHitting['stat']['homeRuns'],
-                            seasonHitting['stat']['rbi'],
-                            seasonHitting['stat']['stolenBases'],
-                            seasonHitting['stat']['avg'],
-                            seasonHitting['stat']['obp'],
-                            seasonHitting['stat']['slg'],
-                            seasonHitting['stat']['ops']
-                        ]);
-
-                        hittingStatsDT.row.add([
-                            'Career',
-                            careerHitting['stat']['atBats'],
-                            careerHitting['stat']['runs'],
-                            careerHitting['stat']['hits'],
-                            careerHitting['stat']['homeRuns'],
-                            careerHitting['stat']['rbi'],
-                            careerHitting['stat']['stolenBases'],
-                            careerHitting['stat']['avg'],
-                            careerHitting['stat']['obp'],
-                            careerHitting['stat']['slg'],
-                            careerHitting['stat']['ops']
-                        ]); //: TODO: do this for hitting also
-
-                        // createHitsScatterPlot();
-
-                        hittingStatsDT.draw(true);
-
-                        pitchingStatsDiv.hide();
-                        hittingStatsDiv.show();
-                    }
-
-                    var allYearsSwitch = allYearsSwitchDiv.find('input').get(0);
-                    allYearsSwitch.onchange = function () {
-                        if (allYearsSwitch.checked) {
-                            if (playerPosition == 'Pitcher') {
-                                updatePitchingStatsTable([...seasonPitchingForAllYears, careerPitching]);
-                            } else {
-
-                            }
+                            pitchingStatsDiv.show();
+                            hittingStatsDiv.hide();
                         } else {
-                            if (playerPosition == 'Pitcher') {
-                                updatePitchingStatsTable(seasonPitching !== undefined
-                                    ? [seasonPitching, careerPitching]
-                                    : [careerPitching]);
-                                // updatePitchingStatsTable([seasonPitching, careerPitching]);
-                            } else {
+                            var seasonHitting = stats.find(item =>
+                                item.type.displayName === 'season' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var seasonAdvancedHitting = stats.find(item =>
+                                item.type.displayName === 'seasonAdvanced' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var careerHitting = stats.find(item =>
+                                item.type.displayName === 'career' &&
+                                item.group.displayName === 'hitting'
+                            );
+                            var careerAdvancedHitting = stats.find(item =>
+                                item.type.displayName === 'careerAdvanced' &&
+                                item.group.displayName === 'hitting'
+                            );
 
+                            console.log('hitting');
+                            console.log(seasonHitting);
+                            console.log(seasonAdvancedHitting);
+                            console.log(careerHitting);
+                            console.log(careerAdvancedHitting);
+
+                            var validYears = [];
+
+                            // get seasonPitching for all years
+                            var seasonHittingForAllYears = [];
+                            for (let i = 0; i < combinedData.length; i++) {
+                                var playerStatsForYear = combinedData[i];
+                                // console.log(playerStatsForYear);
+                                playerStatsForYear = playerStatsForYear['people'][0];
+
+                                var statsForYear = playerStatsForYear['stats'];
+                                var seasonHittingForYear = statsForYear.find(item =>
+                                    item.type.displayName === 'season' &&
+                                    item.group.displayName === 'hitting'
+                                );
+
+                                if (seasonHittingForYear != undefined) {
+                                    seasonHittingForAllYears.push(seasonHittingForYear);
+
+                                    validYears.push(seasonHittingForYear['splits'][0]['season']);
+                                }
                             }
-                        }
-                    }
+                            setSeasonHitting(seasonHitting);
+                            setSeasonHittingForAllYears(seasonHittingForAllYears);
+                            setCareerHitting(careerHitting);
 
-                    console.log(`year: ${year}`);
-                    createGenericCharts(year);
-                    genericStatsDiv.show();
+                            hittingYearDropdown.setData(
+                                validYears.map(year => ({
+                                    text: year,
+                                    value: year
+                                }))
+                            );
+
+                            console.log('updateHittingStatsTable');
+                            updateHittingStatsTable(seasonHitting !== undefined
+                                ? [seasonHitting, careerHitting]
+                                : [careerHitting]);
+
+                            // hittingStatsDT.clear();
+
+                            // seasonHitting = seasonHitting['splits'][0];
+                            // careerHitting = careerHitting['splits'][0];
+
+                            // hittingStatsDT.row.add([
+                            //     // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonHitting['team']['name']][0]}"><span>${seasonHitting['season']}</span>`,
+                            //     `${seasonHitting['season']}`,
+                            //     seasonHitting['stat']['atBats'],
+                            //     seasonHitting['stat']['runs'],
+                            //     seasonHitting['stat']['hits'],
+                            //     seasonHitting['stat']['homeRuns'],
+                            //     seasonHitting['stat']['rbi'],
+                            //     seasonHitting['stat']['stolenBases'],
+                            //     seasonHitting['stat']['avg'],
+                            //     seasonHitting['stat']['obp'],
+                            //     seasonHitting['stat']['slg'],
+                            //     seasonHitting['stat']['ops']
+                            // ]);
+
+                            // hittingStatsDT.row.add([
+                            //     'Career',
+                            //     careerHitting['stat']['atBats'],
+                            //     careerHitting['stat']['runs'],
+                            //     careerHitting['stat']['hits'],
+                            //     careerHitting['stat']['homeRuns'],
+                            //     careerHitting['stat']['rbi'],
+                            //     careerHitting['stat']['stolenBases'],
+                            //     careerHitting['stat']['avg'],
+                            //     careerHitting['stat']['obp'],
+                            //     careerHitting['stat']['slg'],
+                            //     careerHitting['stat']['ops']
+                            // ]);
+
+                            // update hit
+                            // createHitsScatterPlot();
+
+                            // hittingStatsDT.draw(true);
+
+                            pitchingStatsDiv.hide();
+                            hittingStatsDiv.show();
+                        }
+
+                        genericStatsDiv.show();
+                        missingStatsDiv.hide();
+                    }
                 })
         }
-
 
         function createPitchingCharts(year) {
             fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})`)
@@ -630,10 +1113,69 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     var gameLog = data['people'][0]['stats'][1]['splits'];
                     var gameURLs = [];
 
+                    pitchingGameLogDT.clear();
                     for (let i = 0; i < gameLog.length; i++) {
-                        // console.log(gameLog[i]['stat']['summary']);
+                        var date = gameLog[i]['date'];
+                        var team = gameLog[i]['team']['name'];
+                        var opponent = gameLog[i]['opponent']['name'];
+                        var summary = gameLog[i]['stat']['summary'];
+                        var pitches = gameLog[i]['stat']['numberOfPitches'];
+                        var inningsPitched = gameLog[i]['stat']['inningsPitched'];
+                        var er = gameLog[i]['stat']['earnedRuns'];
+                        var era = gameLog[i]['stat']['era'];
+                        var hits = gameLog[i]['stat']['hits'];
+                        var strikeouts = gameLog[i]['stat']['strikeOuts'];
+                        var walks = gameLog[i]['stat']['baseOnBalls'];
+                        var whip = gameLog[i]['stat']['whip'];
+                        var link = gameLog[i]['game']['link'];
+
+                        date = `${date.split('-')[1]}/${date.split('-')[2]}`;
+
+                        var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
+                        var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
+                        var matchup = `${team}${vsOrAt}${opponent}`;
+
+                        pitchingGameLogDT.row.add([
+                            date,
+                            matchup,
+                            pitches,
+                            inningsPitched,
+                            er,
+                            era,
+                            hits,
+                            strikeouts,
+                            walks,
+                            whip,
+                            link
+                        ]);
+
+                        pitchingGameLogDT.draw(true);
+
                         gameURLs.push(`https://statsapi.mlb.com/${gameLog[i]['game']['link']}`);
                     }
+
+                    pitchingGameLogDT.on('select', function (e, dt, type, indexes) {
+                        var selectedIndex = indexes[0];
+                        var gameLink = dt.row(selectedIndex).data()[10];
+
+                        var link = `https://statsapi.mlb.com/${gameLink}`;
+                        fetch(link)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(gameResponse => {
+                                gameDataToSend = gameResponse;
+                                console.log(gameDataToSend);
+                                setSelectedGame(gameDataToSend);
+                                navigate('/games');
+                            })
+                    });
 
                     var promises = gameURLs.map(url =>
                         fetch(url)
@@ -699,8 +1241,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                         };
                                     }
                                 } catch {
-                                    console.log('unknown pitch');
-                                    console.log(allPitches[i]);
+                                    // console.log('unknown pitch');
+                                    // console.log(allPitches[i]);
                                     pitchCode = '?';
                                     pitchDescription = 'Unknown';
                                 }
@@ -713,8 +1255,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                         pitches.push(pitchDescription);
                                         pitchCodes.push(pitchCode);
 
-                                        // console.log(pitchDescription);
-                                        // scatter plot
                                         pitchDatasets.push({
                                             data: [dataPoint],
                                             label: pitchDescription,
@@ -794,24 +1334,10 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                 inningsPitched[inningNumber] /= 3;
                             });
 
-                            // console.log('pie chart');
-                            // console.log(sortedCounts);
-                            // console.log(sortedPitches);
-                            // console.log(sortedPitchCodes);
-
-                            // console.log('scatter plot');
-                            // console.log(total);
-                            // console.log(pitchDatasets);
-
-                            // console.log('bar chart');
-                            // console.log(inningsPitched);
-                            // console.log(Object.keys(inningsPitched));
-                            // console.log(Object.values(inningsPitched));
                             var totalIP = Object.values(inningsPitched).reduce((a, b) => a + b, 0);
                             totalIP = formatInnings(totalIP);
 
                             var backgroundColors = sortedPitchCodes.map(pitchColors);
-                            console.log(backgroundColors);
 
                             pitchesPieChart = new Chart(pitchesPieChartCanvas, {
                                 type: 'pie',
@@ -843,7 +1369,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                 font: {
                                                     size: 18
                                                 }
-                                            },
+                                            }
                                         }
                                     }
                                 }
@@ -927,6 +1453,113 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     }
                                 }
                             });
+
+                            fetch(`https://statsapi.mlb.com/api/v1/seasons/${year}?sportId=1`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(seasonInfo => {
+                                    var seasonEndDate = seasonInfo['seasons'][0]['regularSeasonEndDate'];
+
+                                    var eraLineChartDataCumulative = [];
+                                    var eraLineChartDataGame = [];
+
+                                    for (var game of gameLog) {
+                                        eraLineChartDataCumulative.push(
+                                            { x: game['date'], y: game['stat']['era'] }
+                                        )
+                                    }
+
+                                    eraLineChart = new Chart(eraLineChartCanvas, {
+                                        type: 'line',
+                                        data: {
+                                            datasets: [
+                                                {
+                                                    label: 'ERA',
+                                                    data: eraLineChartDataCumulative
+                                                },
+                                            ]
+                                        },
+                                        options: {
+                                            layout: {
+                                                padding: {
+                                                    left: 15,
+                                                    right: 30
+                                                }
+                                            },
+                                            scales: {
+                                                x: {
+                                                    min: new Date(`${seasonInfo['seasons'][0]['regularSeasonStartDate']}T00:00:00`), // TODO: use months as ticks
+                                                    max: seasonEndDate,
+                                                    border: {
+                                                        display: false
+                                                    },
+                                                    ticks: {
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    grid: {
+                                                        color: 'white'
+                                                    },
+                                                    type: 'time',
+                                                    time: {
+                                                        unit: 'day'
+                                                    }
+                                                },
+                                                y: {
+                                                    title: {
+                                                        display: true,
+                                                        text: 'ERA',
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    border: {
+                                                        display: false
+                                                    },
+                                                    ticks: {
+                                                        display: true,
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    },
+                                                    grid: {
+                                                        display: false
+                                                    }
+                                                }
+                                            },
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'Cumulative ERA',
+                                                    color: 'white',
+                                                    font: {
+                                                        size: 21
+                                                    }
+                                                },
+                                                legend: {
+                                                    display: false
+                                                },
+                                                tooltip: {
+                                                    callbacks: {
+                                                        title: function(context) {
+                                                            return context[0]['label'].split(',').slice(0, 2).join(',');
+                                                        }
+                                                    },
+                                                    mode: 'index',
+                                                    intersect: false
+                                                },
+                                            }
+                                        }
+                                    });
+                                })
 
                             inningsPitchedBarChart = new Chart(inningsPitchedBarChartCanvas, {
                                 type: 'bar',
@@ -1040,11 +1673,70 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     var gameLog = data['people'][0]['stats'][2]['splits'];
                     var gameURLs = [];
 
+                    hittingGameLogDT.clear();
                     for (let i = 0; i < gameLog.length; i++) {
-                        // console.log(gameLog[i]['stat']['summary']);
-                        gameURLs.push(`https://statsapi.mlb.com${gameLog[i]['game']['link']}`);
+                        console.log(gameLog[i]);
+                        var date = gameLog[i]['date'];
+                        var team = gameLog[i]['team']['name'];
+                        var opponent = gameLog[i]['opponent']['name'];
+                        var summary = gameLog[i]['stat']['summary'];
+                        var atBats = gameLog[i]['stat']['atBats'];
+                        var hits = gameLog[i]['stat']['hits'];
+                        var homeRuns = gameLog[i]['stat']['homeRuns'];
+                        var walks = gameLog[i]['stat']['baseOnBalls'];
+                        var strikeouts = gameLog[i]['stat']['strikeOuts'];
+                        var rbi = gameLog[i]['stat']['rbi'];
+                        var totalBases = gameLog[i]['stat']['totalBases'];
+                        var link = gameLog[i]['game']['link'];
+
+                        date = `${date.split('-')[1]}/${date.split('-')[2]}`;
+
+                        var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
+                        var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
+                        var matchup = `${team}${vsOrAt}${opponent}`;
+
+                        hittingGameLogDT.row.add([
+                            date,
+                            matchup,
+                            summary,
+                            atBats,
+                            hits,
+                            homeRuns,
+                            walks,
+                            strikeouts,
+                            rbi,
+                            totalBases,
+                            link
+                        ]);
+                        // summary, hits, runs, walks, strikeouts
+
+                        hittingGameLogDT.draw(true);
+
+                        gameURLs.push(`https://statsapi.mlb.com/${gameLog[i]['game']['link']}`);
                     }
-                    // console.log(gameURLs);
+
+                    hittingGameLogDT.on('select', function (e, dt, type, indexes) {
+                        var selectedIndex = indexes[0];
+                        var gameLink = dt.row(selectedIndex).data()[10];
+
+                        var link = `https://statsapi.mlb.com/${gameLink}`;
+                        fetch(link)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(gameResponse => {
+                                gameDataToSend = gameResponse;
+                                console.log(gameDataToSend);
+                                setSelectedGame(gameDataToSend);
+                                navigate('/games');
+                            })
+                    });
 
                     var promises = gameURLs.map(url =>
                         fetch(url)
@@ -1064,8 +1756,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     return response.json();
                                 })
                                 .then(eventTypes => {
-                                    console.log('eventTypes');
-                                    console.log(eventTypes);
+                                    // console.log('eventTypes');
+                                    // console.log(eventTypes);
 
                                     var combinedData = splitData.flat();
 
@@ -1110,7 +1802,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                         allHitTypes.push(event);
                                         allHitLocations.push(hitCoords);
 
-
                                         if (!hitDatasets.find(item => item.label == event)) {
                                             hitDatasets.push({
                                                 data: [hitCoords],
@@ -1127,7 +1818,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
                                         // eventTypes
 
-                                        console.log([allLastPlayEvents[i]['hitData']['coordinates']['coordX'], allLastPlayEvents[i]['hitData']['coordinates']['coordY'], event]);
+                                        // console.log([allLastPlayEvents[i]['hitData']['coordinates']['coordX'], allLastPlayEvents[i]['hitData']['coordinates']['coordY'], event]);
                                         // }
                                     }
 
@@ -1196,7 +1887,59 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
                                     // console.log('hits');
                                     // console.log(hitLabels);
+                                    console.log('hitDatasets');
                                     console.log(hitDatasets);
+
+                                    const allowedHits = ['Single', 'Double', 'Triple', 'Home Run'];
+                                    const hitCounts = allHitTypes.reduce((acc, item) => {
+                                        const key = allowedHits.includes(item) ? item : 'Out';
+                                        acc[key] = (acc[key] || 0) + 1;
+                                        return acc;
+                                    }, {});
+                                    console.log('counts');
+                                    console.log(hitCounts);
+
+                                    hitsPieChart = new Chart(hitsPieChartCanvas, {
+                                        type: 'pie',
+                                        // labels: ['Singles', 'Doubles', 'Triples', 'Home Runs'],
+                                        data: {
+                                            labels: ['Outs', 'Singles', 'Doubles', 'Triples', 'Home Runs'],
+                                            datasets: [{
+                                                data: [hitCounts['Out'], hitCounts['Single'], hitCounts['Double'], hitCounts['Triple'], hitCounts['Home Run']],
+                                                // backgroundColor: [
+                                                    // 'rgb(200, 200, 20)',
+                                                    // 'rgb(20, 200, 200)',
+                                                    // 'rgb(200, 100, 100)',
+                                                    // 'rgb(50, 10, 200)',
+                                                // ]
+                                            }],
+                                        },
+                                        options: {
+                                            layout: {
+                                                padding: {
+                                                    bottom: 20
+                                                }
+                                            },
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: 'At bat results',
+                                                    color: 'white',
+                                                    font: {
+                                                        size: 21
+                                                    }
+                                                },
+                                                legend: {
+                                                    labels: {
+                                                        color: 'white',
+                                                        font: {
+                                                            size: 18
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
 
                                     hitsScatterPlot = new Chart(hitsScatterPlotCanvas, {
                                         type: 'scatter',
@@ -1273,34 +2016,15 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                 },
                                                 title: {
                                                     display: true,
-                                                    text: 'All hits',
+                                                    text: 'Hit locations',
                                                     color: 'white',
                                                     font: {
                                                         size: 21
                                                     }
                                                 },
-                                                // legend: {
-                                                //     labels: {
-                                                //         color: 'white',
-                                                //         font: {
-                                                //             size: 18
-                                                //         }
-                                                //     },
-                                                // }
-                                                // tooltip: {
-                                                //   callbacks: {
-                                                //     label: function (context) {
-                                                //       var label = context.dataset.label;
-                                                //       var speed = context.parsed.x;
-                                                //       return `${label}, ${speed} mph`;
-                                                //     }
-                                                //   }
-                                                // }
                                             }
                                         }
                                     });
-
-                                    console.log(hitsScatterPlot);
                                 })
                         })
                 })
@@ -1315,9 +2039,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     return response.json();
                 })
                 .then(seasonInfo => {
-                    console.log('seasonInfo');
-                    console.log(seasonInfo);
-
                     var seasonEndDate = seasonInfo['seasons'][0]['regularSeasonEndDate'];
                     seasonEndDate = new Date(`${seasonEndDate}T00:00:00`);
 
@@ -1329,10 +2050,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                             return response.json();
                         })
                         .then(playerInfo => {
-
-                            console.log('playerInfo');
-                            console.log(playerInfo);
-
                             fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,gameLog],season=${year})`)
                                 .then(response => {
                                     if (!response.ok) {
@@ -1348,7 +2065,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                     // for (let i = 0; i < seasonStatsByTeam.length; i++) {
                                     for (let i = 0; i < seasonStatsByTeam.length; i++) {
                                         if ('team' in seasonStatsByTeam[i]) {
-                                            console.log('adding team');
                                             allTeamsURLs.push(`${Consts.baseURL}/teams/${seasonStatsByTeam[i]['team']['id']}`);
                                             // fetch(`${Consts.baseURL}/teams/${seasonStatsByTeam[i]['team']['id']}`)
                                             // .then(response => {
@@ -1488,6 +2204,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                         }
                                                     }
 
+                                                    console.log(`year: ${year}`);
                                                     fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,gameLog],season=${year})`)
                                                         .then(response => {
                                                             if (!response.ok) {
@@ -1496,8 +2213,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                             return response.json();
                                                         })
                                                         .then(allStats => {
-                                                            console.log('allStats');
-                                                            console.log(allStats);
+                                                            // console.log('allStats');
+                                                            // console.log(allStats);
                                                             var gameLogInfo = allStats['people'][0]['stats'][2]['splits'];
                                                             // only get game log, not season info?
                                                             // console.log('gameLogInfo');
@@ -1534,9 +2251,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                                     backgroundColor: 'rgba(100, 200, 200, 0.8)'
                                                                 }
                                                             ];
-                                                            // console.log('++++++++++++++++++');
-                                                            // console.log(activeDates);
-                                                            // console.log(inactiveDates);
                                                             for (let i = 0; i < allTeams.length; i++) {
                                                                 datasets.push(
                                                                     {
@@ -1683,16 +2397,12 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                                                     },
                                                                                     label: function (context) {
                                                                                         var dates = context['dataset']['data'][context['dataIndex']]['x'];
-                                                                                        // console.log(dates);
                                                                                         var startDate = new Date(dates[0]);
                                                                                         var endDate = new Date(dates[1]);
 
                                                                                         dateOptions = { month: '2-digit', day: '2-digit', year: 'numeric' };
                                                                                         var formattedStartDate = new Intl.DateTimeFormat('en-US', dateOptions).format(startDate);
                                                                                         var formattedEndDate = new Intl.DateTimeFormat('en-US', dateOptions).format(endDate);
-                                                                                        // console.log(formattedStartDate);
-                                                                                        console.log(formattedStartDate);
-
 
                                                                                         if (context['label'] == 'Games') {
                                                                                             var gameDetails = gameLogInfo.find(game => game.date == new Intl.DateTimeFormat('en-CA', dateOptions).format(startDate));
@@ -1732,123 +2442,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
             updatePlayerAwards(playerID);
         }
 
-        function updatePitchingStatsTable(seasonsPitching) {
-            pitchingStatsDT.clear();
-
-            var dropdownRowIndices = [];
-            var subRowIndices = [];
-            var rowIndex = 0;
-
-            for (let i = 0; i < seasonsPitching.length; i++) {
-                var splits;
-                if (seasonsPitching[i]['splits'].length > 1) {
-                    splits = [seasonsPitching[i]['splits'][0], ...seasonsPitching[i]['splits'].slice(1).reverse()];
-                } else {
-                    splits = seasonsPitching[i]['splits'];
-                }
-
-                for (let j = 0; j < splits.length; j++) {
-
-                    var pitchingRow = splits[j];
-                    var seasonYear;
-                    if ('season' in pitchingRow) {
-                        seasonYear = pitchingRow['season'];
-                    } else {
-                        seasonYear = 'Career';
-                    }
-
-                    var team;
-                    if (seasonYear == 'Career') {
-                        team = '';
-                    } else if ('team' in pitchingRow) {
-                        team = pitchingRow['team']['name'];
-                        team = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[team][0]}">`;
-                    } else {
-                        team = pitchingRow['numTeams'];
-                    }
-
-                    if (j == 0 && splits.length > 1) {
-                        // seasonYear += '&nbsp; <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;"><path d="M480-360 280-560h400L480-360Z"/></svg>';
-                        seasonYear += `&nbsp; ${svgDownArrow}`;
-
-
-                        dropdownRowIndices.push(rowIndex);
-                    }
-
-                    pitchingStatsDT.row.add([
-                        // `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[seasonPitching['team']['name']][0]}"><span>${seasonPitching['season']}</span>`,
-                        `${seasonYear}`,
-                        `${team}`,
-                        pitchingRow['stat']['wins'],
-                        pitchingRow['stat']['losses'],
-                        pitchingRow['stat']['era'],
-                        pitchingRow['stat']['gamesPitched'],
-                        pitchingRow['stat']['gamesStarted'],
-                        pitchingRow['stat']['saves'],
-                        pitchingRow['stat']['inningsPitched'],
-                        pitchingRow['stat']['strikeOuts'],
-                        pitchingRow['stat']['whip'],
-                    ]);
-
-                    if (j > 0) {
-                        subRowIndices.push(rowIndex);
-                    }
-
-                    rowIndex += 1;
-                }
-            }
-
-            pitchingStatsDT.draw(true);
-
-            let dropdownRows = pitchingStatsDT.rows(dropdownRowIndices).nodes();
-            let subRows = pitchingStatsDT.rows(subRowIndices).nodes();
-
-            $(dropdownRows).each(function (index, dropdownRow) {
-                $(dropdownRow).on('click', function () {
-                    let svgArrow = $(dropdownRow).find('td:first svg');
-                    var direction = svgArrow.attr('data-direction');
-                    console.log(svgArrow.html());
-                    console.log(direction);
-
-                    if (direction == 'up') {
-                        svgArrow.replaceWith(svgDownArrow);
-                    } else {
-                        svgArrow.replaceWith(svgUpArrow);
-                    }
-
-                    let nextRows = $(dropdownRow).nextAll('tr');
-                    let matchingRows = [];
-
-                    nextRows.each(function (i, nextRow) {
-                        if ($(nextRow).hasClass('stats-subrow')) {
-                            matchingRows.push(nextRow);
-                        } else {
-                            return false;
-                        }
-                    });
-                    // var yearSubRows = $(dropdownRow).nextAll('tr').filter('.stats-subrow');
-
-                    // console.log(nextRows);
-                    // console.log($(matchingRows));
-
-                    $(matchingRows).each(function (i, subRow) {
-                        // console.log('subRow:', subRow);
-                        // console.log($(subRow).html());
-                        $(subRow).toggleClass('stats-subrow-hidden');
-                    });
-                });
-            });
-
-            $(subRows).each(function (index, subRow) {
-                $(subRow).addClass('stats-subrow');
-                $(subRow).addClass('stats-subrow-hidden');
-            });
-        }
-
         function fillStrikeZones(allPitches, sortedPitches) {
-            // console.log('fillStrikeZones');
-            // console.log(sortedPitches);
-
             var strikeZones = [];
             var strikeZonesHTML = '';
 
@@ -2008,8 +2602,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         }
 
         function updateGameLogSummary(playerID, gameDetails, gameDate) {
-            console.log(gameDetails);
-
             var link = `https://statsapi.mlb.com${gameDetails['game']['link']}`;
             fetch(link)
                 .then(response => {
@@ -2019,7 +2611,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     return response.json();
                 })
                 .then(gameResponse => {
-                    console.log(gameResponse);
                     gameDataToSend = gameResponse;
 
                     var awayTeam = gameResponse['gameData']['teams']['away']['name'];
@@ -2055,9 +2646,6 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
         }
 
         detailsButton.off('click').on('click', function () {
-            console.log('send to details panel');
-            console.log(gameDataToSend);
-
             // var gameDetailsEvent = new CustomEvent('gameDetailsEvent', { detail: gameDataToSend});
             // document.dispatchEvent(gameDetailsEvent);
             setSelectedGame(gameDataToSend);
@@ -2131,6 +2719,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
     return (
         <>
+            <StatsModal open={modalOpen} handleClose={handleModalClose} modalData={modalData} />
             <Box sx={{ width: 1200 }}>
                 <Typography variant="h5" noWrap component="div">
                     Player Stats
@@ -2141,15 +2730,16 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     <span id="player-stats-label"></span>
                 </div>
                 {/* <div style={{ position: 'absolute', left: '600px' }}> */}
-                <div style={{ position: 'absolute', left: '1800px' }}>
+                <div style={{ position: 'absolute', left: '2000px' }}>
                     <ul id="player-details">
                         <li><span style={{ fontWeight: 'bold' }}>Age:</span> <span></span></li>
                         <li><span style={{ fontWeight: 'bold' }}>Position:</span> <span></span></li>
-                        <li><span style={{ fontWeight: 'bold' }}>Debut:</span> <span></span></li>
                         <li><span style={{ fontWeight: 'bold' }}>Birthplace:</span> <span></span></li>
                     </ul>
                 </div>
-                <div id="all-years-switch-container"></div>
+                <div id="all-years-switch-container">
+                    <FormControlLabel id="all-years-switch" control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label="All Years" />
+                </div>
                 <div className="player-team-color-banner" style={{ height: '30px' }}></div>
                 <div className="player-team-color-banner" style={{ height: '20px' }}></div>
                 <div id="pitching-stats-container">
@@ -2172,9 +2762,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         <tbody>
                         </tbody>
                     </table>
-                    <div id="player-stats-year-select-container">
-                        {/* <select id="player-stats-year-select"></select> */}
-                    </div>
+                    <div id="pitching-stats-year-select-container"></div>
                     <div id="pitches-pie-chart">
                         <canvas></canvas>
                     </div>
@@ -2183,19 +2771,40 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     </div>
                     <div style={{ clear: 'both' }}></div>
                     <h2>Pitch Locations</h2>
-                    <div id="strike-zones">
-                        {/* <div class="strike-zone-scatter-plots"></div>
-                        <div class="strike-zone-labels"></div> */}
+                    <div id="strike-zones"></div>
+                    <div id="era-line-chart">
+                        <canvas></canvas>
                     </div>
                     <div id="innings-pitched-bar-chart">
                         <canvas></canvas>
                     </div>
+                    <h2>Game Log</h2>
+                    <table id="pitching-game-log">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>Pitches</th>
+                                <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
+                                <th><span className="tooltip" data-tooltip="Earned runs">ER</span></th>
+                                <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
+                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
+                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
+                                <th>link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
                 <div id="hitting-stats-container">
                     <table id="hitting-stats">
                         <thead>
                             <tr>
                                 <th>Year</th>
+                                <th>Team</th>
                                 <th><span className="tooltip" data-tooltip="At bats">AB</span></th>
                                 <th><span className="tooltip" data-tooltip="Runs">R</span></th>
                                 <th><span className="tooltip" data-tooltip="Hits">H</span></th>
@@ -2211,9 +2820,33 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                         <tbody>
                         </tbody>
                     </table>
-                    {/* <div id="hits-scatter-plot">
+                    <div id="hitting-stats-year-select-container"></div>
+                    <div id="hits-pie-chart">
                         <canvas></canvas>
-                    </div> */}
+                    </div>
+                    <div id="hits-scatter-plot">
+                        <canvas></canvas>
+                    </div>
+                    <h2>Game Log</h2>
+                    <table id="hitting-game-log">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Matchup</th>
+                                <th>Summary</th>
+                                <th><span className="tooltip" data-tooltip="At bats">AB</span></th>
+                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
+                                <th><span className="tooltip" data-tooltip="Home runs">HR</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
+                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="RBI">RBI</span></th>
+                                <th>Total Bases</th>
+                                <th>link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
                 <div id="generic-stats-container">
                     <h2 style={{ marginTop: '0px' }}>More Stats</h2>
@@ -2231,6 +2864,11 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                             <br /><br /><br /><br />
                         </Box>
                     </div>
+                </div>
+                <div id="missing-stats-container">
+                    <Typography variant="h5" noWrap component="div" sx={{ mt: 5 }}>
+                        No stats
+                    </Typography>
                 </div>
             </Box>
         </>
