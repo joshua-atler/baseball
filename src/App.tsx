@@ -43,7 +43,6 @@ import Settings from './pages/Settings.tsx';
 import BasedashLogo from './assets/basedash_logo.png';
 
 import MobileNav from './components/MobileNav.tsx';
-import HeaderWithDrawer from './components/HeaderWithDrawer.tsx';
 
 
 const darkTheme = createTheme({
@@ -134,7 +133,6 @@ export default function App() {
                         <CssBaseline />
                         {isMobileDevice() ? (
                             <>
-                                <HeaderWithDrawer />
                                 <Box sx={{ p: 2 }}>
                                     <Routes>
                                         <Route path="/" element={<Home />} />
