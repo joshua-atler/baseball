@@ -41,29 +41,7 @@ import { Consts } from '../consts/consts.ts';
 
 const divisionNames = ['AL East', 'NL East', 'AL Central', 'NL Central', 'AL West', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
-
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
 function StandingsTable({ index }) {
-    // console.log(divisionNames[index]);
-    // console.log(index);
-
     return (
         <table className="standings-dt">
             <thead>
@@ -88,7 +66,7 @@ function StandingsTable({ index }) {
 
 export default function Standings() {
     const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
-    const [standingsYear, setStandingsYear] = React.useState(2025);
+    const [standingsYear, setStandingsYear] = React.useState(2026);
     const [standingsMode, setStandingsMode] = React.useState('regular season');
     const [leagueTab, setLeagueTab] = React.useState('AL');
     const tableIndices = leagueTab === 'AL' ? [0, 2, 4] : [1, 3, 5];
@@ -132,9 +110,6 @@ export default function Standings() {
             dts.push(dt);
         }
 
-        // https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=2024&standingsTypes=regularSeason&hydrate=team(league)
-
-        // regular season
         fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${standingsYear}&standingsTypes=regularSeason&hydrate=team(league)`)
             .then(response => {
                 return response.json();
@@ -261,6 +236,7 @@ export default function Standings() {
                                 value={standingsYear}
                                 onChange={handleYearChange}
                             >
+                                <MenuItem value={2026}>2026</MenuItem>
                                 <MenuItem value={2025}>2025</MenuItem>
                                 <MenuItem value={2024}>2024</MenuItem>
                                 <MenuItem value={2023}>2023</MenuItem>
