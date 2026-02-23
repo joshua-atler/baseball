@@ -18,9 +18,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     React.useEffect(() => {
         var timeZone = localStorage.getItem('timeZone') || 'ET';
-        if (timeZone !== lastTimeZone) {
-            console.log('should update times');
-        }
     }, [location]);
 
     function findTeamIndex(teamName) {

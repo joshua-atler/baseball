@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress } from '@mui/material';
@@ -22,28 +22,25 @@ import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
 
 
 export default function GamesList({
-    dates,
-    setDates,
-    tableData,
-    setTableData,
-    isLiveGames,
-    setIsLiveGames,
-    isAutoUpdate,
-    setIsAutoUpdate,
     selectedGame,
     setSelectedGame,
-    teamsFilter,
-    setTeamsFilter,
     lastTimeZone,
     setLastTimeZone
 }) {
-    const datesRef = React.useRef(dates);
-    const teamsFilterRef = React.useRef(teamsFilter);
-    const [progress, setProgress] = React.useState(0);
-    const [newSettings, setNewSettings] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [progress, setProgress] = useState(0);
+    const [newSettings, setNewSettings] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const location = useLocation();
-    const prevLocation = React.useRef(null);
+    const prevLocation = useRef(null);
+
+    const [dates, setDates] = useState([new DateObject(new Date()), new DateObject(new Date())]); // change to dayjs
+    const [isLiveGames, setIsLiveGames] = useState(false);
+    const [teamsFilter, setTeamsFilter] = useState([]);
+    const [tableData, setTableData] = useState({ dtData: null, gamesDetails: null, selectedIndex: null, page: null });
+    const [isAutoUpdate, setIsAutoUpdate] = useState(false);
+
+    const teamsFilterRef = useRef(teamsFilter);  // remove
+    const datesRef = useRef(dates);
 
     const updateDates = () => {
         if (dates.length > 0) {
@@ -52,7 +49,7 @@ export default function GamesList({
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         updateDates();
     }, [dates]);
 
@@ -60,7 +57,7 @@ export default function GamesList({
         setDates(newDates);
     }
 
-    const formatDate = React.useMemo(() => {
+    const formatDate = useMemo(() => {
         if (dates.length >= 1) {
             return dates[0].format('MM/DD/YY');
         } else {
@@ -72,7 +69,7 @@ export default function GamesList({
         setProgress(0);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (prevLocation.current === location['pathname']) {
             return;
         }
@@ -475,6 +472,8 @@ export default function GamesList({
 
         dt.on('select', function (e, dt, type, indexes) {
             var selectedIndex = indexes[0];
+            console.log('setSelectedGame');
+            console.log(gamesDetails[selectedIndex]);
             setSelectedGame(gamesDetails[selectedIndex]);
             setTableData((prev) => ({ ...prev, selectedIndex: selectedIndex }));
         });

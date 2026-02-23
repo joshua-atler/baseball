@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { Box, Typography, Tabs, Tab } from '@mui/material';
@@ -15,7 +15,7 @@ import WinProb from './WinProb';
 
 
 const useScreenWidth = () => {
-    const [screenWidth, setScreenWidth] = React.useState(window.innerWidth);
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -34,30 +34,17 @@ const useScreenWidth = () => {
 };
 
 export default function Games({
-    dates,
-    setDates,
-    tableData,
-    setTableData,
-    isLiveGames,
-    setIsLiveGames,
-    isAutoUpdate,
-    setIsAutoUpdate,
     selectedGame,
     setSelectedGame,
-    teamsFilter,
-    setTeamsFilter,
-    highlightedPlayer,
-    setHighlightedPlayer,
-    tabValue,
-    setTabValue,
-    setSelectedPlayer,
-    lastTimeZone,
-    setLastTimeZone
+    setSelectedPlayer
 }) {
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
     };
-    const screenWidth = useScreenWidth();
+    // const screenWidth = useScreenWidth();
+    const [tabValue, setTabValue] = useState('Boxscore');
+    const [lastTimeZone, setLastTimeZone] = useState(localStorage.getItem('timeZone') || '');
+    const [highlightedPlayer, setHighlightedPlayer] = useState(null);
 
     const getTabValue = (value) => {
         return ["Plays", "News", "Media", "Win Probability"].includes(value) ? value : "Plays";
@@ -68,25 +55,14 @@ export default function Games({
             <Grid container spacing={2} id="games-grid">
                 <Grid>
                     <GamesList
-                        dates={dates}
-                        setDates={setDates}
-                        tableData={tableData}
-                        setTableData={setTableData}
-                        isLiveGames={isLiveGames}
-                        setIsLiveGames={setIsLiveGames}
-                        isAutoUpdate={isAutoUpdate}
-                        setIsAutoUpdate={setIsAutoUpdate}
                         selectedGame={setSelectedGame}
                         setSelectedGame={setSelectedGame}
-                        teamsFilter={teamsFilter}
-                        setTeamsFilter={setTeamsFilter}
                         lastTimeZone={lastTimeZone}
                         setLastTimeZone={setLastTimeZone}
                     />
                 </Grid>
-                {/* <Divider orientation="vertical" flexItem sx={{ height: "100%", margin: "0 16px" }} /> */}
-                {screenWidth > 2550 ?
-                    <>
+                {/* {screenWidth > 2550 ? */}
+                    {/* <> */}
                         <Grid>
                             <Boxscore
                                 selectedGame={selectedGame}
@@ -109,8 +85,8 @@ export default function Games({
                                 {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
                             </Box>
                         </Grid>
-                    </> : <>
-                        <Grid>
+                    {/* </> : <> */}
+                        {/* <Grid>
                             <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
                                 <Tab label="Boxscore" value={"Boxscore"} />
                                 <Tab label="Plays" value={"Plays"} />
@@ -130,8 +106,8 @@ export default function Games({
                                 {tabValue === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
                                 {tabValue === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
                             </Box>
-                        </Grid>
-                    </>}
+                        </Grid> */}
+                    {/* </>} */}
             </Grid>
         </>
     )
