@@ -12,7 +12,7 @@ import { BasedashProvider } from './context/BasedashContext.tsx';
 import { baseDashTheme } from './theme.ts';
 import { NavTabs } from './NavTabs.tsx';
 import { Header } from './Header.tsx';
-import Games from './pages/Games/Games.tsx';
+import { Games } from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
 import News from './pages/News.tsx';
 import Stats from './pages/Stats.tsx';
@@ -22,8 +22,8 @@ import Settings from './pages/Settings.tsx';
 import './styles/style.css';
 
 export default function App() {
-    const [selectedGame, setSelectedGame] = React.useState(null);
-    const [selectedPlayer, setSelectedPlayer] = React.useState({ playerID: null, color: null });
+    // const [selectedGame, setSelectedGame] = React.useState(null);
+    // const [selectedPlayer, setSelectedPlayer] = React.useState({ playerID: null, color: null });
 
     return (
         <>
@@ -37,16 +37,8 @@ export default function App() {
                             <NavTabs />
                             <Box sx={{ p: 4 }}>
                                 <Routes>
-                                    <Route path="/games" element={<Games
-                                        selectedGame={selectedGame}
-                                        setSelectedGame={setSelectedGame}
-                                        setSelectedPlayer={setSelectedPlayer}
-                                    />} />
-                                    <Route path="/players" element={<Players
-                                        selectedPlayer={selectedPlayer}
-                                        setSelectedPlayer={setSelectedPlayer}
-                                        setSelectedGame={setSelectedGame}
-                                    />} />
+                                    <Route path="/games" element={<Games />} />
+                                    <Route path="/players" element={<Players />} />
                                     <Route path="/news" element={<News />} />
                                     <Route path="/stats" element={<Stats />} />
                                     <Route path="/standings" element={<Standings />} />

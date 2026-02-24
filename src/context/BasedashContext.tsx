@@ -20,7 +20,6 @@ export const BasedashProvider = ({children}) => {
         <BasedashContext.Provider value={{ ...state}}>
             {children}
         </BasedashContext.Provider>
-
     )
 };
 

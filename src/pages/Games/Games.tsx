@@ -11,17 +11,16 @@ import Plays from './Plays';
 import News from './News';
 import Media from './Media';
 import WinProb from './WinProb';
-
+import { useBasedash } from '../../context/BasedashContext';
 
 
 const useScreenWidth = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             setScreenWidth(window.innerWidth);
         };
-
 
         window.addEventListener('resize', handleResize);
 
@@ -33,15 +32,18 @@ const useScreenWidth = () => {
     return screenWidth;
 };
 
-export default function Games({
-    selectedGame,
-    setSelectedGame,
-    setSelectedPlayer
-}) {
+export const Games = () => {
     const handleChange = (event, newValue) => {
         setTabValue(newValue);
     };
-    // const screenWidth = useScreenWidth();
+
+    const {
+        selectedGame,
+        setSelectedGame,
+        selectedPlayer,
+        setSelectedPlayer
+    } = useBasedash();
+
     const [tabValue, setTabValue] = useState('Boxscore');
     const [lastTimeZone, setLastTimeZone] = useState(localStorage.getItem('timeZone') || '');
     const [highlightedPlayer, setHighlightedPlayer] = useState(null);
