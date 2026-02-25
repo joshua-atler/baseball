@@ -19,13 +19,12 @@ import '../../styles/dtStyle.css';
 import '../../styles/datepickerStyle.css';
 import '../../styles/slimSelectStyle.css';
 import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
+import { useBasedash } from '../../context/BasedashContext.tsx';
 
 
 export default function GamesList({
     selectedGame,
-    setSelectedGame,
-    lastTimeZone,
-    setLastTimeZone
+    setSelectedGame
 }) {
     const [progress, setProgress] = useState(0);
     const [newSettings, setNewSettings] = useState(false);
@@ -41,6 +40,8 @@ export default function GamesList({
 
     const teamsFilterRef = useRef(teamsFilter);  // remove
     const datesRef = useRef(dates);
+
+    const { timeZone } = useBasedash();
 
     const updateDates = () => {
         if (dates.length > 0) {
@@ -342,8 +343,6 @@ export default function GamesList({
 
             var progressAmount = 0;
 
-            var timeZone = localStorage.getItem('timeZone') || 'ET';
-
             gamesDetails = Array(gamesList.length);
             for (let i = 0; i < gamesForDates.length; i++) {
                 var url = gamesForDates[i]['link'];
@@ -499,16 +498,6 @@ export default function GamesList({
 
         if (dt.rows().count() == 0) {
             updateTable(true);
-        }
-
-        var timeZone = localStorage.getItem('timeZone') || 'ET';
-        if (timeZone !== lastTimeZone) {
-            setLastTimeZone(timeZone);
-
-
-            if (lastTimeZone !== '') {
-                updateTable(true);
-            }
         }
 
         teamsDropdown.setSelected(teamsFilter);

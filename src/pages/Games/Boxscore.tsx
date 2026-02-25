@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import * as React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import $ from 'jquery';
 import 'datatables.net-dt';
@@ -11,14 +11,11 @@ import 'datatables.net-select-dt';
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
+import { useBasedash } from '../../context/BasedashContext.tsx';
 
-export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer, lastTimeZone }) {
+export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
     const navigate = useNavigate();
-    const location = useLocation();
 
-    React.useEffect(() => {
-        var timeZone = localStorage.getItem('timeZone') || 'ET';
-    }, [location]);
 
     function findTeamIndex(teamName) {
         for (const league in Consts.teams) {
@@ -69,6 +66,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
         var activeData = false;
         var selectedSide = 'away';
+
+        const { timeZone } = useBasedash();
 
 
         function clearTable() {
@@ -295,7 +294,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 $(homeTab).css('background-color', '#0416c0');
             }
 
-            var timeZone = localStorage.getItem('timeZone') || 'ET';
             var date = new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
             var time = new Date(selectedGame['gameData']['datetime']['dateTime']);
             time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);

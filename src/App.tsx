@@ -22,9 +22,6 @@ import Settings from './pages/Settings.tsx';
 import './styles/style.css';
 
 export default function App() {
-    // const [selectedGame, setSelectedGame] = React.useState(null);
-    // const [selectedPlayer, setSelectedPlayer] = React.useState({ playerID: null, color: null });
-
     return (
         <>
             <Analytics />

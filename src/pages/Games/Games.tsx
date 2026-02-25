@@ -45,7 +45,6 @@ export const Games = () => {
     } = useBasedash();
 
     const [tabValue, setTabValue] = useState('Boxscore');
-    const [lastTimeZone, setLastTimeZone] = useState(localStorage.getItem('timeZone') || '');
     const [highlightedPlayer, setHighlightedPlayer] = useState(null);
 
     const getTabValue = (value) => {
@@ -59,8 +58,6 @@ export const Games = () => {
                     <GamesList
                         selectedGame={setSelectedGame}
                         setSelectedGame={setSelectedGame}
-                        lastTimeZone={lastTimeZone}
-                        setLastTimeZone={setLastTimeZone}
                     />
                 </Grid>
                 {/* {screenWidth > 2550 ? */}
@@ -70,7 +67,6 @@ export const Games = () => {
                                 selectedGame={selectedGame}
                                 highlightedPlayer={highlightedPlayer}
                                 setSelectedPlayer={setSelectedPlayer}
-                                lastTimeZone={lastTimeZone}
                             />
                         </Grid>
                         <Grid>
