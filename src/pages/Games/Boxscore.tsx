@@ -15,6 +15,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
     const navigate = useNavigate();
+    const { timeZone } = useBasedash();
 
 
     function findTeamIndex(teamName) {
@@ -66,9 +67,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
         var activeData = false;
         var selectedSide = 'away';
-
-        const { timeZone } = useBasedash();
-
 
         function clearTable() {
             var boxscoreTableRows = boxscoreTable.find('tr');

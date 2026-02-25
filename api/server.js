@@ -1,13 +1,12 @@
 import express from 'express';
 import axios from 'axios';
 import cors from 'cors';
+import 'dotenv/config';
 
 const app = express();
-app.use(cors());
+const PORT = 5000;
 
-app.get('/api/server', (req, res) => {
-    res.json({ message: 'Hello from Express!' });
-});
+app.use(cors());
 
 app.get('/api/rss/:team?', async (req, res) => {
     try {
@@ -15,9 +14,6 @@ app.get('/api/rss/:team?', async (req, res) => {
         const baseUrl = 'https://www.mlb.com/';
         const rssPath = team ? `${team}/feeds/news/rss.xml` : 'feeds/news/rss.xml';
         const rssUrl = `${baseUrl}${rssPath}`;
-
-        console.log(rssUrl);
-
         const response = await axios.get(rssUrl);
         res.send(response.data);
     } catch (error) {
@@ -28,5 +24,11 @@ app.get('/api/rss/:team?', async (req, res) => {
 app.get('/api/*', (req, res) => {
     res.status(404).json({ error: 'API route not found' });
 });
+
+if (process.env.VITE_LOCAL === 'LOCAL') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
 
 export default app;

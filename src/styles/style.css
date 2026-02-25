@@ -898,17 +898,14 @@ table#roster-dt thead th {
     outline: none !important;
 }
 
-#roster-teams-select-container,
-#news-teams-select-container {
+#roster-teams-select-container {
     width: 500px;
     float: right;
     margin-top: 25px;
     margin-right: 50px;
 }
 
-#roster-team-logo,
-#news-team-logo {
-    /* margin-top: 10px; */
+#roster-team-logo {
     margin-left: 75px;
 }
 

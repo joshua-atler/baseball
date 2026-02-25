@@ -33,8 +33,8 @@ export default function Settings() {
 
     return (
         <>
-            <Box sx={{ width: 1200 }}>
-                <Grid container spacing={2} alignItems="center" mt={5} ml={10}>
+            <Box>
+                <Grid container spacing={5} alignItems="center" mt={5} ml={10}>
                     <Grid>
                         <Typography variant="h6" noWrap component="div">
                             Time zone
@@ -58,8 +58,6 @@ export default function Settings() {
                     </Grid>
                 </Grid>
             </Box >
-            {/* </> */}
-            {/* )} */}
         </>
     );
 }

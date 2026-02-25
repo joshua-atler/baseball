@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     Box,
@@ -20,6 +20,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { Consts } from '../consts/consts.ts';
 import '../styles/style.css';
 import '../styles/slimSelectStyle.css';
+import { useBasedash } from '../context/BasedashContext.tsx';
 
 
 const parseXMLtoJSON = (xmlString) => {
@@ -58,22 +59,22 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
                 </>
             ) : (
                 <>
-                    <Card sx={{ width: 400 }}>
+                    <Card sx={{ width: 355 }}>
                         <CardActionArea
                             href={link}
                             target={"_blank"}
                         >
                             <CardMedia
                                 component='img'
-                                sx={{ height: 225, objectFit: 'fill' }}
+                                sx={{ height: 200, objectFit: 'fill' }}
                                 image={imageUrl}
                                 title={title}
                             />
                             <CardContent>
-                                <Typography gutterBottom variant='h6' component='div'>
+                                <Typography gutterBottom variant='subtitle1' component='div'>
                                     {title}
                                 </Typography>
-                                <Typography variant='body1'>{pubDate}</Typography>
+                                <Typography variant='subtitle2'>{pubDate}</Typography>
                             </CardContent>
                         </CardActionArea>
                     </Card>
@@ -84,12 +85,14 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
 }
 
 export default function News() {
-    const [articles, setArticles] = React.useState([]);
+    const [articles, setArticles] = useState([]);
+    const [newsTeam, setNewsTeam] = React.useState<NewsTeam>({logo: '', label: ''});
+    const { isMobileDevice } = useBasedash();
 
     function fetchRss(team) {
         var apiUrl;
         if (import.meta.env.VITE_LOCAL === 'LOCAL') {
-            apiUrl = `http://localhost:5000/rss`;
+            apiUrl = `http://localhost:5000/api/rss`;
         } else {
             apiUrl = `/api/rss`;
         }
@@ -136,19 +139,19 @@ export default function News() {
         return null;
     }
 
-    React.useEffect(() => {
+    interface NewsTeam {
+        logo: string,
+        label: string
+    }
+
+
+    useEffect(() => {
 
         const newsTeamLogo = $(document.querySelector('#news-team-logo'));
         const newsTeamLabel = $(document.querySelector('#news-team-label'));
+        
         const newsTeamColorBanners = $(document.querySelectorAll('.news-team-color-banner'));
         var teamsSelect = document.querySelector('#news-teams-select');
-
-        function resetLabels() {
-            newsTeamLogo.html('');
-            newsTeamLabel.html('All Teams');
-            newsTeamColorBanners.css('background-color', 'transparent');
-            fetchRss('');
-        }
 
         var newStylesheet = $('<link>', {
             rel: 'stylesheet',
@@ -201,17 +204,21 @@ export default function News() {
                 },
                 afterChange: (newVal, oldVal) => {
                     var selectedTeam = teamsDropdown.getSelected()[0];
+                    console.log(selectedTeam);
 
                     if (selectedTeam == 'Select a team') {
-                        resetLabels();
+                        setNewsTeam({
+                            logo: '',
+                            label: ''
+                        });
+                        fetchRss('');
                     } else {
-                        newsTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamsDetails[selectedTeam[0]].logo}" />`);
-                        if (selectedTeam[0] == 'Oakland Athletics') {
-                            newsTeamLabel.html('Athletics');
-                        } else {
-                            newsTeamLabel.html(selectedTeam[0]);
-                        }
+                        setNewsTeam({
+                            logo: Consts.teamsDetails[selectedTeam[0]].logo,
+                            label: selectedTeam[0] === 'Oakland Athletics' ? 'Athletics' : selectedTeam[0]
+                        });
                         var teamIndex = findTeamIndex(selectedTeam[0]);
+                        console.log(teamIndex);
                         newsTeamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
                         newsTeamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
                         fetchRss(selectedTeam[1]);
@@ -231,26 +238,13 @@ export default function News() {
             }
         });
         document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
-
-        resetLabels();
     }, []);
-
-
-    const isMobileDevice = () => {
-        return (
-            /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)
-        );
-    };
 
     return (
         <>
-
             {isMobileDevice() ? (
                 <>
                     <Box>
-                        <Typography variant="h5" noWrap component="div">
-                            MLB News
-                        </Typography>
                         <div style={{ height: '250px' }}>
                             <span id="news-team-logo" style={{ all: 'unset !important' }}></span>
                             <span id="news-team-label"></span>
@@ -280,22 +274,26 @@ export default function News() {
                 </>
             ) : (
                 <>
-                    <Box sx={{ width: 1200 }}>
-                        <Typography variant="h5" noWrap component="div">
-                            MLB News
-                        </Typography>
-                        <div style={{ height: '100px' }}>
-                            <span id="news-team-logo"></span>
-                            <span id="news-team-label"></span>
-                            <div id="news-teams-select-container">
+                    <Box sx={{ width: '70%', mb: 5 }}>
+                        <Box sx={{ display: 'flex', height: 100, alignItems: 'center', gap: 4, mb: 2 }}>
+                            {newsTeam.logo && 
+                                <img src={newsTeam.logo} style={{width: 80, height: 80}} ></img>
+                            }
+                            <Typography variant='h6'>
+                                {newsTeam.label}
+                            </Typography>
+                            <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
                                 <select id="news-teams-select"></select>
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                         <div className="news-team-color-banner" style={{ height: '30px' }}></div>
                         <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
+                        <Box sx={{ height: '30px', bgcolor: '#aabbcc' }} />
+                        <Box sx={{ height: '20px', bgcolor: '#559999' }} />
+                        <Box sx={{ height: '20px', bgcolor: '#99aa44' }} />
                     </Box>
 
-                    <Box sx={{ width: '80%', alignItems: "center" }} display="flex">
+                    <Box sx={{ width: "70%", alignItems: "center" }}>
                         <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
                             {articles.map((article, index) => (
                                 <NewsCard
