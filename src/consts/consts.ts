@@ -139,6 +139,189 @@ class Consts {
         'Miami Marlins': createTeam('MIA')
     };
 
+    static teamInfo = {
+        "NYY": {
+            "name": "New York Yankees",
+            "nickname": "yankees",
+            "primary": "rgb(19, 36, 72)",
+            "secondary": "rgb(255, 255, 255)"
+        },
+        "BAL": {
+            "name": "Baltimore Orioles",
+            "nickname": "orioles",
+            "primary": "rgb(223, 70, 1)",
+            "secondary": "rgb(0, 0, 0)"
+        },
+        "BOS": {
+            "name": "Boston Red Sox",
+            "nickname": "redsox",
+            "primary": "rgb(189, 48, 57)",
+            "secondary": "rgb(12, 35, 64)"
+        },
+        "TB": {
+            "name": "Tampa Bay Rays",
+            "nickname": "rays",
+            "primary": "rgb(9, 44, 92)",
+            "secondary": "rgb(245, 209, 48)"
+        },
+        "TOR": {
+            "name": "Toronto Blue Jays",
+            "nickname": "bluejays",
+            "primary": "rgb(19, 74, 142)",
+            "secondary": "rgb(232, 41, 28)"
+        },
+        "CLE": {
+            "name": "Cleveland Guardians",
+            "nickname": "guardians",
+            "primary": "rgb(12, 35, 63)",
+            "secondary": "rgb(229, 0, 34)"
+        },
+        "KC": {
+            "name": "Kansas City Royals",
+            "nickname": "royals",
+            "primary": "rgb(0, 70, 135)",
+            "secondary": "rgb(189, 155, 96)"
+        },
+        "DET": {
+            "name": "Detroit Tigers",
+            "nickname": "tigers",
+            "primary": "rgb(12, 35, 64)",
+            "secondary": "rgb(250, 70, 22)"
+        },
+        "MIN": {
+            "name": "Minnesota Twins",
+            "nickname": "twins",
+            "primary": "rgb(211, 17, 69)",
+            "secondary": "rgb(0, 43, 92)"
+        },
+        "CWS": {
+            "name": "Chicago White Sox",
+            "nickname": "whitesox",
+            "primary": "rgb(0, 0, 0)",
+            "secondary": "rgb(196, 206, 212)"
+        },
+        "TEX": {
+            "name": "Texas Rangers",
+            "nickname": "rangers",
+            "primary": "rgb(0, 50, 120)",
+            "secondary": "rgb(192, 17, 31)"
+        },
+        "HOU": {
+            "name": "Houston Astros",
+            "nickname": "astros",
+            "primary": "rgb(235, 110, 31)",
+            "secondary": "rgb(0, 45, 98)"
+        },
+        "LAA": {
+            "name": "Los Angeles Angels",
+            "nickname": "angels",
+            "primary": "rgb(186, 0, 33)",
+            "secondary": "rgb(196, 206, 212)"
+        },
+        "SEA": {
+            "name": "Seattle Mariners",
+            "nickname": "mariners",
+            "primary": "rgb(0, 92, 92)",
+            "secondary": "rgb(12, 44, 86)"
+        },
+        "ATH": {
+            "name": "Oakland Athletics",
+            "nickname": "athletics",
+            "primary": "rgb(0, 56, 49)",
+            "secondary": "rgb(239, 178, 30)"
+        },
+        "ATL": {
+            "name": "Atlanta Braves",
+            "nickname": "braves",
+            "primary": "rgb(206, 17, 65)",
+            "secondary": "rgb(19, 39, 79)"
+        },
+        "PHI": {
+            "name": "Philadelphia Phillies",
+            "nickname": "phillies",
+            "primary": "rgb(232, 24, 40)",
+            "secondary": "rgb(107, 172, 228)"
+        },
+        "NYM": {
+            "name": "New York Mets",
+            "nickname": "mets",
+            "primary": "rgb(0, 45, 114)",
+            "secondary": "rgb(252, 89, 16)"
+        },
+        "WSH": {
+            "name": "Washington Nationals",
+            "nickname": "nationals",
+            "primary": "rgb(171, 0, 3)",
+            "secondary": "rgb(20, 34, 90)"
+        },
+        "MIA": {
+            "name": "Miami Marlins",
+            "nickname": "marlins",
+            "primary": "rgb(0, 163, 224)",
+            "secondary": "rgb(239, 51, 64)"
+        },
+        "MIL": {
+            "name": "Milwaukee Brewers",
+            "nickname": "brewers",
+            "primary": "rgb(255, 197, 47)",
+            "secondary": "rgb(18, 40, 75)"
+        },
+        "CHC": {
+            "name": "Chicago Cubs",
+            "nickname": "cubs",
+            "primary": "rgb(14, 51, 134)",
+            "secondary": "rgb(204, 52, 51)"
+        },
+        "CIN": {
+            "name": "Cincinnati Reds",
+            "nickname": "reds",
+            "primary": "rgb(198, 1, 31)",
+            "secondary": "rgb(0, 0, 0)"
+        },
+        "STL": {
+            "name": "St. Louis Cardinals",
+            "nickname": "cardinals",
+            "primary": "rgb(196, 30, 58)",
+            "secondary": "rgb(254, 219, 0)"
+        },
+        "PIT": {
+            "name": "Pittsburgh Pirates",
+            "nickname": "pirates",
+            "primary": "rgb(253, 184, 39)",
+            "secondary": "rgb(0, 0, 0)"
+        },
+        "LAD": {
+            "name": "Los Angeles Dodgers",
+            "nickname": "dodgers",
+            "primary": "rgb(0, 90, 156)",
+            "secondary": "rgb(255, 255, 255)"
+        },
+        "SD": {
+            "name": "San Diego Padres",
+            "nickname": "padres",
+            "primary": "rgb(47, 36, 29)",
+            "secondary": "rgb(255, 196, 37)"
+        },
+        "SF": {
+            "name": "San Francisco Giants",
+            "nickname": "giants",
+            "primary": "rgb(253, 90, 30)",
+            "secondary": "rgb(0, 0, 0)"
+        },
+        "AZ": {
+            "name": "Arizona Diamondbacks",
+            "nickname": "dbacks",
+            "primary": "rgb(167, 25, 48)",
+            "secondary": "rgb(227, 212, 173)"
+        },
+        "COL": {
+            "name": "Colorado Rockies",
+            "nickname": "rockies",
+            "primary": "rgb(51, 0, 102)",
+            "secondary": "rgb(196, 206, 212)"
+        }
+    };
+
     static fieldBackground = svgs['fieldBackground'];
 
     static markerIcon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAFgUlEQVR4Aa1XA5BjWRTN2oW17d3YaZtr2962HUzbDNpjszW24mRt28p47v7zq/bXZtrp/lWnXr337j3nPCe85NcypgSFdugCpW5YoDAMRaIMqRi6aKq5E3YqDQO3qAwjVWrD8Ncq/RBpykd8oZUb/kaJutow8r1aP9II0WmLKLIsJyv1w/kqw9Ch2MYdB++12Onxee/QMwvf4/Dk/Lfp/i4nxTXtOoQ4pW5Aj7wpici1A9erdAN2OH64x8OSP9j3Ft3b7aWkTg/Fm91siTra0f9on5sQr9INejH6CUUUpavjFNq1B+Oadhxmnfa8RfEmN8VNAsQhPqF55xHkMzz3jSmChWU6f7/XZKNH+9+hBLOHYozuKQPxyMPUKkrX/K0uWnfFaJGS1QPRtZsOPtr3NsW0uyh6NNCOkU3Yz+bXbT3I8G3xE5EXLXtCXbbqwCO9zPQYPRTZ5vIDXD7U+w7rFDEoUUf7ibHIR4y6bLVPXrz8JVZEql13trxwue/uDivd3fkWRbS6/IA2bID4uk0UpF1N8qLlbBlXs4Ee7HLTfV1j54APvODnSfOWBqtKVvjgLKzF5YdEk5ewRkGlK0i33Eofffc7HT56jD7/6U+qH3Cx7SBLNntH5YIPvODnyfIXZYRVDPqgHtLs5ABHD3YzLuespb7t79FY34DjMwrVrcTuwlT55YMPvOBnRrJ4VXTdNnYug5ucHLBjEpt30701A3Ts+HEa73u6dT3FNWwflY86eMHPk+Yu+i6pzUpRrW7SNDg5JHR4KapmM5Wv2E8Tfcb1HoqqHMHU+uWDD7zg54mz5/2BSnizi9T1Dg4QQXLToGNCkb6tb1NU+QAlGr1++eADrzhn/u8Q2YZhQVlZ5+CAOtqfbhmaUCS1ezNFVm2imDbPmPng5wmz+gwh+oHDce0eUtQ6OGDIyR0uUhUsoO3vfDmmgOezH0mZN59x7MBi++WDL1g/eEiU3avlidO671bkLfwbw5XV2P8Pzo0ydy4t2/0eu33xYSOMOD8hTf4CrBtGMSoXfPLchX+J0ruSePw3LZeK0juPJbYzrhkH0io7B3k164hiGvawhOKMLkrQLyVpZg8rHFW7E2uHOL888IBPlNZ1FPzstSJM694fWr6RwpvcJK60+0HCILTBzZLFNdtAzJaohze60T8qBzyh5ZuOg5e7uwQppofEmf2++DYvmySqGBuKaicF1blQjhuHdvCIMvp8whTTfZzI7RldpwtSzL+F1+wkdZ2TBOW2gIF88PBTzD/gpeREAMEbxnJcaJHNHrpzji0gQCS6hdkEeYt9DF/2qPcEC8RM28Hwmr3sdNyht00byAut2k3gufWNtgtOEOFGUwcXWNDbdNbpgBGxEvKkOQsxivJx33iow0Vw5S6SVTrpVq11ysA2Rp7gTfPfktc6zhtXBBC+adRLshf6sG2RfHPZ5EAc4sVZ83yCN00Fk/4kggu40ZTvIEm5g24qtU4KjBrx/BTTH8ifVASAG7gKrnWxJDcU7x8X6Ecczhm3o6YicvsLXWfh3Ch1W0k8x0nXF+0fFxgt4phz8QvypiwCCFKMqXCnqXExjq10beH+UUA7+nG6mdG/Pu0f3LgFcGrl2s0kNNjpmoJ9o4B29CMO8dMT4Q5ox8uitF6fqsrJOr8qnwNbRzv6hSnG5wP+64C7h9lp30hKNtKdWjtdkbuPA19nJ7Tz3zR/ibgARbhb4AlhavcBebmTHcFl2fvYEnW0ox9xMxKBS8btJ+KiEbq9zA4RthQXDhPa0T9TEe69gWupwc6uBUphquXgf+/FrIjweHQS4/pduMe5ERUMHUd9xv8ZR98CxkS4F2n3EUrUZ10EYNw7BWm9x1GiPssi3GgiGRDKWRYZfXlON+dfNbM+GgIwYdwAAAAASUVORK5CYII=';
@@ -185,3 +368,5 @@ class Consts {
 }
 
 export { Consts };
+
+window.Consts = Consts;
