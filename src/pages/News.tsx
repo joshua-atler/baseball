@@ -15,20 +15,15 @@ import {
 
 import $ from 'jquery';
 import SlimSelect from 'slim-select';
-import { XMLParser } from 'fast-xml-parser';
 
 import { Consts } from '../consts/consts.ts';
 import '../styles/style.css';
 import '../styles/slimSelectStyle.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
+import { fetchRss, formatDate } from '../services/newsService.ts';
+import { string } from 'prop-types';
 
 
-const parseXMLtoJSON = (xmlString) => {
-    const parser = new XMLParser({
-        ignoreAttributes: false
-    });
-    return parser.parse(xmlString);
-};
 
 function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
     return (
@@ -86,43 +81,13 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
 
 export default function News() {
     const [articles, setArticles] = useState([]);
-    const [newsTeam, setNewsTeam] = React.useState<NewsTeam>({logo: '', label: ''});
+    const [newsTeam, setNewsTeam] = useState<NewsTeam>({ logo: '', label: '' });
+    const [selectedTeam, setSelectedTeam] = useState<[string, string]>(['Select a team', '']);
     const { isMobileDevice } = useBasedash();
 
-    function fetchRss(team) {
-        var apiUrl;
-        if (import.meta.env.VITE_LOCAL === 'LOCAL') {
-            apiUrl = `http://localhost:5000/api/rss`;
-        } else {
-            apiUrl = `/api/rss`;
-        }
-        if (team.length > 0) {
-            apiUrl = `${apiUrl}/${team}`;
-        }
+    console.log('selectedTeam');
+    console.log(selectedTeam);
 
-        fetch(apiUrl)
-            .then(response => response.text())
-            .then(data => {
-                const json = parseXMLtoJSON(data);
-                var articles = json['rss']['channel']['item'];
-
-                setArticles([]);
-                articles.map((article, index) => {
-                    var formattedDate = new Date(article['pubDate']).toLocaleString('en-US', {
-                        month: 'numeric',
-                        day: 'numeric',
-                        year: 'numeric',
-                    });
-                    setArticles((prevArticles) => [...prevArticles, {
-                        title: article['title'],
-                        link: article['link'],
-                        pubDate: formattedDate,
-                        imageUrl: article?.['image']?.['@_href'] || null
-                    }]);
-                });
-            })
-            .catch(error => console.error("Error fetching RSS:", error));
-    }
 
     function findTeamIndex(teamName) {
         for (const league in Consts.teams) {
@@ -144,21 +109,48 @@ export default function News() {
         label: string
     }
 
+    useEffect(() => {
+        const loadNews = async () => {
+            console.log(selectedTeam);
+            const newArticles = await fetchRss(selectedTeam[1]);
+            console.log('newArticles');
+            console.log(newArticles);
+            newArticles.map((article, index) => {
+                const formattedDate = formatDate(article['pubDate']);
+                setArticles((prevArticles) => [...prevArticles, {
+                    title: article['title'],
+                    link: article['link'],
+                    pubDate: formattedDate,
+                    imageUrl: article?.['image']?.['@_href'] || null
+                }]);
+            });
+        };
+
+        loadNews();
+
+        if (selectedTeam[0] === 'Select a team') {
+            setNewsTeam({
+                logo: '',
+                label: ''
+            });
+        } else {
+            setNewsTeam({
+                logo: Consts.teamsDetails[selectedTeam[0]].logo,
+                label: selectedTeam[0] === 'Oakland Athletics' ? 'Athletics' : selectedTeam[0]
+            });
+        }
+    }, [selectedTeam]);
+
 
     useEffect(() => {
-
-        const newsTeamLogo = $(document.querySelector('#news-team-logo'));
-        const newsTeamLabel = $(document.querySelector('#news-team-label'));
-        
-        const newsTeamColorBanners = $(document.querySelectorAll('.news-team-color-banner'));
         var teamsSelect = document.querySelector('#news-teams-select');
 
-        var newStylesheet = $('<link>', {
-            rel: 'stylesheet',
-            href: 'https://unpkg.com/slim-select@latest/dist/slimselect.css'
-        });
+        // var newStylesheet = $('<link>', {
+        //     rel: 'stylesheet',
+        //     href: 'https://unpkg.com/slim-select@latest/dist/slimselect.css'
+        // });
 
-        $('head').append(newStylesheet);
+        // $('head').append(newStylesheet);
 
         var selectOptions = [];
         const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
@@ -186,7 +178,7 @@ export default function News() {
                 options: options
             }
         });
-        selectData.unshift({ placeholder: true, text: 'Select a team' });
+        selectData.unshift({ placeholder: true, text: 'Select a team', value: ['Select a team', ''] });
 
         var teamsDropdown = new SlimSelect({
             select: teamsSelect,
@@ -203,26 +195,10 @@ export default function News() {
                     return true
                 },
                 afterChange: (newVal, oldVal) => {
-                    var selectedTeam = teamsDropdown.getSelected()[0];
+                    console.log('----');
+                    setSelectedTeam(teamsDropdown.getSelected()[0]);
                     console.log(selectedTeam);
 
-                    if (selectedTeam == 'Select a team') {
-                        setNewsTeam({
-                            logo: '',
-                            label: ''
-                        });
-                        fetchRss('');
-                    } else {
-                        setNewsTeam({
-                            logo: Consts.teamsDetails[selectedTeam[0]].logo,
-                            label: selectedTeam[0] === 'Oakland Athletics' ? 'Athletics' : selectedTeam[0]
-                        });
-                        var teamIndex = findTeamIndex(selectedTeam[0]);
-                        console.log(teamIndex);
-                        newsTeamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
-                        newsTeamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
-                        fetchRss(selectedTeam[1]);
-                    }
 
                     var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
@@ -276,8 +252,8 @@ export default function News() {
                 <>
                     <Box sx={{ width: '70%', mb: 5 }}>
                         <Box sx={{ display: 'flex', height: 100, alignItems: 'center', gap: 4, mb: 2 }}>
-                            {newsTeam.logo && 
-                                <img src={newsTeam.logo} style={{width: 80, height: 80}} ></img>
+                            {newsTeam.logo &&
+                                <img src={newsTeam.logo} style={{ width: 80, height: 80 }} ></img>
                             }
                             <Typography variant='h6'>
                                 {newsTeam.label}
