@@ -20,7 +20,7 @@ import { Consts } from '../consts/consts.ts';
 import '../styles/style.css';
 import '../styles/slimSelectStyle.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
-import { fetchRss, formatDate } from '../services/newsService.ts';
+import { fetchRss, formatDate, useNews } from '../services/newsService.ts';
 import { string } from 'prop-types';
 
 
@@ -80,54 +80,18 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
 }
 
 export default function News() {
-    const [articles, setArticles] = useState([]);
     const [newsTeam, setNewsTeam] = useState<NewsTeam>({ logo: '', label: '' });
     const [selectedTeam, setSelectedTeam] = useState<[string, string]>(['Select a team', '']);
     const { isMobileDevice } = useBasedash();
-
-    console.log('selectedTeam');
-    console.log(selectedTeam);
-
-
-    function findTeamIndex(teamName) {
-        for (const league in Consts.teams) {
-            for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {
-                const division = Consts.teams[league][divisionIndex];
-                const teamIndex = division.indexOf(teamName);
-
-                if (teamIndex !== -1) {
-                    return [league, divisionIndex, teamIndex];
-                }
-            }
-        }
-
-        return null;
-    }
 
     interface NewsTeam {
         logo: string,
         label: string
     }
 
+    const { articles, isLoading } = useNews(selectedTeam[1]);
+
     useEffect(() => {
-        const loadNews = async () => {
-            console.log(selectedTeam);
-            const newArticles = await fetchRss(selectedTeam[1]);
-            console.log('newArticles');
-            console.log(newArticles);
-            newArticles.map((article, index) => {
-                const formattedDate = formatDate(article['pubDate']);
-                setArticles((prevArticles) => [...prevArticles, {
-                    title: article['title'],
-                    link: article['link'],
-                    pubDate: formattedDate,
-                    imageUrl: article?.['image']?.['@_href'] || null
-                }]);
-            });
-        };
-
-        loadNews();
-
         if (selectedTeam[0] === 'Select a team') {
             setNewsTeam({
                 logo: '',
@@ -143,7 +107,7 @@ export default function News() {
 
 
     useEffect(() => {
-        var teamsSelect = document.querySelector('#news-teams-select');
+
 
         // var newStylesheet = $('<link>', {
         //     rel: 'stylesheet',
@@ -180,6 +144,8 @@ export default function News() {
         });
         selectData.unshift({ placeholder: true, text: 'Select a team', value: ['Select a team', ''] });
 
+        console.log('----');
+        var teamsSelect = document.querySelector('#news-teams-select');
         var teamsDropdown = new SlimSelect({
             select: teamsSelect,
             data: selectData,
@@ -199,7 +165,6 @@ export default function News() {
                     setSelectedTeam(teamsDropdown.getSelected()[0]);
                     console.log(selectedTeam);
 
-
                     var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
                     for (let i = 0; i < box.length; i++) {
@@ -213,8 +178,16 @@ export default function News() {
                 }
             }
         });
+        console.log(teamsSelect);
+
         document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
     }, []);
+
+    if (isLoading) { // TODO: move this inside return
+        return <>
+            <Typography variant="h6">Loading...</Typography>
+        </>
+    }
 
     return (
         <>
@@ -264,9 +237,6 @@ export default function News() {
                         </Box>
                         <div className="news-team-color-banner" style={{ height: '30px' }}></div>
                         <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
-                        <Box sx={{ height: '30px', bgcolor: '#aabbcc' }} />
-                        <Box sx={{ height: '20px', bgcolor: '#559999' }} />
-                        <Box sx={{ height: '20px', bgcolor: '#99aa44' }} />
                     </Box>
 
                     <Box sx={{ width: "70%", alignItems: "center" }}>
