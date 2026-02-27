@@ -22,10 +22,11 @@ import '../styles/slimSelectStyle.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
 import { fetchRss, formatDate, useNews } from '../services/newsService.ts';
 import { string } from 'prop-types';
+import TeamSelect from '../components/TeamSelect.tsx';
 
 
 
-function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
+const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
     return (
         <>
             {isMobileDevice ? (
@@ -79,9 +80,9 @@ function NewsCard({ title, link, pubDate, imageUrl, isMobileDevice }) {
     );
 }
 
-export default function News() {
+export const News = () => {
     const [newsTeam, setNewsTeam] = useState<NewsTeam>({ logo: '', label: '' });
-    const [selectedTeam, setSelectedTeam] = useState<[string, string]>(['Select a team', '']);
+    const [selectedTeam, setSelectedTeam] = useState<string>('');
     const { isMobileDevice } = useBasedash();
 
     interface NewsTeam {
@@ -89,26 +90,27 @@ export default function News() {
         label: string
     }
 
-    const { articles, isLoading } = useNews(selectedTeam[1]);
+    const { articles, isLoading, isError } = useNews(selectedTeam);
 
     useEffect(() => {
-        if (selectedTeam[0] === 'Select a team') {
+        console.log(selectedTeam);
+        if (selectedTeam === '') {
             setNewsTeam({
                 logo: '',
                 label: ''
             });
         } else {
+            console.log(selectedTeam);
             setNewsTeam({
-                logo: Consts.teamsDetails[selectedTeam[0]].logo,
-                label: selectedTeam[0] === 'Oakland Athletics' ? 'Athletics' : selectedTeam[0]
+                logo: Consts.teamsDetails[selectedTeam].logo, // TODO: fix
+                label: selectedTeam
+                // label: selectedTeam[0] === 'Oakland Athletics' ? 'Athletics' : selectedTeam[0]
             });
         }
     }, [selectedTeam]);
 
 
     useEffect(() => {
-
-
         // var newStylesheet = $('<link>', {
         //     rel: 'stylesheet',
         //     href: 'https://unpkg.com/slim-select@latest/dist/slimselect.css'
@@ -116,78 +118,10 @@ export default function News() {
 
         // $('head').append(newStylesheet);
 
-        var selectOptions = [];
-        const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
 
-        var leagues = ['AL', 'NL'];
-        for (var league of leagues) {
-            for (let i = 0; i < 3; i++) {
-                var divisionData = Consts.teamAbbrs[league][i].map((team, index) => {
-                    var teamPadded = team.padEnd(3, '\u00A0');
-                    return {
-                        text: team,
-                        html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]].logo}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
-                        value: [Consts.teams[league][i][index], Consts.teamNicknames[league][i][index]]
-                    };
-                });
 
-                selectOptions.push(divisionData);
-            }
-        }
-
-        var selectData = selectOptions.map((options, index) => {
-            return {
-                label: divisionNames[index],
-                selectAll: true,
-                options: options
-            }
-        });
-        selectData.unshift({ placeholder: true, text: 'Select a team', value: ['Select a team', ''] });
-
-        console.log('----');
-        var teamsSelect = document.querySelector('#news-teams-select');
-        var teamsDropdown = new SlimSelect({
-            select: teamsSelect,
-            data: selectData,
-
-            settings: {
-                showSearch: false,
-                placeholderText: 'All teams',
-                closeOnSelect: true,
-                allowDeselect: true
-            },
-            events: {
-                beforeChange: (newVal, oldVal) => {
-                    return true
-                },
-                afterChange: (newVal, oldVal) => {
-                    console.log('----');
-                    setSelectedTeam(teamsDropdown.getSelected()[0]);
-                    console.log(selectedTeam);
-
-                    var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
-
-                    for (let i = 0; i < box.length; i++) {
-                        if (!box[i].innerHTML.includes('<img')) {
-                            var teamPadded = box[i].innerHTML.padEnd(4, '\u00A0');
-                            box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
-                        }
-                    }
-
-                    return true;
-                }
-            }
-        });
-        console.log(teamsSelect);
-
-        document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
+        // document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
     }, []);
-
-    if (isLoading) { // TODO: move this inside return
-        return <>
-            <Typography variant="h6">Loading...</Typography>
-        </>
-    }
 
     return (
         <>
@@ -231,27 +165,44 @@ export default function News() {
                             <Typography variant='h6'>
                                 {newsTeam.label}
                             </Typography>
-                            <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
+                            {/* <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
                                 <select id="news-teams-select"></select>
+                            </Box> */}
+                            <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
+                                <TeamSelect
+                                    currentValue={selectedTeam}
+                                    onTeamChange={(val) => setSelectedTeam(val)} />
                             </Box>
                         </Box>
+                        <Box sx={{ height: '20px', backgroundColor: '#00ffff' }}></Box>
                         <div className="news-team-color-banner" style={{ height: '30px' }}></div>
                         <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
                     </Box>
 
                     <Box sx={{ width: "70%", alignItems: "center" }}>
-                        <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
-                            {articles.map((article, index) => (
-                                <NewsCard
-                                    key={index}
-                                    title={article.title}
-                                    description={article.description}
-                                    link={article.link}
-                                    pubDate={article.pubDate}
-                                    imageUrl={article.imageUrl}
-                                />
-                            ))}
-                        </Box>
+                        {(() => {
+                            if (isLoading) {
+                                return <Typography variant="h6">Loading...</Typography>;
+                            } else if (isError) {
+                                return <Typography variant="h6">Error loading news</Typography>;
+                            } else {
+                                return <>
+                                    <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
+                                        {articles.map((article, index) => (
+                                            <NewsCard
+                                                key={index}
+                                                title={article.title}
+                                                description={article.description}
+                                                link={article.link}
+                                                pubDate={article.pubDate}
+                                                imageUrl={article.imageUrl}
+                                            />
+                                        ))}
+                                    </Box>
+                                </>;
+                            }
+                        })()}
+
                     </Box>
                 </>
             )}

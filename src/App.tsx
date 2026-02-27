@@ -14,7 +14,7 @@ import { NavTabs } from './NavTabs.tsx';
 import { Header } from './Header.tsx';
 import { Games } from './pages/Games/Games.tsx';
 import Players from './pages/Players/Players.tsx';
-import News from './pages/News.tsx';
+import { News } from './pages/News.tsx';
 import Stats from './pages/Stats.tsx';
 import Standings from './pages/Standings.tsx';
 import Settings from './pages/Settings.tsx';

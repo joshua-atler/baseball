@@ -28,6 +28,7 @@ export const formatDate = (pubDate: string): string => {
 export const useNews = (team: string) => {
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
 
 
     useEffect(() => {
@@ -41,6 +42,8 @@ export const useNews = (team: string) => {
         const fetchNews = async () => {
             try {
                 setIsLoading(true);
+                console.log('apiUrl');
+                console.log(apiUrl);
                 const response = await fetch(apiUrl);
                 const data = await response.text();
 
@@ -56,17 +59,19 @@ export const useNews = (team: string) => {
 
                 setArticles(formattedArticles);
                 setIsLoading(false);
+                setIsError(false);
             } catch (error) {
                 console.error('Error fetching RSS:', error);
                 setArticles([]);
                 setIsLoading(false);
+                setIsError(true);
             };
         };
 
         fetchNews();
     }, [team]);
 
-    return { articles, isLoading };
+    return { articles, isLoading, isError };
 }
 
 
