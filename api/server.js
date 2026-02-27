@@ -10,7 +10,12 @@ app.use(cors());
 
 app.get('/api/rss/:team?', async (req, res) => {
     try {
+        console.log('/api/rss');
+
         const { team } = req.params;
+
+        console.log(team);
+
         const baseUrl = 'https://www.mlb.com/';
         const rssPath = team ? `${team}/feeds/news/rss.xml` : 'feeds/news/rss.xml';
         const rssUrl = `${baseUrl}${rssPath}`;
