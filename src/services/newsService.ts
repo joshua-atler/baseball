@@ -42,8 +42,6 @@ export const useNews = (team: string) => {
         const fetchNews = async () => {
             try {
                 setIsLoading(true);
-                console.log('apiUrl');
-                console.log(apiUrl);
                 const response = await fetch(apiUrl);
                 const data = await response.text();
 
