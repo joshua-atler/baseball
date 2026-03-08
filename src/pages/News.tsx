@@ -137,7 +137,8 @@ export function News() {
                             <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
                                 <TeamSelect
                                     currentValue={selectedTeam}
-                                    onTeamChange={(val) => setSelectedTeam(val)} />
+                                    onTeamChange={(val) => setSelectedTeam(val)}
+                                    multiple={false} />
                             </Box>
                         </Box>
                         <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].primary : '' }}></Box>

@@ -561,12 +561,9 @@ div.ss-values {
     font-size: 14px;
 }
 
-.roster-select div.ss-option {
+.roster-select {
     display: table-cell !important;
-}
-
-div.roster-select.ss-content.ss-open-below {
-    min-height: 450px;
+    width: 100px !important;
 }
 
 #live-switch-container {

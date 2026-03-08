@@ -19,7 +19,6 @@ import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
 import dayjs from 'dayjs';
-import SlimSelect from 'slim-select';
 
 import { Consts } from '../consts/consts.ts';
 import '../styles/style.css';

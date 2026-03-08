@@ -13,8 +13,9 @@ import 'datatables.net-select-dt';
 import dayjs from 'dayjs';
 import SlimSelect from 'slim-select';
 
+import { TeamSelect } from '../../components/TeamSelect.tsx';
+
 import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
 import '../../styles/dtStyle.css';
 import '../../styles/datepickerStyle.css';
 import '../../styles/slimSelectStyle.css';
@@ -32,11 +33,14 @@ export default function GamesList({
     const location = useLocation();
     const prevLocation = useRef(null);
 
+
     const [dates, setDates] = useState([new DateObject(new Date()), new DateObject(new Date())]); // change to dayjs
     const [isLiveGames, setIsLiveGames] = useState(false);
     const [teamsFilter, setTeamsFilter] = useState([]);
     const [tableData, setTableData] = useState({ dtData: null, gamesDetails: null, selectedIndex: null, page: null });
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
+
+    const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
 
     const teamsFilterRef = useRef(teamsFilter);  // remove
     const datesRef = useRef(dates);
@@ -69,6 +73,7 @@ export default function GamesList({
     const resetProgress = () => {
         setProgress(0);
     };
+
 
     useEffect(() => {
         if (prevLocation.current === location['pathname']) {
@@ -120,50 +125,50 @@ export default function GamesList({
             }
         });
 
-        var teamsDropdown = new SlimSelect({
-            select: teamsSelect,
-            data: selectData,
+        // var teamsDropdown = new SlimSelect({
+        //     select: teamsSelect,
+        //     data: selectData,
 
-            settings: {
-                showSearch: false,
-                placeholderText: 'All teams',
-                closeOnSelect: false,
-                allowDeselect: true,
-                maxSelected: 5
-            },
-            events: {
-                beforeChange: (newVal, oldVal) => {
-                    return true
-                },
-                afterChange: (newVal, oldVal) => {
-                    setTeamsFilter(teamsDropdown.getSelected());
-                    teamsFilterRef.current = teamsDropdown.getSelected();
+        //     settings: {
+        //         showSearch: false,
+        //         placeholderText: 'All teams',
+        //         closeOnSelect: false,
+        //         allowDeselect: true,
+        //         maxSelected: 5
+        //     },
+        //     events: {
+        //         beforeChange: (newVal, oldVal) => {
+        //             return true
+        //         },
+        //         afterChange: (newVal, oldVal) => {
+        //             setTeamsFilter(teamsDropdown.getSelected());
+        //             teamsFilterRef.current = teamsDropdown.getSelected();
 
-                    var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
+        //             var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
-                    for (let i = 0; i < box.length; i++) {
-                        const currentText = box[i].textContent.trim();
-                        const foundOption = selectOptions.flat().find(opt => opt.text === currentText);
+        //             for (let i = 0; i < box.length; i++) {
+        //                 const currentText = box[i].textContent.trim();
+        //                 const foundOption = selectOptions.flat().find(opt => opt.text === currentText);
 
-                        if (foundOption && !box[i].querySelector('img')) {
-                            const teamData = Consts.teamsDetails[foundOption.value];
-                            if (teamData) {
-                                box[i].innerHTML = `
-                                    <img width="30" height="30" 
-                                        style="vertical-align: middle; margin-right: 10px;" 
-                                        src="${teamData.logo}" />
-                                    <span>${currentText}</span>
-                                `;
-                            }
-                        }
-                    }
+        //                 if (foundOption && !box[i].querySelector('img')) {
+        //                     const teamData = Consts.teamsDetails[foundOption.value];
+        //                     if (teamData) {
+        //                         box[i].innerHTML = `
+        //                             <img width="30" height="30" 
+        //                                 style="vertical-align: middle; margin-right: 10px;" 
+        //                                 src="${teamData.logo}" />
+        //                             <span>${currentText}</span>
+        //                         `;
+        //                     }
+        //                 }
+        //             }
 
-                    setNewSettings(true);
-                    return true;
-                }
-            }
-        })
-        document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
+        //             setNewSettings(true);
+        //             return true;
+        //         }
+        //     }
+        // })
+        // document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
 
         function updateTable(reset) {
             var selectedIndex = dt.row({ selected: true }).index();
@@ -500,7 +505,7 @@ export default function GamesList({
             updateTable(true);
         }
 
-        teamsDropdown.setSelected(teamsFilter);
+        // teamsDropdown.setSelected(teamsFilter);
 
         const timer = setInterval(() => {
             setProgress((oldProgress) => {
@@ -539,8 +544,12 @@ export default function GamesList({
                 <Button variant="contained" id="dates-button" className="margin" disabled={isLoading}>Update</Button>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'stretch', mb: 2, gap: 0 }}>
-                <Box sx={{ mr: 3 }} id="teams-select-container">
-                    <select id="teams-select" multiple></select>
+                <Box sx={{ mr: 3, width: 500 }}>
+                    {/* <select id="teams-select" multiple></select> */}
+                    <TeamSelect
+                        currentValue={selectedTeams}
+                        onTeamChange={(val) => setSelectedTeams(val)}
+                        multiple={true} />
                 </Box>
                 <FormControlLabel control={<Checkbox id="live-games" checked={isLiveGames} onChange={(e) => { setIsLiveGames(e.target.checked) }} />} label="Live games" />
                 <FormControlLabel control={<Checkbox id="auto-update" checked={isAutoUpdate} onChange={(e) => { setIsAutoUpdate(e.target.checked) }} />} label="Auto update" />
