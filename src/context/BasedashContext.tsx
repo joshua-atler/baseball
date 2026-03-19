@@ -1,10 +1,10 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useMemo, useState, useEffect } from 'react';
 
 const BasedashContext = createContext(undefined);
 
 export type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 
-export const BasedashProvider = ({children}) => {
+export const BasedashProvider = ({ children }) => {
 
     const [selectedGame, setSelectedGame] = useState(null);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -16,7 +16,7 @@ export const BasedashProvider = ({children}) => {
         );
     };
 
-    const state = {
+    const state = useMemo(() => ({
         selectedGame,
         setSelectedGame,
         selectedPlayer,
@@ -24,10 +24,10 @@ export const BasedashProvider = ({children}) => {
         timeZone,
         setTimeZone,
         isMobileDevice
-    }
+    }), [selectedGame, selectedPlayer, timeZone]);
 
     return (
-        <BasedashContext.Provider value={{ ...state}}>
+        <BasedashContext.Provider value={{ ...state }}>
             {children}
         </BasedashContext.Provider>
     )

@@ -1,11 +1,14 @@
 import { Box } from '@mui/material';
 import { Consts } from '../consts/consts.ts';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import SlimSelect from 'slim-select';
 
 
-export function TeamSelect({ currentValue, onTeamChange, multiple }) {
-
+export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
+    currentValue: any,
+    onTeamChange: any,
+    multiple: boolean
+}) => {
     const selectRef = useRef(null);
 
     const slimSelectInstance = useRef<SlimSelect | null>(null);
@@ -23,12 +26,12 @@ export function TeamSelect({ currentValue, onTeamChange, multiple }) {
                 return {
                     text: abbr,
                     value: abbr,
-                    // html: `
-                    // <div style="display: flex; align-items: center;">
-                    //     <img src="teamLogos/${abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
-                    //     <span style="font-weight: bold;">${abbr}</span>
-                    // </div>
-                    // `
+                    html: `
+                    <div style="display: flex; align-items: center;">
+                        <img src="teamLogos/${abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
+                        <span style="font-weight: bold;">${abbr}</span>
+                    </div>
+                    `
                 };
             })
         };
@@ -37,12 +40,6 @@ export function TeamSelect({ currentValue, onTeamChange, multiple }) {
     });
     selectData.unshift({ placeholder: true, text: 'Select a team', value: '' });
 
-
-    useEffect(() => {
-        console.log("SlimSelect instance:", SlimSelect);
-        // ...
-    }, []);
-
     useEffect(() => {
         if (selectRef.current && !slimSelectInstance.current) {
             slimSelectInstance.current = new SlimSelect({
@@ -50,32 +47,23 @@ export function TeamSelect({ currentValue, onTeamChange, multiple }) {
                 data: selectData,
                 settings: {
                     showSearch: false,
-                    // closeOnSelect: multiple ? false : true,
+                    closeOnSelect: multiple ? false : true,
                     allowDeselect: true,
                     isMultiple: multiple,
-                    template: (data) => {
-                        return `
-            <div style="display: flex; align-items: center;">
-                <img src="teamLogos/${data.value}.svg" width="30" height="30" style="margin-right: 10px;" />
-                <span style="font-weight: bold;">${data.text}</span>
-            </div>
-        `;
-                    },
+                    maxSelected: 5
                 },
-
                 events: {
-                    afterOpen: () => {
+                    beforeOpen: () => {
                         const containers = document.querySelectorAll('.ss-option');
                         containers.forEach(el => el.classList.add('roster-select'));
                     },
                     afterChange: (newVal) => {
-                        const selectedValue = newVal[0]?.value;
-                        onTeamChange(selectedValue);
+                        const selectedTeams = newVal.map(v => v.value);
+                        onTeamChange(selectedTeams);
                     }
                 }
             })
         }
-
 
         return () => {
             if (slimSelectInstance.current) {
@@ -96,4 +84,4 @@ export function TeamSelect({ currentValue, onTeamChange, multiple }) {
             <select ref={selectRef} multiple={multiple}></select>
         </Box>
     </>;
-}
+});

@@ -1,19 +1,24 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate, } from 'react-router-dom';
 import { Tab } from '@mui/material';
 
 import { TabContext, TabList } from '@mui/lab';
+import { useEffect } from 'react';
 
 export const NavTabs = () => {
-    const location = useLocation();
 
-    const paths = ['/games', '/players', '/news', '/stats', '/standings', '/settings'];
-    let pathname = location.pathname;
-    if (!paths.includes(pathname)) {
-        pathname = '/games';
-    }
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const paths = ['/games', '/players', '/news', '/stats', '/standings', '/settings'];
+
+        if (!paths.includes(location.pathname) && location.pathname !== '/games') {
+            navigate('/games', { replace: true });
+        }
+    }, [location.pathname, navigate]);
 
     return (
-        <TabContext value={pathname}>
+        <TabContext value={location.pathname}>
             <TabList sx={{ pl: 4 }}>
                 <Tab label="Games" component={Link} to="/games" value="/games" />
                 <Tab label="Players" component={Link} to="/players" value="/players" />

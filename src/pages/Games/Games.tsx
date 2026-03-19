@@ -32,10 +32,8 @@ const useScreenWidth = () => {
     return screenWidth;
 };
 
+
 export const Games = () => {
-    const handleChange = (event, newValue) => {
-        setTabValue(newValue);
-    };
 
     const {
         selectedGame,
@@ -45,7 +43,6 @@ export const Games = () => {
     } = useBasedash();
 
     const [tabValue, setTabValue] = useState('Boxscore');
-    const [highlightedPlayer, setHighlightedPlayer] = useState(null);
 
     const getTabValue = (value) => {
         return ["Plays", "News", "Media", "Win Probability"].includes(value) ? value : "Plays";
@@ -56,7 +53,6 @@ export const Games = () => {
             <Grid container spacing={2} id="games-grid">
                 <Grid>
                     <GamesList
-                        selectedGame={setSelectedGame}
                         setSelectedGame={setSelectedGame}
                     />
                 </Grid>
@@ -65,19 +61,22 @@ export const Games = () => {
                         <Grid>
                             <Boxscore
                                 selectedGame={selectedGame}
-                                highlightedPlayer={highlightedPlayer}
+                                highlightedPlayer={undefined}
+                                // highlightedPlayer={highlightedPlayer}
                                 setSelectedPlayer={setSelectedPlayer}
                             />
                         </Grid>
                         <Grid>
-                            <Tabs value={getTabValue(tabValue)} onChange={handleChange} sx={{ mb: 4.5 }}>
+                            <Tabs value={getTabValue(tabValue)} onChange={(e, newValue) => {
+                                setTabValue(newValue);
+                            }} sx={{ mb: 4.5 }}>
                                 <Tab label="Plays" value={"Plays"} />
                                 <Tab label="News" value={"News"} />
                                 <Tab label="Media" value={"Media"} />
                                 <Tab label="Win Probability" value={"Win Probability"} />
                             </Tabs>
                             <Box sx={{ width: '100%' }}>
-                                {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
+                                {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={undefined} />}
                                 {getTabValue(tabValue) === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
                                 {getTabValue(tabValue) === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
                                 {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
@@ -97,7 +96,6 @@ export const Games = () => {
                                     selectedGame={selectedGame}
                                     highlightedPlayer={highlightedPlayer}
                                     setSelectedPlayer={setSelectedPlayer}
-                                    lastTimeZone={lastTimeZone}
                                 />}
                                 {tabValue === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={setHighlightedPlayer} />}
                                 {tabValue === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
