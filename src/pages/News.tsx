@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import {
     Box,
@@ -56,14 +56,14 @@ const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
                 </>
             ) : (
                 <>
-                    <Card sx={{ width: 355 }}>
+                    <Card sx={{ width: '20%'  }}>
                         <CardActionArea
                             href={link}
                             target={"_blank"}
                         >
                             <CardMedia
                                 component='img'
-                                sx={{ height: 200, objectFit: 'fill' }}
+                                sx={{ objectFit: 'fill' }}
                                 image={imageUrl}
                                 title={title}
                             />
@@ -89,6 +89,14 @@ export function News() {
 
 
     const newsTeamLogo = selectedTeam ? `/teamLogos/${selectedTeam}.svg` : '';
+
+    const handleTeamChange = useCallback((val) => {
+        if (val.length === 1) {
+            setSelectedTeam(val[0]);
+        } else {
+            setSelectedTeam(null);
+        }
+    }, []);
 
     return (
         <>
@@ -126,7 +134,7 @@ export function News() {
                 </>
             ) : (
                 <>
-                    <Box sx={{ width: '70%', mb: 5 }}>
+                    <Box sx={{ width: '100%', mb: 5 }}>
                         <Box sx={{ display: 'flex', height: 100, alignItems: 'center', gap: 4, mb: 2 }}>
                             {newsTeamLogo &&
                                 <img src={newsTeamLogo} style={{ width: 80, height: 80 }} ></img>
@@ -137,7 +145,7 @@ export function News() {
                             <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
                                 <TeamSelect
                                     currentValue={selectedTeam}
-                                    onTeamChange={(val) => setSelectedTeam(val)}
+                                    onTeamChange={handleTeamChange}
                                     multiple={false} />
                             </Box>
                         </Box>
@@ -145,7 +153,7 @@ export function News() {
                         <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].secondary : '' }}></Box>
                     </Box>
 
-                    <Box sx={{ width: "70%", alignItems: "center" }}>
+                    <Box sx={{ width: '90%', mx: 'auto', alignItems: 'center' }}>
                         {(() => {
                             if (isLoading) {
                                 return <Typography variant="h6">Loading...</Typography>;
@@ -153,7 +161,7 @@ export function News() {
                                 return <Typography variant="h6">Error loading news</Typography>;
                             } else {
                                 return <>
-                                    <Box sx={{ alignItems: "center" }} display="flex" flexWrap="wrap" gap={2}>
+                                    <Box sx={{ width: '100%', justifyContent: 'space-between' }} display="flex" flexWrap="wrap" gap={4}>
                                         {articles.map((article, index) => (
                                             <NewsCard
                                                 key={index}
