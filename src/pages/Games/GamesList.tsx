@@ -16,7 +16,6 @@ import SlimSelect from 'slim-select';
 
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 
-import { Consts } from '../../consts/consts.ts';
 import '../../styles/dtStyle.css';
 import '../../styles/datepickerStyle.css';
 import '../../styles/slimSelectStyle.css';
@@ -33,9 +32,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric'
 });
 
-const teamNameToKey = Object.fromEntries(
-    Object.entries(Consts.teamInfo).map(([key, val]) => [val.name, key])
-);
+
 
 export default function GamesList({
     setSelectedGame
@@ -165,7 +162,9 @@ export default function GamesList({
         const gamesJson = await fetchSchedule(startDate, endDate);
         console.log('gamesJson');
         console.log(gamesJson);
-        const gamesData = await transformGames(gamesJson, isLiveGames, selectedTeams, timeZone);
+        const gamesData = await transformGames(gamesJson, isLiveGames, selectedTeams, timeZone, (p) => setProgress(p));
+        console.log('onProgress');
+        console.log(progress);
 
         // console.log(`isLiveGames: ${isLiveGames}`);
         // let gamesForDates = [];
