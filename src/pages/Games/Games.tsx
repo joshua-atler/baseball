@@ -76,10 +76,10 @@ export const Games = () => {
                                 <Tab label="Win Probability" value={"Win Probability"} />
                             </Tabs>
                             <Box sx={{ width: '100%' }}>
-                                {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={undefined} />}
+                                {/* {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={undefined} />}
                                 {getTabValue(tabValue) === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
                                 {getTabValue(tabValue) === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
-                                {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
+                                {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />} */}
                             </Box>
                         </Grid>
                     {/* </> : <> */}

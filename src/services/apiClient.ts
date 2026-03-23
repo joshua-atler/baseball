@@ -1,7 +1,14 @@
-const BASE_URL = 'https://statsapi.mlb.com/api/v1';
+const BASE_URL = 'https://statsapi.mlb.com/api';
+const BASE_URL_V1 = BASE_URL + '/v1';
+const BASE_URL_V1dot1 = BASE_URL + '/v1.1';
 
-export const apiClient = async (endpoint: string) => {
-    const url = `${BASE_URL}${endpoint}`;
+export const apiClient = async (v1dot1: boolean, endpoint: string) => {
+    let url = '';
+    if (!v1dot1) {
+        url = `${BASE_URL_V1}${endpoint}`;
+    } else {
+        url = `${BASE_URL_V1dot1}${endpoint}`;
+    }
 
     try {
         const response = await fetch(url);

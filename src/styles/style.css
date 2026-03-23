@@ -11,10 +11,6 @@ p {
     font-size: 18px;
 }
 
-p.details {
-    margin: 10px 0px 10px 0px;
-}
-
 #dates-error {
     color: red;
 }
