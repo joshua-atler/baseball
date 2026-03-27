@@ -25,10 +25,12 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const displayValue = currGame ? selectedSide : null;
     console.log('currGame');
     console.log(currGame);
-    console.log('displayValue');
-    console.log(displayValue);
-    console.log('selectedSide');
-    console.log(selectedSide);
+
+    console.log(`selectedSide: ${selectedSide}`);
+    // console.log('displayValue');
+    // console.log(displayValue);
+    // console.log('selectedSide');
+    // console.log(selectedSide);
 
     async function fillBoxscore(selectedGame) {
         setCurrGame(await fetchGame(selectedGame));
@@ -37,7 +39,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     useEffect(() => {
         if (selectedGame) {
             (async () => {
-                console.log('finding game');
                 fillBoxscore(selectedGame);
             })();
         } else {
@@ -838,6 +839,15 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
+                    {currGame?.liveData?.boxscore?.teams?.[selectedSide]?.battingOrder.map((batterID, i) => {
+                        const batter = currGame?.liveData?.boxscore?.teams?.[selectedSide]?.players?.[`ID${batterID}`];
+                        console.log(batter);
+                        return <tr key={batterID}>
+                            <td key={batterID}>{batter?.person?.fullName}
+                                {/* name, number, position */}
+                            </td>
+                        </tr>
+                    })}
                 </tbody>
             </table>
             <div id="subs"></div>

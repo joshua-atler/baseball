@@ -94,8 +94,6 @@ export default function GamesList({
     // }, [dates]);
 
     const handleSelect = (e, dt, type, indexes) => {
-        console.log(tableData[indexes]);
-        console.log('setSelectedGame');
         setSelectedGame(tableData[indexes]['gamePk']);
     }
 
