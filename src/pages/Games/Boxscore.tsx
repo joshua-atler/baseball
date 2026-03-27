@@ -776,7 +776,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     <tr>
                         <td>{currGame?.liveData?.decisions?.winner?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.winner?.fullName}</Link> : '-'}   </td>
                         <td>{currGame?.liveData?.decisions?.loser?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.loser?.fullName}</Link> : '-'}</td>
-                        <td>{currGame?.liveData?.decisions?.loser?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.loser?.fullName}</Link> : '-'}</td>
+                        <td>{currGame?.liveData?.decisions?.save?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.save?.fullName}</Link> : '-'}</td>
                     </tr>
                 </tbody>
             </table>
