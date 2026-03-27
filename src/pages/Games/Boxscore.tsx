@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { ToggleButtonGroup, ToggleButton, Box } from '@mui/material';
 
 import $ from 'jquery';
 import 'datatables.net-dt';
@@ -841,11 +841,24 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <tbody>
                     {currGame?.liveData?.boxscore?.teams?.[selectedSide]?.battingOrder.map((batterID, i) => {
                         const batter = currGame?.liveData?.boxscore?.teams?.[selectedSide]?.players?.[`ID${batterID}`];
-                        console.log(batter);
+                        const fullName = batter?.person?.fullName;
+                        const jerseyNumber = batter?.jerseyNumber;
+                        const position = batter?.position?.abbreviation;
+                        const gameStats = batter?.stats?.batting;
+                        const seasonStats = batter?.seasonStats?.batting;
                         return <tr key={batterID}>
-                            <td key={batterID}>{batter?.person?.fullName}
-                                {/* name, number, position */}
-                            </td>
+                            <td><Link to='/players/?'>{fullName}</Link></td>
+                            <td>#{jerseyNumber}</td>
+                            <td>{position}</td>
+                            <td>{gameStats?.atBats}</td>
+                            <td>{gameStats?.runs}</td>
+                            <td>{gameStats?.hits}</td>
+                            <td>{gameStats?.baseOnBalls}</td>
+                            <td>{gameStats?.rbi}</td>
+                            <td>{gameStats?.homeRuns}</td>
+                            <td>{gameStats?.strikeOuts}</td>
+                            <td>{seasonStats?.avg}</td>
+                            <td>{seasonStats?.ops}</td>
                         </tr>
                     })}
                 </tbody>
@@ -879,6 +892,25 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
+                    {currGame?.liveData?.boxscore?.teams?.[selectedSide]?.pitchers.map((pitcherID, i) => {
+                        const pitcher = currGame?.liveData?.boxscore?.teams?.[selectedSide]?.players?.[`ID${pitcherID}`];
+                        const fullName = pitcher?.person?.fullName;
+                        const jerseyNumber = pitcher?.jerseyNumber;
+                        const gameStats = pitcher?.stats?.pitching;
+                        const seasonStats = pitcher?.seasonStats?.pitching;
+                        return <tr key={pitcherID}>
+                            <td><Link to='/players/?'>{fullName}</Link></td>
+                            <td>#{jerseyNumber}</td>
+                            <td>{gameStats.inningsPitched}</td>
+                            <td>{gameStats.hits}</td>
+                            <td>{gameStats.runs}</td>
+                            <td>{gameStats.earnedRuns}</td>
+                            <td>{gameStats.baseOnBalls}</td>
+                            <td>{gameStats.strikeOuts}</td>
+                            <td>{gameStats.homeRuns}</td>
+                            <td>{seasonStats.era}</td>
+                        </tr>
+                    })}
                 </tbody>
             </table>
             <div id="probable-pitchers"></div>
