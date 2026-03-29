@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { ToggleButtonGroup, ToggleButton, Box } from '@mui/material';
+import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography } from '@mui/material';
 
 import $ from 'jquery';
 import 'datatables.net-dt';
@@ -27,10 +27,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     console.log(currGame);
 
     console.log(`selectedSide: ${selectedSide}`);
-    // console.log('displayValue');
-    // console.log(displayValue);
-    // console.log('selectedSide');
-    // console.log(selectedSide);
 
     async function fillBoxscore(selectedGame) {
         setCurrGame(await fetchGame(selectedGame));
@@ -44,26 +40,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         } else {
             setCurrGame(null);
         }
-
-        // const dateSpan = $(document.querySelector('#date'));
-        // const recapSpan = $(document.querySelector('#recap'));
-
-        // const linescoreTable = $(document.querySelector('#linescore'));
-        // const pitchingTable = $(document.querySelector('#pitching'));
-        // const boxscoreTable = $(document.querySelector('#boxscore'));
-        // const subsDiv = $(document.querySelector('#subs'));
-        // const infoDiv = $(document.querySelector('#info'));
-        // const pitchersTable = $(document.querySelector('#pitchers'));
-        // const probablePitchersDiv = $(document.querySelector('#probable-pitchers'));
-        // const detailsDiv = $(document.querySelector('#details'));
-
-        // var headerRow = linescoreTable.find('thead').find('tr:nth-of-type(1)');
-        // var awayRow = linescoreTable.find('tbody').find('tr:nth-of-type(1)');
-        // var homeRow = linescoreTable.find('tbody').find('tr:nth-of-type(2)');
-        // var awayTeamRowCells = awayRow.find('td').slice(1, 10);
-        // var homeTeamRowCells = homeRow.find('td').slice(1, 10);
-        // var awayTeamSummaryCells = awayRow.find('td').slice(10, 13);
-        // var homeTeamSummaryCells = homeRow.find('td').slice(10, 13);
 
         // var pitchingRow = $(document.querySelector('#pitching')).find('tbody').find('tr');
 
@@ -715,7 +691,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     <tr>
                         <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.away?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.away?.abbreviation ?? 'Away'}</td>
 
-                        {/* runs by inning */}
                         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
                             return <td key={i}>{inning.away.runs ?? '-'}</td>
                         })}
@@ -726,7 +701,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                             return <td key={i}>-</td>
                         })}
 
-                        {/* runs, hits, errors for game */}
                         {currGame &&
                             <>
                                 <td>{currGame?.liveData?.linescore?.teams?.away?.runs ?? '-'}</td>
@@ -750,7 +724,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                             return <td key={i}>-</td>
                         })}
 
-                        {/* runs, hits, errors for game */}
                         {currGame &&
                             <>
                                 <td>{currGame?.liveData?.linescore?.teams?.home?.runs ?? '-'}</td>
@@ -812,7 +785,16 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                             borderColor: '#cccccc',
                                             fontWeight: 'bold'
                                         }
-                                    }}>Away</ToggleButton>
+                                    }}>{currGame ?
+                                        <>
+                                            <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.away?.abbreviation}.svg`} />
+                                            {currGame?.gameData?.teams?.away?.teamName}
+                                            {/* add standings */}
+                                        </>
+                                        :
+                                        'Away'
+                                    }
+                                </ToggleButton>
                                 <ToggleButton size="large" value="home"
                                     sx={{
                                         width: '50%',
@@ -821,7 +803,16 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                             borderColor: '#cccccc',
                                             fontWeight: 'bold'
                                         }
-                                    }}>Home</ToggleButton>
+                                    }}>
+                                    {currGame ?
+                                        <>
+                                            <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.home?.abbreviation}.svg`} />
+                                            {currGame?.gameData?.teams?.home?.teamName}
+                                            {/* add standings */}
+                                        </>
+                                        :
+                                        'Home'
+                                    }</ToggleButton>
                             </ToggleButtonGroup>
                         </th>
                     </tr>
@@ -863,8 +854,33 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     })}
                 </tbody>
             </table>
-            <div id="subs"></div>
-            <div id="info"></div>
+            <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+                <Stack>
+                    {
+                        currGame?.liveData?.boxscore?.teams?.[selectedSide].note.map((sub, i) => {
+                            return <Typography key={i} sx={{ fontSize: 14 }}>
+                                {sub.label} - {sub.value}
+                            </Typography>
+                        })
+                    }
+                </Stack>
+            </Box>
+            <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+                {
+                    currGame?.liveData?.boxscore?.teams?.[selectedSide].info.map((info, i) => {
+                        return <Box key={i} sx={{ mb: 2 }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>{info.title}</Typography>
+                            <Stack>
+                                {info.fieldList.map((event, j) => {
+                                    return <Typography key={j} sx={{ fontSize: 14 }}>
+                                        <b>{event.label}</b>: {event.value}
+                                    </Typography>
+                                })}
+                            </Stack>
+                        </Box>
+                    })
+                }
+            </Box>
             <table id="pitchers">
                 <colgroup>
                     <col />
@@ -914,7 +930,17 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 </tbody>
             </table>
             <div id="probable-pitchers"></div>
-            <div id="details"></div>
+            {/* TODO */}
+            <Box id="details" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+                {currGame && <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>GAME NOTES</Typography>}
+                {currGame?.liveData?.boxscore?.info?.map((detail, i) => {
+                    console.log(detail);
+                    return <Typography sx={{ fontSize: 14 }}>
+                        <b>{detail?.label}</b>{detail?.value && ': '}{detail?.value}
+                    </Typography>
+                })
+                }
+            </Box>
         </>
     )
 }

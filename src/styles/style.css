@@ -565,34 +565,13 @@ div.ss-values {
     width: 100px;
 }
 
-#subs,
+/* #subs,
 #info,
 #details {
     width: 600px;
     padding: 0px 8px;
     margin-bottom: 20px;
-}
-
-#subs p,
-#info p,
-#details p {
-    font-size: 14px;
-    margin: 0px;
-}
-
-#info .info-group {
-    margin-bottom: 20px;
-}
-
-#info .info-title,
-#details .details-title {
-    margin-bottom: 10px;
-}
-
-#info .info-label,
-#details .details-label {
-    font-weight: bold;
-}
+} */
 
 .inning-highlight {
     background-color: #374bfb;
@@ -629,7 +608,7 @@ table#boxscore td {
     padding: 3px;
 }
 
-table#boxscore tbody tr:nth-child(2n):not(:last-child) {
+table#boxscore tbody tr:nth-child(2n) {
     background-color: #2c323a;
 }
 
@@ -688,7 +667,7 @@ table#pitchers td {
     padding: 3px;
 }
 
-table#pitchers tbody tr:nth-child(2n):not(:last-child) {
+table#pitchers tbody tr:nth-child(2n) {
     background-color: #2c323a;
 }
 
