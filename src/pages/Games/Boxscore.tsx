@@ -10,12 +10,14 @@ import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
+import { fetchPlayer } from '../../services/playerService.ts';
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
     const navigate = useNavigate();
     const { timeZone } = useBasedash();
 
     const [currGame, setCurrGame] = useState(null);
+    const [probablePitchers, setProbablePitchers] = useState(null);
     // const [teamRecords, setTeamRecords] = useState(null);
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
@@ -29,21 +31,35 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         // setTeamRecords(await fetchRecords());
     }
 
+    async function fetchProbablePitchers(currGame) {
+        console.log('fetchProbablePitchers');
+        const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? 'TBA';
+        const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? 'TBA';
+        setProbablePitchers(await Promise.all([
+            awayPitcherID === 'TBA' ? 'TBA' :fetchPlayer(awayPitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced']),
+            homePitcherID === 'TBA' ? 'TBA' : fetchPlayer(homePitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced'])
+        ]));
+    }
+
+    const [awayPitcher, homePitcher] = probablePitchers ?? [null, null];
+    // TODO
+
     const awayTeam = currGame?.gameData?.teams?.away?.clubName.toLowerCase().replace(' ', '-');
     const homeTeam = currGame?.gameData?.teams?.home?.clubName.toLowerCase().replace(' ', '-');
     const gameDate = currGame?.gameData?.datetime?.officialDate;
     const [year, month, day] = gameDate?.split('-') || [];
     const gamedayUrl = `https://www.mlb.com/gameday/${awayTeam}-vs-${homeTeam}/${year}/${month}/${day}/${selectedGame}/final/box`;
 
+    const abstractGameState = currGame?.gameData?.status?.abstractGameState;
+    const detailedState = currGame?.gameData?.status?.detailedState;
+    const linescore = currGame?.liveData?.linescore;
+
     let numInnings = 9;
     if (currGame) {
-        const status = currGame?.gameData?.status?.abstractGameState;
-        const detailedState = currGame?.gameData?.status?.detailedState;
-        const linescore = currGame?.liveData?.linescore;
 
-        if (status === 'Preview') {
+        if (abstractGameState === 'Preview') {
             numInnings = 9;
-        } else if (status === 'Live') {
+        } else if (abstractGameState === 'Live') {
             numInnings = linescore.innings.length;
             if (linescore.innings.length > 9) {
                 numInnings = linescore.innings.length;
@@ -59,8 +75,21 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         numInnings = 9;
     }
 
-    console.log(`numInings: ${numInnings}`);
+    const teamStats = {};
+    teamStats.away = currGame?.liveData?.boxscore?.teams?.away?.teamStats;
+    teamStats.home = currGame?.liveData?.boxscore?.teams?.home?.teamStats;
 
+
+
+    useEffect(() => {
+        if (currGame) {
+            (async () => {
+                fetchProbablePitchers(currGame);
+            })();
+        } else {
+            setProbablePitchers(null);
+        }
+    }, [currGame]);
 
     useEffect(() => {
         if (selectedGame) {
@@ -609,8 +638,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <thead>
                     <tr>
                         <th>Team</th>
-                        {Array.from({length: numInnings}).map((_, i) => {
-                            const inningNum = i+1;
+                        {Array.from({ length: numInnings }).map((_, i) => {
+                            const inningNum = i + 1;
                             return <th key={inningNum}>{inningNum}</th>
                         })}
                         <th>R</th>
@@ -784,6 +813,21 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         </tr>
                     })}
                 </tbody>
+                {(currGame && detailedState !== 'Scheduled') &&
+                    <tfoot>
+                        <tr style={{ fontWeight: 'bold', borderTop: '1px solid white' }}>
+                            <td>Totals</td><td></td><td></td>
+                            <td>{teamStats?.[selectedSide].batting?.atBats}</td>
+                            <td>{teamStats?.[selectedSide].batting?.runs}</td>
+                            <td>{teamStats?.[selectedSide].batting?.hits}</td>
+                            <td>{teamStats?.[selectedSide].batting?.baseOnBalls}</td>
+                            <td>{teamStats?.[selectedSide].batting?.rbi}</td>
+                            <td>{teamStats?.[selectedSide].batting?.homeRuns}</td>
+                            <td>{teamStats?.[selectedSide].batting?.strikeOuts}</td>
+                            <td></td><td></td>
+                        </tr>
+                    </tfoot>
+                }
             </table>
             <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 <Stack>
@@ -859,9 +903,37 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         </tr>
                     })}
                 </tbody>
+                {(currGame && detailedState !== 'Scheduled') &&
+                    <tfoot>
+                        <tr style={{ fontWeight: 'bold', borderTop: '1px solid white' }}>
+                            <td>Totals</td><td></td>
+                            <td>{teamStats?.[selectedSide].pitching?.inningsPitched}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.hits}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.runs}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.earnedRuns}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.baseOnBalls}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.strikeOuts}</td>
+                            <td>{teamStats?.[selectedSide].pitching?.homeRuns}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                }
             </table>
-            <div id="probable-pitchers"></div>
-            {/* TODO */}
+
+            {(currGame && detailedState === 'Scheduled') &&
+                <>
+                    <Box sx={{ width: '600px', paddingX: 2, mt: 2, mb: 2 }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: 18 }}>PROBABLE PITCHERS</Typography>
+                        <Box sx={{ width: '600px', display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+                            <Typography>
+                                {currGame?.gameData?.probablePitchers?.away?.fullName ?? 'TBA'}
+                            </Typography>
+                            <Typography>
+                                {currGame?.gameData?.probablePitchers?.home?.fullName ?? 'TBA'}
+                            </Typography>
+                        </Box>
+                    </Box>
+                </>}
             <Box id="details" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 {currGame && <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>GAME NOTES</Typography>}
                 {currGame?.liveData?.boxscore?.info?.map((detail, i) => {
