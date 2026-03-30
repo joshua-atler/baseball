@@ -31,11 +31,35 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     const awayTeam = currGame?.gameData?.teams?.away?.clubName.toLowerCase().replace(' ', '-');
     const homeTeam = currGame?.gameData?.teams?.home?.clubName.toLowerCase().replace(' ', '-');
-
     const gameDate = currGame?.gameData?.datetime?.officialDate;
     const [year, month, day] = gameDate?.split('-') || [];
-
     const gamedayUrl = `https://www.mlb.com/gameday/${awayTeam}-vs-${homeTeam}/${year}/${month}/${day}/${selectedGame}/final/box`;
+
+    let numInnings = 9;
+    if (currGame) {
+        const status = currGame?.gameData?.status?.abstractGameState;
+        const detailedState = currGame?.gameData?.status?.detailedState;
+        const linescore = currGame?.liveData?.linescore;
+
+        if (status === 'Preview') {
+            numInnings = 9;
+        } else if (status === 'Live') {
+            numInnings = linescore.innings.length;
+            if (linescore.innings.length > 9) {
+                numInnings = linescore.innings.length;
+            } else {
+                numInnings = 9;
+            }
+        } else if (detailedState !== 'Final') {
+            numInnings = 9;
+        } else {
+            numInnings = linescore.innings.length;
+        }
+    } else {
+        numInnings = 9;
+    }
+
+    console.log(`numInings: ${numInnings}`);
 
 
     useEffect(() => {
@@ -585,15 +609,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <thead>
                     <tr>
                         <th>Team</th>
-                        <th>1</th>
-                        <th>2</th>
-                        <th>3</th>
-                        <th>4</th>
-                        <th>5</th>
-                        <th>6</th>
-                        <th>7</th>
-                        <th>8</th>
-                        <th>9</th>
+                        {Array.from({length: numInnings}).map((_, i) => {
+                            const inningNum = i+1;
+                            return <th key={inningNum}>{inningNum}</th>
+                        })}
                         <th>R</th>
                         <th>H</th>
                         <th>E</th>

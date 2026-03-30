@@ -58,9 +58,9 @@ table#linescore td:nth-child(1) {
 }
 
 table#linescore th:nth-child(1),
-table#linescore th:nth-child(10),
+table#linescore th:nth-last-child(4),
 table#linescore td:nth-child(1),
-table#linescore td:nth-child(10) {
+table#linescore td:nth-last-child(4) {
     border-right: 1px solid white;
 }
 
