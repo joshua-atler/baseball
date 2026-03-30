@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { HiExternalLink } from 'react-icons/hi';
 
 import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography } from '@mui/material';
 
-import $ from 'jquery';
-import 'datatables.net-dt';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-select-dt';
-
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
-import '../../styles/dtStyle.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 
@@ -21,6 +16,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const { timeZone } = useBasedash();
 
     const [currGame, setCurrGame] = useState(null);
+    // const [teamRecords, setTeamRecords] = useState(null);
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
     console.log('currGame');
@@ -30,7 +26,17 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     async function fillBoxscore(selectedGame) {
         setCurrGame(await fetchGame(selectedGame));
+        // setTeamRecords(await fetchRecords());
     }
+
+    const awayTeam = currGame?.gameData?.teams?.away?.clubName.toLowerCase().replace(' ', '-');
+    const homeTeam = currGame?.gameData?.teams?.home?.clubName.toLowerCase().replace(' ', '-');
+
+    const gameDate = currGame?.gameData?.datetime?.officialDate;
+    const [year, month, day] = gameDate?.split('-') || [];
+
+    const gamedayUrl = `https://www.mlb.com/gameday/${awayTeam}-vs-${homeTeam}/${year}/${month}/${day}/${selectedGame}/final/box`;
+
 
     useEffect(() => {
         if (selectedGame) {
@@ -41,30 +47,13 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             setCurrGame(null);
         }
 
-        // var pitchingRow = $(document.querySelector('#pitching')).find('tbody').find('tr');
 
-        // var awayBoxscoreTeamLabel = $(document.querySelector('#away-tab'));
-        // var homeBoxscoreTeamLabel = $(document.querySelector('#home-tab'));
-
-        // var awayTab = document.querySelector('#away-tab');
-        // var homeTab = document.querySelector('#home-tab');
 
         // var currInning = -1;
         // var currInningHalf = '';
 
-        // var activeData = false;
         // var selectedSide = 'away';
 
-        // function clearTable() {
-        //     var boxscoreTableRows = boxscoreTable.find('tr');
-        //     boxscoreTableRows.each(function (i, row) {
-        //         if (i > 1) {
-        //             row.remove();
-        //         }
-        //     });
-
-        //     subsDiv.empty();
-        //     infoDiv.empty();
 
         //     var pitchersTableRows = pitchersTable.find('tr');
         //     pitchersTableRows.each(function (i, row) {
@@ -75,8 +64,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
         //     detailsDiv.empty();
         // }
-
-        // activeData = false;
 
         // var numInnings;
         // if (selectedGame != null) {
@@ -131,8 +118,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         // if (selectedGame === null) {
         //     pitchingTable.show();
         //     boxscoreTable.show();
-        //     subsDiv.show();
-        //     infoDiv.show();
         //     pitchersTable.show();
 
         //     probablePitchersDiv.empty();
@@ -162,17 +147,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         $(homeTeamRowCells[i]).removeClass('inning-highlight');
         //     }
 
-        //     pitchingRow.find('td').eq(0).text('-');
-        //     pitchingRow.find('td').eq(1).text('-');
-        //     pitchingRow.find('td').eq(2).text('-');
-
-        //     awayBoxscoreTeamLabel.text('Away');
-        //     homeBoxscoreTeamLabel.text('Home');
-
-        //     clearTable();
-        //     $(awayTab).css('background-color', '#555555');
-        //     $(homeTab).css('background-color', '#555555');
-
         //     // var playsEvent = new CustomEvent('plays', { detail: null });
         //     // document.dispatchEvent(playsEvent);
 
@@ -182,8 +156,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //     if (detailedState == 'Scheduled') {
         //         pitchingTable.hide();
         //         boxscoreTable.hide();
-        //         subsDiv.hide();
-        //         infoDiv.hide();
         //         pitchersTable.hide();
 
         //         probablePitchersDiv.hide();
@@ -265,18 +237,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         pitchingTable.show();
         //         boxscoreTable.show();
         //         subsDiv.show();
-        //         infoDiv.show();
         //         pitchersTable.show();
         //         probablePitchersDiv.hide();
-        //     }
-
-        //     activeData = true;
-        //     if (selectedSide == 'away') {
-        //         $(awayTab).css('background-color', '#0416c0');
-        //         $(homeTab).css('background-color', '#555555');
-        //     } else {
-        //         $(awayTab).css('background-color', '#555555');
-        //         $(homeTab).css('background-color', '#0416c0');
         //     }
 
         //     var date = new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
@@ -369,18 +331,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         if ('save' in selectedGame['liveData']['decisions']) {
         //             var save = selectedGame['liveData']['decisions']['save'];
         //         }
-        //         pitchingRow.find('td').eq(0).html(playerLink(winner['id'], winner['fullName']));
-        //         pitchingRow.find('td').eq(1).html(playerLink(loser['id'], loser['fullName']));
-        //         if (save != 'N/A') {
-        //             pitchingRow.find('td').eq(2).html(playerLink(save['id'], save['fullName']));
-        //         } else {
-        //             pitchingRow.find('td').eq(2).html('-');
-        //         }
-        //     } catch {
-        //         pitchingRow.find('td').eq(0).text('-');
-        //         pitchingRow.find('td').eq(1).text('-');
-        //         pitchingRow.find('td').eq(2).text('-');
-        //     }
 
         //     var awayTeamID = awayTeam['id'];
         //     var homeTeamID = homeTeam['id'];
@@ -408,19 +358,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //             }
         //         }
 
-        //         if (awayTeamName in Consts.teamsDetails) {
-        //             awayBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName].logo}"><span>${awayTeamClubName} ${awayTeamRecord}</span>`);
-        //         } else {
-        //             awayBoxscoreTeamLabel.text(awayTeamName);
-        //         }
-
-        //         if (homeTeamName in Consts.teamsDetails) {
-        //             homeBoxscoreTeamLabel.html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeamName].logo}"><span>${homeTeamClubName} ${homeTeamRecord}</span>`);
-        //         } else {
-        //             homeBoxscoreTeamLabel.text(homeTeamName);
-        //         }
-        //     })();
-
         //     boxscore(selectedGame, selectedSide);
 
         //     var playsEvent = new CustomEvent('plays', { detail: selectedGame });
@@ -429,24 +366,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //     var contentEvent = new CustomEvent('content', { detail: selectedGame['gameData']['game']['pk'] });
         //     document.dispatchEvent(contentEvent);
         // }
-
-        // awayTab.onclick = function () {
-        //     if (activeData) {
-        //         selectedSide = 'away';
-        //         boxscore(selectedGame, selectedSide);
-        //         $(awayTab).css('background-color', '#0416c0');
-        //         $(homeTab).css('background-color', '#555555');
-        //     }
-        // };
-
-        // homeTab.onclick = function () {
-        //     if (activeData) {
-        //         selectedSide = 'home';
-        //         boxscore(selectedGame, selectedSide);
-        //         $(awayTab).css('background-color', '#555555');
-        //         $(homeTab).css('background-color', '#0416c0');
-        //     }
-        // };
 
         // function playerLink(ID, name) {
         //     var link = `<a href="/players" class="player-link" data-id="${ID}">${name}</a>`;
@@ -523,7 +442,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         // }
 
         // function boxscore(selectedGame, teamSide) {
-        //     clearTable();
         //     var players = selectedGame['liveData']['boxscore']['teams'][teamSide]['players'];
         //     var batters = selectedGame['liveData']['boxscore']['teams'][teamSide]['batters'];
         //     var currentBatter;
@@ -548,22 +466,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //         boxscoreTotalsRow += '<td></td><td></td></tr>';
         //         boxscoreTable.append(boxscoreTotalsRow);
-        //     }
-
-        //     var subs = selectedGame['liveData']['boxscore']['teams'][teamSide]['note'];
-        //     for (let i = 0; i < subs.length; i++) {
-        //         subsDiv.append(`<p>${subs[i]['label']}-${subs[i]['value']}</p>`);
-        //     }
-
-        //     var info = selectedGame['liveData']['boxscore']['teams'][teamSide]['info'];
-        //     for (let i = 0; i < info.length; i++) {
-        //         infoDiv.append('<div class="info-group">');
-        //         infoDiv.append(`<p class="info-title info-label">${info[i]['title']}</p>`);
-        //         for (let j = 0; j < info[i]['fieldList'].length; j++) {
-        //             var infoItem = info[i]['fieldList'][j];
-        //             infoDiv.append(`<p><span class="info-label">${infoItem['label']}:</span> ${infoItem['value']}</p>`);
-        //         }
-        //         infoDiv.append('</div>');
         //     }
 
         //     var pitchers = selectedGame['liveData']['boxscore']['teams'][teamSide]['pitchers'];
@@ -663,12 +565,22 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     return (
         <>
-            <p>Date: {currGame ? currGame?.gameData?.datetime?.officialDate : ''}</p>
-            <p>
-                Recap: <a target="_blank" rel="noopener" href={`https://www.mlb.com/stories/game/${selectedGame}`}>
-                    {currGame ? 'Video' : ''}
-                </a>
-            </p>
+            {<Box sx={{ height: 40, display: 'flex', justifyContent: 'space-between', fontSize: 18 }}>
+                {currGame &&
+                    <>
+                        <Typography sx={{ fontSize: 'inherit', verticalAlign: 'middle' }}>{currGame ?
+                            <>
+                                {`${currGame?.gameData?.datetime?.officialDate} ${currGame?.gameData?.datetime?.time} ${currGame?.gameData?.datetime?.ampm}`}
+                            </> : ''}</Typography>
+                        <a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/game/${selectedGame}`}>
+                            {'Recap'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
+                        </a>
+                        <a target="_blank" rel="noopener noreferrer" href={gamedayUrl}>
+                            {'mlb.com'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
+                        </a>
+                    </>
+                }
+            </Box>}
             <table id="linescore">
                 <thead>
                     <tr>
@@ -934,8 +846,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             <Box id="details" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 {currGame && <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>GAME NOTES</Typography>}
                 {currGame?.liveData?.boxscore?.info?.map((detail, i) => {
-                    console.log(detail);
-                    return <Typography sx={{ fontSize: 14 }}>
+                    return <Typography key={i} sx={{ fontSize: 14 }}>
                         <b>{detail?.label}</b>{detail?.value && ': '}{detail?.value}
                     </Typography>
                 })
