@@ -5,12 +5,44 @@ import { Link, useNavigate } from 'react-router-dom';
 import { HiExternalLink } from 'react-icons/hi';
 
 import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
+
 
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
+
+
+function ProbablePitcherGrid({ pitcher }) {
+    console.log(pitcher);
+
+    // const pitcherStats = pitcher.
+
+    const stats = [
+        { label: 'W-L', value:  '3'},
+        { label: 'ERA', value: '3' },
+        { label: 'WHIP', value: '5' },
+        { label: 'IP', value: '5' },
+        { label: 'K/9', value: '5' },
+        { label: 'BB/9', value: '5' },
+    ];
+
+    return (
+        <Grid container spacing={2}>
+            {stats.map((stat, i) => (
+                <Grid key={i} size={4}>
+                    <Typography>
+                        {`${stat.label}: ${stat.value}`}
+                    </Typography>
+                </Grid>
+            ))}
+        </Grid>
+        // W-L: 0-0	ERA: 1.80	WHIP: 0.80
+        // IP: 5.0	K/9: 3.60	BB/9: 0.00
+    );
+}
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
     const navigate = useNavigate();
@@ -32,17 +64,15 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     }
 
     async function fetchProbablePitchers(currGame) {
-        console.log('fetchProbablePitchers');
         const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? 'TBA';
         const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? 'TBA';
         setProbablePitchers(await Promise.all([
-            awayPitcherID === 'TBA' ? 'TBA' :fetchPlayer(awayPitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced']),
+            awayPitcherID === 'TBA' ? 'TBA' : fetchPlayer(awayPitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced']),
             homePitcherID === 'TBA' ? 'TBA' : fetchPlayer(homePitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced'])
         ]));
     }
 
     const [awayPitcher, homePitcher] = probablePitchers ?? [null, null];
-    // TODO
 
     const awayTeam = currGame?.gameData?.teams?.away?.clubName.toLowerCase().replace(' ', '-');
     const homeTeam = currGame?.gameData?.teams?.home?.clubName.toLowerCase().replace(' ', '-');
@@ -924,13 +954,19 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <>
                     <Box sx={{ width: '600px', paddingX: 2, mt: 2, mb: 2 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: 18 }}>PROBABLE PITCHERS</Typography>
-                        <Box sx={{ width: '600px', display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                            <Typography>
-                                {currGame?.gameData?.probablePitchers?.away?.fullName ?? 'TBA'}
-                            </Typography>
-                            <Typography>
-                                {currGame?.gameData?.probablePitchers?.home?.fullName ?? 'TBA'}
-                            </Typography>
+                        <Box sx={{ width: '600px', display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Box>
+                                <Typography>
+                                    {awayPitcher?.people[0]?.fullName ?? 'TBA'}
+                                </Typography>
+                                <ProbablePitcherGrid pitcher={awayPitcher} />
+                            </Box>
+                            <Box>
+                                <Typography>
+                                    {homePitcher?.people[0]?.fullName ?? 'TBA'}
+                                </Typography>
+                                <ProbablePitcherGrid pitcher={homePitcher} />
+                            </Box>
                         </Box>
                     </Box>
                 </>}
