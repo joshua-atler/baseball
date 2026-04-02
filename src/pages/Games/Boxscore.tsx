@@ -15,21 +15,34 @@ import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
 
 
-function ProbablePitcherGrid({ pitcher }) {
-    console.log(pitcher);
+function ProbablePitcher({ pitcher }) {
 
-    // const pitcherStats = pitcher.
+    const pitcherStats = pitcher?.people?.[0]?.stats;
+    const seasonStats = pitcherStats.find(x => x.type.displayName === 'season')?.splits?.[0]?.stat;
 
     const stats = [
-        { label: 'W-L', value:  '3'},
-        { label: 'ERA', value: '3' },
-        { label: 'WHIP', value: '5' },
-        { label: 'IP', value: '5' },
-        { label: 'K/9', value: '5' },
-        { label: 'BB/9', value: '5' },
+        { label: 'W-L', value: `${seasonStats?.wins}-${seasonStats?.losses}` },
+        { label: 'ERA', value: seasonStats.era ?? '---' },
+        { label: 'WHIP', value: seasonStats.whip ?? '---' },
+        { label: 'IP', value: seasonStats.inningsPitched ?? '---' },
+        { label: 'K/9', value: seasonStats.strikeoutsPer9Inn ?? '---' },
+        { label: 'BB/9', value: seasonStats.walksPer9Inn ?? '---' },
     ];
 
-    return (
+    return <Stack spacing={2}>
+        <Box
+            component="img"
+            src={`https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${pitcher?.people?.[0]?.id}/headshot/silo/current`}
+            sx={{
+                width: 150,
+                height: 150,
+                objectFit: 'cover'
+            }}
+        />
+        <Typography>
+            <Link to={`/players/${pitcher?.people?.[0]?.id}`}>{pitcher?.people?.[0]?.fullName}</Link>
+            {` (${pitcher?.people?.[0]?.pitchHand?.code})`}
+        </Typography>
         <Grid container spacing={2}>
             {stats.map((stat, i) => (
                 <Grid key={i} size={4}>
@@ -39,9 +52,7 @@ function ProbablePitcherGrid({ pitcher }) {
                 </Grid>
             ))}
         </Grid>
-        // W-L: 0-0	ERA: 1.80	WHIP: 0.80
-        // IP: 5.0	K/9: 3.60	BB/9: 0.00
-    );
+    </Stack>
 }
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
@@ -53,10 +64,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     // const [teamRecords, setTeamRecords] = useState(null);
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
-    console.log('currGame');
-    console.log(currGame);
-
-    console.log(`selectedSide: ${selectedSide}`);
 
     async function fillBoxscore(selectedGame) {
         setCurrGame(await fetchGame(selectedGame));
@@ -64,11 +71,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     }
 
     async function fetchProbablePitchers(currGame) {
-        const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? 'TBA';
-        const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? 'TBA';
+        const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? null;
+        const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? null;
         setProbablePitchers(await Promise.all([
-            awayPitcherID === 'TBA' ? 'TBA' : fetchPlayer(awayPitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced']),
-            homePitcherID === 'TBA' ? 'TBA' : fetchPlayer(homePitcherID, ['pitching'], ['season', 'seasonAdvanced', 'career', 'careerAdvanced'])
+            awayPitcherID === null ? null : fetchPlayer(awayPitcherID, ['pitching'], ['season']),
+            homePitcherID === null ? null : fetchPlayer(homePitcherID, ['pitching'], ['season'])
         ]));
     }
 
@@ -954,18 +961,18 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 <>
                     <Box sx={{ width: '600px', paddingX: 2, mt: 2, mb: 2 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: 18 }}>PROBABLE PITCHERS</Typography>
-                        <Box sx={{ width: '600px', display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                            <Box>
-                                <Typography>
-                                    {awayPitcher?.people[0]?.fullName ?? 'TBA'}
-                                </Typography>
-                                <ProbablePitcherGrid pitcher={awayPitcher} />
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Box sx={{ width: '275px' }}>
+                                {awayPitcher ?
+                                    <ProbablePitcher pitcher={awayPitcher} />
+                                    : 'TBA'
+                                }
                             </Box>
-                            <Box>
-                                <Typography>
-                                    {homePitcher?.people[0]?.fullName ?? 'TBA'}
-                                </Typography>
-                                <ProbablePitcherGrid pitcher={homePitcher} />
+                            <Box sx={{ width: '275px' }}>
+                                {homePitcher ?
+                                    <ProbablePitcher pitcher={homePitcher} />
+                                    : 'TBA'
+                                }
                             </Box>
                         </Box>
                     </Box>
