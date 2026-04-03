@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HiExternalLink } from 'react-icons/hi';
 
-import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography } from '@mui/material';
+import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 
@@ -13,7 +13,47 @@ import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
+import { lightBlue } from '@mui/material/colors';
 
+
+function LinescoreRow({ currGame, team }) {
+
+    console.log(currGame?.liveData?.linescore?.currentInning);
+    console.log(currGame?.liveData?.linescore?.isTopInning);
+
+    const currentInning = currGame?.liveData?.linescore?.currentInning;
+    const isTopInning = currGame?.liveData?.linescore?.currentInning;
+
+    return <tr>
+        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? 'Away'}</td>
+
+        {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
+            return <td key={i}>{inning?.[team].runs ?? '-'}</td>
+        })}
+        {currGame && Array.from({ length: 9 - currGame?.liveData?.linescore?.innings?.length }).map((inning, i) => {
+            return <td key={i}
+            // style={{
+            //     backgroundColor: i === 1 ? 'cornflowerblue' : 'transparent',
+            //     borderRadius: i === 1 ? '50%' : '0'
+            // }}
+            >-</td>
+        })}
+        {!currGame && Array.from({ length: 9 }).map((_, i) => {
+            return <td key={i}>-</td>
+        })}
+
+        {currGame &&
+            <>
+                <td>{currGame?.liveData?.linescore?.teams?.[team]?.runs ?? '-'}</td>
+                <td>{currGame?.liveData?.linescore?.teams?.[team]?.hits ?? '-'}</td>
+                <td>{currGame?.liveData?.linescore?.teams?.[team]?.errors ?? '-'}</td>
+            </>
+        }
+        {!currGame && Array.from({ length: 3 }).map((_, i) => {
+            return <td key={i}>-</td>
+        })}
+    </tr>
+}
 
 function ProbablePitcher({ pitcher }) {
 
@@ -21,12 +61,12 @@ function ProbablePitcher({ pitcher }) {
     const seasonStats = pitcherStats.find(x => x.type.displayName === 'season')?.splits?.[0]?.stat;
 
     const stats = [
-        { label: 'W-L', value: `${seasonStats?.wins}-${seasonStats?.losses}` },
-        { label: 'ERA', value: seasonStats.era ?? '---' },
-        { label: 'WHIP', value: seasonStats.whip ?? '---' },
-        { label: 'IP', value: seasonStats.inningsPitched ?? '---' },
-        { label: 'K/9', value: seasonStats.strikeoutsPer9Inn ?? '---' },
-        { label: 'BB/9', value: seasonStats.walksPer9Inn ?? '---' },
+        { label: 'W-L', description: 'Wins-Losses', value: `${seasonStats?.wins}-${seasonStats?.losses}` },
+        { label: 'ERA', description: 'Earned run average', value: seasonStats.era ?? '---' },
+        { label: 'WHIP', description: 'Walks plus hits per inning pitched', value: seasonStats.whip ?? '---' },
+        { label: 'IP', description: 'Innings pitched', value: seasonStats.inningsPitched ?? '---' },
+        { label: 'K/9', description: 'Strikeouts per 9 innings', value: seasonStats.strikeoutsPer9Inn ?? '---' },
+        { label: 'BB/9', description: 'Walks per 9 innings', value: seasonStats.walksPer9Inn ?? '---' },
     ];
 
     return <Stack spacing={2}>
@@ -43,11 +83,12 @@ function ProbablePitcher({ pitcher }) {
             <Link to={`/players/${pitcher?.people?.[0]?.id}`}>{pitcher?.people?.[0]?.fullName}</Link>
             {` (${pitcher?.people?.[0]?.pitchHand?.code})`}
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2}
+        >
             {stats.map((stat, i) => (
                 <Grid key={i} size={4}>
                     <Typography>
-                        {`${stat.label}: ${stat.value}`}
+                        <span className="tooltip" data-tooltip={stat.description}>{stat.label}</span>{`: ${stat.value}`}
                     </Typography>
                 </Grid>
             ))}
@@ -137,24 +178,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             setCurrGame(null);
         }
 
-
-
-        // var currInning = -1;
-        // var currInningHalf = '';
-
-        // var selectedSide = 'away';
-
-
-        //     var pitchersTableRows = pitchersTable.find('tr');
-        //     pitchersTableRows.each(function (i, row) {
-        //         if (i > 0) {
-        //             row.remove();
-        //         }
-        //     });
-
-        //     detailsDiv.empty();
-        // }
-
         // var numInnings;
         // if (selectedGame != null) {
         //     var status = selectedGame['gameData']['status']['abstractGameState'];
@@ -195,26 +218,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         // awayTeamSummaryCells = awayRow.find('td').slice(numInnings + 1, numInnings + 4);
         // homeTeamSummaryCells = homeRow.find('td').slice(numInnings + 1, numInnings + 4);
 
-        // $(headerRow.find('td')[numInnings - 1]).css('border-right', '1px solid white');
-        // $(homeTeamRowCells[numInnings - 1]).css('border-right', '1px solid white');
-        // $(awayTeamRowCells[numInnings - 1]).css('border-right', '1px solid white');
-
-        // if (numInnings > 9) {
-        //     $(headerRow.find('td')[8]).css('border-right', 'none');
-        //     $(homeTeamRowCells[8]).css('border-right', 'none');
-        //     $(awayTeamRowCells[8]).css('border-right', 'none');
-        // }
-
         // if (selectedGame === null) {
         //     pitchingTable.show();
         //     boxscoreTable.show();
         //     pitchersTable.show();
 
-        //     probablePitchersDiv.empty();
-        //     probablePitchersDiv.hide();
-
-        //     dateSpan.text('');
-        //     recapSpan.text('');
 
         //     $(awayRow.find('td')[0]).text('Away');
         //     $(homeRow.find('td')[0]).text('Home');
@@ -247,89 +255,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         pitchingTable.hide();
         //         boxscoreTable.hide();
         //         pitchersTable.hide();
-
-        //         probablePitchersDiv.hide();
-        //         probablePitchersDiv.empty();
-
-        //         var probablePitchers = selectedGame['gameData']['probablePitchers'];
-        //         const isEmpty = (obj) => Object.keys(obj).length === 0;
-        //         if (!isEmpty(probablePitchers)) {
-        //             // console.log('probablePitchers');
-        //             // console.log(probablePitchers);
-        //             probablePitchersDiv.append(`<p class="probable-pitchers-title probable-pitchers-label">PROBABLE PITCHERS</p>`);
-
-        //             function probablePitcherText(side) {
-        //                 return `<img class="probable-pitcher-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${probablePitchers[side]['id']}/headshot/silo/current">
-        //                 ${playerLink(probablePitchers[side]['id'], probablePitchers[side]['fullName'])}`;
-        //             }
-
-        //             var pitchersData = {};
-
-        //             ['away', 'home'].forEach(side => {
-        //                 pitchersData[side] = {};
-        //                 pitchersData[side]['winsLosses'] = '---';
-        //                 pitchersData[side]['ERA'] = '---';
-        //                 pitchersData[side]['WHIP'] = '---';
-        //                 pitchersData[side]['IP'] = '---';
-        //                 pitchersData[side]['K/9'] = '---';
-        //                 pitchersData[side]['BB/9'] = '---';
-
-        //                 if (side in probablePitchers) {
-        //                     pitchersData[side]['name'] = probablePitcherText(side);
-
-        //                     fetch(`https://statsapi.mlb.com/api/v1/people/${probablePitchers[side]['id']}?hydrate=stats(group=[pitching],type=[season,seasonAdvanced,career,careerAdvanced])`)
-        //                         .then(response => {
-        //                             if (!response.ok) {
-        //                                 throw new Error('Network response was not ok');
-        //                             }
-        //                             return response.json();
-        //                         })
-        //                         .then(data => {
-        //                             data = data['people'][0];
-        //                             var pitchHand = data['pitchHand']['code'];
-        //                             pitchersData[side]['name'] = `${pitchersData[side]['name']} (${pitchHand})`;
-
-        //                             var seasonStats = data['stats'][0]['splits'][0]['stat'];
-
-        //                             pitchersData[side]['winsLosses'] = `${seasonStats['wins']}-${seasonStats['losses']}`;
-        //                             pitchersData[side]['ERA'] = `${seasonStats['era']}`;
-        //                             pitchersData[side]['WHIP'] = `${seasonStats['whip']}`;
-        //                             pitchersData[side]['IP'] = `${seasonStats['inningsPitched']}`;
-        //                             pitchersData[side]['K/9'] = `${seasonStats['strikeoutsPer9Inn']}`;
-        //                             pitchersData[side]['BB/9'] = `${seasonStats['walksPer9Inn']}`;
-
-        //                         })
-        //                 } else {
-        //                     pitchersData[side]['name'] = 'TBD';
-        //                 }
-        //             });
-
-        //             setTimeout(() => {
-        //                 probablePitchersDiv.append(`<table>
-        //                     <tr><td colSpan="3">${pitchersData['away']['name']}</td><td colSpan="3">${pitchersData['home']['name']}</td></tr>
-        //                     <tr>
-        //                         <td>W-L: ${pitchersData['away']['winsLosses']}</td><td>ERA: ${pitchersData['away']['ERA']}</td><td>WHIP: ${pitchersData['away']['WHIP']}</td>
-        //                         <td>W-L: ${pitchersData['home']['winsLosses']}</td><td>ERA: ${pitchersData['home']['ERA']}</td><td>WHIP: ${pitchersData['home']['WHIP']}</td>
-        //                     </tr>
-        //                     <tr>
-        //                         <td>IP: ${pitchersData['away']['IP']}</td><td>K/9: ${pitchersData['away']['K/9']}</td><td>BB/9: ${pitchersData['away']['BB/9']}</td>
-        //                         <td>IP: ${pitchersData['home']['IP']}</td><td>K/9: ${pitchersData['home']['K/9']}</td><td>BB/9: ${pitchersData['home']['BB/9']}</td>
-        //                     </tr>
-        //                 </table>`);
-
-        //                 setTimeout(() => {
-        //                     probablePitchersDiv.show();
-        //                 }, 100);
-        //             }, 200);
-        //         }
-
-        //     } else {
-        //         pitchingTable.show();
-        //         boxscoreTable.show();
-        //         subsDiv.show();
-        //         pitchersTable.show();
-        //         probablePitchersDiv.hide();
-        //     }
 
         //     var date = new Date(selectedGame['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
         //     var time = new Date(selectedGame['gameData']['datetime']['dateTime']);
@@ -455,11 +380,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
         //     var contentEvent = new CustomEvent('content', { detail: selectedGame['gameData']['game']['pk'] });
         //     document.dispatchEvent(contentEvent);
-        // }
-
-        // function playerLink(ID, name) {
-        //     var link = `<a href="/players" class="player-link" data-id="${ID}">${name}</a>`;
-        //     return link;
         // }
 
         // function boxscoreRow(player, isCurrentBatter) {
@@ -598,60 +518,23 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //     }
         // }
-
-        // function tableToArray(table) {
-        //     var tableArray = [];
-        //     table.find('tbody tr').each(function () {
-        //         var rowArray = [];
-        //         $(this).find('td').each(function () {
-        //             rowArray.push($(this).text());
-        //         });
-        //         tableArray.push(rowArray);
-        //     });
-        //     if (tableArray.length == 0) {
-        //         return null;
-        //     } else {
-        //         var transposed = tableArray[0].map((_, colIndex) => tableArray.map(row => row[colIndex]));
-        //         return transposed;
-        //     }
-        // }
-
-        // $(document).off('click', '.player-link').on('click', '.player-link', function (e) {
-        //     e.preventDefault();
-        //     var ID = $(this).data('id');
-
-        //     fetch(`https://statsapi.mlb.com/api/v1/people/${ID}?hydrate=currentTeam`)
-        //         .then(response => {
-        //             if (!response.ok) {
-        //                 throw new Error('Network response was not ok');
-        //             }
-        //             return response.json();
-        //         })
-        //         .then(data => {
-        //             var currentTeam = data['people'][0]['currentTeam']['name'];
-        //             console.log(currentTeam);
-        //             var teamIndex = Consts.findTeamIndex(currentTeam);
-        //             setSelectedPlayer({ playerID: ID, color: [Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]], Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]] });
-        //             navigate('/players');
-        //         })
-        // });
     }, [selectedGame]);
 
-    useEffect(() => {
-        try {
-            const boxscoreTable = $(document.querySelector('#boxscore'));
+    // useEffect(() => {
+    //     try {
+    //         const boxscoreTable = $(document.querySelector('#boxscore'));
 
-            boxscoreTable.find('tr td a').each(function () {
-                if ($(this).text() == highlightedPlayer) {
-                    $(this).closest('tr').addClass('selected-batter');
-                } else {
-                    $(this).closest('tr').removeClass('selected-batter');
-                }
-            });
-        } catch {
+    //         boxscoreTable.find('tr td a').each(function () {
+    //             if ($(this).text() == highlightedPlayer) {
+    //                 $(this).closest('tr').addClass('selected-batter');
+    //             } else {
+    //                 $(this).closest('tr').removeClass('selected-batter');
+    //             }
+    //         });
+    //     } catch {
 
-        }
-    }, [highlightedPlayer]);
+    //     }
+    // }, [highlightedPlayer]);
 
     return (
         <>
@@ -685,53 +568,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.away?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.away?.abbreviation ?? 'Away'}</td>
-
-                        {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
-                            return <td key={i}>{inning.away.runs ?? '-'}</td>
-                        })}
-                        {currGame && Array.from({ length: 9 - currGame?.liveData?.linescore?.innings?.length }).map((inning, i) => {
-                            return <td key={i}>-</td>
-                        })}
-                        {!currGame && Array.from({ length: 9 }).map((_, i) => {
-                            return <td key={i}>-</td>
-                        })}
-
-                        {currGame &&
-                            <>
-                                <td>{currGame?.liveData?.linescore?.teams?.away?.runs ?? '-'}</td>
-                                <td>{currGame?.liveData?.linescore?.teams?.away?.hits ?? '-'}</td>
-                                <td>{currGame?.liveData?.linescore?.teams?.away?.errors ?? '-'}</td>
-                            </>
-                        }
-                        {!currGame && Array.from({ length: 3 }).map((_, i) => {
-                            return <td key={i}>-</td>
-                        })}
-                    </tr>
-                    <tr>
-                        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.home?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.home?.abbreviation ?? 'Home'}</td>
-                        {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
-                            return <td key={i}>{inning.home.runs ?? '-'}</td>
-                        })}
-                        {currGame && Array.from({ length: 9 - currGame?.liveData?.linescore?.innings?.length }).map((inning, i) => {
-                            return <td key={i}>-</td>
-                        })}
-                        {!currGame && Array.from({ length: 9 }).map((_, i) => {
-                            return <td key={i}>-</td>
-                        })}
-
-                        {currGame &&
-                            <>
-                                <td>{currGame?.liveData?.linescore?.teams?.home?.runs ?? '-'}</td>
-                                <td>{currGame?.liveData?.linescore?.teams?.home?.hits ?? '-'}</td>
-                                <td>{currGame?.liveData?.linescore?.teams?.home?.errors ?? '-'}</td>
-                            </>
-                        }
-                        {!currGame && Array.from({ length: 3 }).map((_, i) => {
-                            return <td key={i}>-</td>
-                        })}
-                    </tr>
+                    <LinescoreRow currGame={currGame} team='away' />
+                    <LinescoreRow currGame={currGame} team='home' />
                 </tbody>
             </table>
             <table id="pitching">
@@ -957,7 +795,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 }
             </table>
 
-            {(currGame && detailedState === 'Scheduled') &&
+            {(currGame && ['Pre-Game', 'Scheduled'].includes(detailedState)) &&
                 <>
                     <Box sx={{ width: '600px', paddingX: 2, mt: 2, mb: 2 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: 18 }}>PROBABLE PITCHERS</Typography>
@@ -968,6 +806,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                     : 'TBA'
                                 }
                             </Box>
+                            <Divider orientation="vertical" flexItem sx={{ mx: 1, bgcolor: 'white' }} />
                             <Box sx={{ width: '275px' }}>
                                 {homePitcher ?
                                     <ProbablePitcher pitcher={homePitcher} />

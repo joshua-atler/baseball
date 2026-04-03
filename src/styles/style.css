@@ -201,6 +201,7 @@ table#boxscore tfoot td {
 span.tooltip {
     border-bottom: 2px dotted white;
     position: relative;
+    user-select: none;
 }
 
 span.tooltip::after {
