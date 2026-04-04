@@ -18,29 +18,22 @@ import { lightBlue } from '@mui/material/colors';
 
 function LinescoreRow({ currGame, team }) {
 
-    console.log(currGame?.liveData?.linescore?.currentInning);
-    console.log(currGame?.liveData?.linescore?.isTopInning);
-
     const currentInning = currGame?.liveData?.linescore?.currentInning;
-    const isTopInning = currGame?.liveData?.linescore?.currentInning;
+    const currentTeam = currGame?.liveData?.linescore?.isTopInning ? 'away' : 'home';
 
     return <tr>
         <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? 'Away'}</td>
 
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
-            return <td key={i}>{inning?.[team].runs ?? '-'}</td>
+            const highlight = currentInning === inning.num && currentTeam === team;
+            return <td key={i} style={{
+                backgroundColor: highlight ? '#374bfb' : undefined,
+                borderRadius: highlight ? '50%' : undefined
+            }} >{inning?.[team].runs ?? '-'}</td>
         })}
-        {currGame && Array.from({ length: 9 - currGame?.liveData?.linescore?.innings?.length }).map((inning, i) => {
-            return <td key={i}
-            // style={{
-            //     backgroundColor: i === 1 ? 'cornflowerblue' : 'transparent',
-            //     borderRadius: i === 1 ? '50%' : '0'
-            // }}
-            >-</td>
-        })}
-        {!currGame && Array.from({ length: 9 }).map((_, i) => {
-            return <td key={i}>-</td>
-        })}
+        {Array.from({ length: Math.max(0, 9 - (currGame?.liveData?.linescore?.innings?.length || 0)) }).map((_, i) => (
+            <td key={`empty-${i}`}>-</td>
+        ))}
 
         {currGame &&
             <>
@@ -122,11 +115,12 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     const [awayPitcher, homePitcher] = probablePitchers ?? [null, null];
 
-    const awayTeam = currGame?.gameData?.teams?.away?.clubName.toLowerCase().replace(' ', '-');
-    const homeTeam = currGame?.gameData?.teams?.home?.clubName.toLowerCase().replace(' ', '-');
+    const awayTeamName = currGame?.gameData?.teams?.away?.teamName.toLowerCase().replace(' ', '-');
+    const homeTeamName = currGame?.gameData?.teams?.home?.teamName.toLowerCase().replace(' ', '-');
     const gameDate = currGame?.gameData?.datetime?.officialDate;
     const [year, month, day] = gameDate?.split('-') || [];
-    const gamedayUrl = `https://www.mlb.com/gameday/${awayTeam}-vs-${homeTeam}/${year}/${month}/${day}/${selectedGame}/final/box`;
+
+    const gamedayUrl = `https://www.mlb.com/gameday/${awayTeamName}-vs-${homeTeamName}/${year}/${month}/${day}/${selectedGame}/final/box`;
 
     const abstractGameState = currGame?.gameData?.status?.abstractGameState;
     const detailedState = currGame?.gameData?.status?.detailedState;
