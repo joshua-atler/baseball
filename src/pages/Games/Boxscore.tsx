@@ -125,6 +125,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const abstractGameState = currGame?.gameData?.status?.abstractGameState;
     const detailedState = currGame?.gameData?.status?.detailedState;
     const linescore = currGame?.liveData?.linescore;
+    const boxscore = currGame?.liveData?.boxscore;
     const currentBatterID = linescore?.offense?.batter?.id;
 
     let numInnings = 9;
@@ -149,8 +150,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     }
 
     const teamStats = {};
-    teamStats.away = currGame?.liveData?.boxscore?.teams?.away?.teamStats;
-    teamStats.home = currGame?.liveData?.boxscore?.teams?.home?.teamStats;
+    teamStats.away = boxscore?.teams?.away?.teamStats;
+    teamStats.home = boxscore?.teams?.home?.teamStats;
 
 
 
@@ -660,15 +661,19 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
-                    {currGame?.liveData?.boxscore?.teams?.[selectedSide]?.battingOrder.map((batterID, i) => {
-                        const batter = currGame?.liveData?.boxscore?.teams?.[selectedSide]?.players?.[`ID${batterID}`];
+                    {boxscore?.teams?.[selectedSide]?.batters.filter(batterID => {
+                            const pitchers = boxscore?.teams?.[selectedSide]?.pitchers;
+                            return !pitchers.includes(batterID);
+                        }).map((batterID, i) => {
+                        const batter = boxscore?.teams?.[selectedSide]?.players?.[`ID${batterID}`];
+                        const isSub = batter?.battingOrder % 100 !== 0;
                         const fullName = batter?.person?.fullName;
                         const jerseyNumber = batter?.jerseyNumber;
                         const position = batter?.position?.abbreviation;
                         const gameStats = batter?.stats?.batting;
                         const seasonStats = batter?.seasonStats?.batting;
                         return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID) ? '#374bfb' : ''}}>
-                            <td><Link to='/players/?'>{fullName}</Link></td>
+                            <td>{isSub && `\u00A0\u00A0${batter?.stats?.batting?.note}\u00A0`}<Link to='/players/?'>{fullName}</Link></td>
                             <td>#{jerseyNumber}</td>
                             <td>{position}</td>
                             <td>{gameStats?.atBats}</td>
@@ -702,7 +707,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 <Stack>
                     {
-                        currGame?.liveData?.boxscore?.teams?.[selectedSide].note.map((sub, i) => {
+                        boxscore?.teams?.[selectedSide].note.map((sub, i) => {
                             return <Typography key={i} sx={{ fontSize: 14 }}>
                                 {sub.label} - {sub.value}
                             </Typography>
@@ -712,7 +717,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
             </Box>
             <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 {
-                    currGame?.liveData?.boxscore?.teams?.[selectedSide].info.map((info, i) => {
+                    boxscore?.teams?.[selectedSide].info.map((info, i) => {
                         return <Box key={i} sx={{ mb: 2 }}>
                             <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>{info.title}</Typography>
                             <Stack>
@@ -753,8 +758,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
-                    {currGame?.liveData?.boxscore?.teams?.[selectedSide]?.pitchers.map((pitcherID, i) => {
-                        const pitcher = currGame?.liveData?.boxscore?.teams?.[selectedSide]?.players?.[`ID${pitcherID}`];
+                    {boxscore?.teams?.[selectedSide]?.pitchers.map((pitcherID, i) => {
+                        const pitcher = boxscore?.teams?.[selectedSide]?.players?.[`ID${pitcherID}`];
                         const fullName = pitcher?.person?.fullName;
                         const jerseyNumber = pitcher?.jerseyNumber;
                         const gameStats = pitcher?.stats?.pitching;
