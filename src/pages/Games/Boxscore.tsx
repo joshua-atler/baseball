@@ -125,6 +125,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const abstractGameState = currGame?.gameData?.status?.abstractGameState;
     const detailedState = currGame?.gameData?.status?.detailedState;
     const linescore = currGame?.liveData?.linescore;
+    const currentBatterID = linescore?.offense?.batter?.id;
 
     let numInnings = 9;
     if (currGame) {
@@ -666,7 +667,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         const position = batter?.position?.abbreviation;
                         const gameStats = batter?.stats?.batting;
                         const seasonStats = batter?.seasonStats?.batting;
-                        return <tr key={batterID}>
+                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID) ? '#374bfb' : ''}}>
                             <td><Link to='/players/?'>{fullName}</Link></td>
                             <td>#{jerseyNumber}</td>
                             <td>{position}</td>
