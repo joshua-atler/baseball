@@ -597,7 +597,10 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                 color="primary"
                                 value={displayValue}
                                 exclusive
-                                onChange={(e, nextView) => selectedSide && setSelectedSide(nextView)}
+                                onChange={(e, nextView) => {
+                                    if (!nextView) return;
+                                    setSelectedSide(nextView)
+                                }}
                                 sx={{
                                     gap: 4,
                                     width: '100%',
