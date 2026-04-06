@@ -25,7 +25,7 @@ function LinescoreRow({ currGame, team }) {
         <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? 'Away'}</td>
 
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
-            const highlight = currentInning === inning.num && currentTeam === team;
+            const highlight = currentInning === inning.num && currentTeam === team && currGame?.gameData?.status?.detailedState !== 'Final';
             return <td key={i} style={{
                 backgroundColor: highlight ? '#374bfb' : undefined,
                 borderRadius: highlight ? '50%' : undefined
@@ -275,39 +275,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //     };
 
-        //     try {
-        //         var awayTeamTotalRuns = linescore['teams']['away']['runs'];
-        //         var awayTeamTotalHits = linescore['teams']['away']['hits'];
-        //         var awayTeamTotalErrors = linescore['teams']['away']['errors'];
-        //         var homeTeamTotalRuns = linescore['teams']['home']['runs'];
-        //         var homeTeamTotalHits = linescore['teams']['home']['hits'];
-        //         var homeTeamTotalErrors = linescore['teams']['home']['errors'];
-
-        //         $(awayTeamSummaryCells[0]).text(awayTeamTotalRuns);
-        //         $(awayTeamSummaryCells[1]).text(awayTeamTotalHits);
-        //         $(awayTeamSummaryCells[2]).text(awayTeamTotalErrors);
-        //         $(homeTeamSummaryCells[0]).text(homeTeamTotalRuns);
-        //         $(homeTeamSummaryCells[1]).text(homeTeamTotalHits);
-        //         $(homeTeamSummaryCells[2]).text(homeTeamTotalErrors);
-        //     } catch {
-
-        //     }
-
-        //     var awayTeam = selectedGame['gameData']['teams']['away'];
-        //     var homeTeam = selectedGame['gameData']['teams']['home'];
-
-        //     var awayTeamName = awayTeam['name'];
-        //     var homeTeamName = homeTeam['name'];
-
-        //     var awayTeamClubName = awayTeam['clubName'];
-        //     var homeTeamClubName = homeTeam['clubName'];
-
-        //     var awayTeamAbbr = awayTeam['abbreviation'];
-        //     var homeTeamAbbr = homeTeam['abbreviation'];
-
-        //     $(awayRow.find('td')[0]).text(awayTeamAbbr);
-        //     $(homeRow.find('td')[0]).text(homeTeamAbbr);
-
         //     if (awayTeamName in Consts.teamsDetails) {
         //         $(awayRow.find('td')[0]).html(`<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeamName].logo}"><span>${awayTeamAbbr}</span>`);
         //     }
@@ -402,17 +369,6 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //     }
 
-        //     var atBats = batting['atBats'];
-        //     var runs = batting['runs'];
-        //     var hits = batting['hits'];
-        //     var walks = batting['baseOnBalls'];
-        //     var rbi = batting['rbi'];
-        //     var homeRuns = batting['homeRuns'];
-        //     var strikeOuts = batting['strikeOuts'];
-
-        //     var avg = seasonBatting['avg'];
-        //     var ops = seasonBatting['ops'];
-
         //     var currentBatterStyle = isCurrentBatter ? 'class="current-player"' : '';
 
         //     var boxscoreString = `<tr ${currentBatterStyle}><td>${battingOrder}${note}${playerLink(playerID, name)}</td><td>${jerseyNum}</td><td>${pos}</td><td>${atBats}</td><td>${runs}</td><td>${hits}</td><td>${walks}</td><td>${rbi}</td><td>${homeRuns}</td><td>${strikeOuts}</td><td>${avg}</td><td>${ops}</td></tr>`;
@@ -463,58 +419,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //     }
 
-        //     var boxscoreTableData = tableToArray(boxscoreTable);
-        //     if (boxscoreTableData != null) {
-        //         var boxscoreTotalsRow = `<tr class='totals-row'><td>Totals</td><td></td><td></td>`;
-        //         for (let i = 3; i <= 9; i++) {
-        //             var sum = boxscoreTableData[i].reduce((sum, value) => sum + parseInt(value, 10), 0);
-        //             boxscoreTotalsRow += `<td>${sum}</td>`;
-        //         }
-        //         boxscoreTotalsRow += '<td></td><td></td></tr>';
-        //         boxscoreTable.append(boxscoreTotalsRow);
-        //     }
-
-        //     var pitchers = selectedGame['liveData']['boxscore']['teams'][teamSide]['pitchers'];
-        //     for (let i = 0; i < pitchers.length; i++) {
-        //         var playerID = 'ID' + pitchers[i].toString();
-        //         if (!$.isEmptyObject(players[playerID]['stats']['pitching'])) {
-        //             pitchersTable.append(pitcherRow(players[playerID]));
-        //         }
-        //     }
-
-        //     var pitchersTableData = tableToArray(pitchersTable);
-        //     if (pitchersTableData != null) {
-        //         var pitchersTableRow = `<tr class='totals-row'><td>Totals</td><td></td>`;
-        //         for (let i = 2; i <= 8; i++) {
-        //             var sum = 0;
-        //             if (i == 2) {
-        //                 sum = pitchersTableData[i].reduce((sum, value) => sum + parseFloat(value, 10), 0);
-        //                 var decimal = sum % 1;
-        //                 if (decimal > 0.25) {
-        //                     var extra = decimal / 3 * 10;
-        //                     sum = sum - decimal + extra;
-        //                 }
-        //                 sum = sum.toFixed(1);
-        //             } else {
-        //                 sum = pitchersTableData[i].reduce((sum, value) => sum + parseInt(value, 10), 0);
-        //             }
-        //             pitchersTableRow += `<td>${sum}</td>`;
-        //         }
-        //         pitchersTableRow += '<td></td></tr>';
-        //         pitchersTable.append(pitchersTableRow);
-        //     }
-
-        //     var details = selectedGame['liveData']['boxscore']['info'];
-        //     detailsDiv.append(`<p class="details-title details-label">GAME NOTES</p>`);
-        //     for (let i = 0; i < details.length; i++) {
-        //         if ('value' in details[i]) {
-        //             detailsDiv.append(`<p><span class="details-label">${details[i]['label']}:</span> ${details[i]['value']}</p>`);
-        //         } else {
-        //             detailsDiv.append(`<p><span class="details-label">${details[i]['label']}</span></p>`);
-        //         }
-        //     }
-        // }
-    }, [selectedGame]);
+            }, [selectedGame]);
 
     // useEffect(() => {
     //     try {
@@ -675,8 +580,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         const position = batter?.position?.abbreviation;
                         const gameStats = batter?.stats?.batting;
                         const seasonStats = batter?.seasonStats?.batting;
-                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID) ? '#374bfb' : ''}}>
-                            <td>{isSub && `\u00A0\u00A0${batter?.stats?.batting?.note}\u00A0`}<Link to='/players/?'>{fullName}</Link></td>
+                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID && detailedState !== 'Final') ? '#374bfb' : ''}}>
+                            <td>{isSub && `\u2937 ${batter?.stats?.batting?.note ? `${batter?.stats?.batting?.note[0]} -` : ''}\u00A0`}<Link to='/players/?'>{fullName}</Link></td>
                             <td>#{jerseyNumber}</td>
                             <td>{position}</td>
                             <td>{gameStats?.atBats}</td>
