@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HiExternalLink } from 'react-icons/hi';
 
-import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider } from '@mui/material';
+import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 
@@ -13,6 +13,8 @@ import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
+import { fetchStandings } from '../../services/standingsService.ts';
+import { transformStandingsForBoxscore } from '../../utils/standingsTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
 
@@ -87,11 +89,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
 
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
-    // const [teamRecords, setTeamRecords] = useState(null);
+    const [teamRecords, setTeamRecords] = useState(null);
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
 
-        async function fetchProbablePitchers() {
+    async function fetchProbablePitchers() {
         const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? null;
         const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? null;
         setProbablePitchers(await Promise.all([
@@ -100,10 +102,26 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         ]));
     }
 
+    async function fetchTeamRecords() {
+        const standings = await fetchStandings(month, day, year);
+
+        if (standings.records.length === 0) {
+            setTeamRecords(null);
+            return;
+        }
+
+        const teamRecords = standings.records.flatMap(division => division.teamRecords);
+
+        setTeamRecords(transformStandingsForBoxscore(standings, awayTeamID, homeTeamID));
+    }
+
     const [awayPitcher, homePitcher] = probablePitchers ?? [null, null];
+    const [awayRecord, homeRecord] = teamRecords ?? [null, null];
 
     const awayTeamName = currGame?.gameData?.teams?.away?.teamName.toLowerCase().replace(' ', '-');
     const homeTeamName = currGame?.gameData?.teams?.home?.teamName.toLowerCase().replace(' ', '-');
+    const awayTeamID = currGame?.gameData?.teams?.away?.id;
+    const homeTeamID = currGame?.gameData?.teams?.home?.id;
     const gameDate = currGame?.gameData?.datetime?.officialDate;
     const [year, month, day] = gameDate?.split('-') || [];
 
@@ -145,12 +163,15 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     useEffect(() => {
         if (currGame) {
             (async () => {
-                fetchProbablePitchers(currGame);
+                fetchProbablePitchers();
+                fetchTeamRecords();
             })();
         } else {
             setProbablePitchers(null);
+            setTeamRecords(null);
         }
     }, [currGame]);
+
 
     useEffect(() => {
         if (selectedGame) {
@@ -406,7 +427,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
         //         }
         //     }
 
-            }, [selectedGame]);
+    }, [selectedGame]);
 
     // useEffect(() => {
     //     try {
@@ -530,7 +551,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                         <>
                                             <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.away?.abbreviation}.svg`} />
                                             {currGame?.gameData?.teams?.away?.teamName}
-                                            {/* add standings */}
+                                            {awayRecord && ` (${awayRecord})`}
                                         </>
                                         :
                                         'Away'
@@ -549,7 +570,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                         <>
                                             <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.home?.abbreviation}.svg`} />
                                             {currGame?.gameData?.teams?.home?.teamName}
-                                            {/* add standings */}
+                                            {homeRecord && ` (${homeRecord})`}
                                         </>
                                         :
                                         'Home'
@@ -572,9 +593,9 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 </thead>
                 <tbody>
                     {boxscore?.teams?.[selectedSide]?.batters.filter(batterID => {
-                            const pitchers = boxscore?.teams?.[selectedSide]?.pitchers;
-                            return !pitchers.includes(batterID);
-                        }).map((batterID, i) => {
+                        const pitchers = boxscore?.teams?.[selectedSide]?.pitchers;
+                        return !pitchers.includes(batterID);
+                    }).map((batterID, i) => {
                         const batter = boxscore?.teams?.[selectedSide]?.players?.[`ID${batterID}`];
                         const isSub = batter?.battingOrder % 100 !== 0;
                         const fullName = batter?.person?.fullName;
