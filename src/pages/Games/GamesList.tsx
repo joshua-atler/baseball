@@ -3,22 +3,19 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import { HiExternalLink } from 'react-icons/hi';
 
-import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress, Skeleton } from '@mui/material';
+import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress, Skeleton, Typography } from '@mui/material';
 import DatePicker, { DateObject } from 'react-multi-date-picker';
 
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
-// import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-select-dt';
 import dayjs from 'dayjs';
 import SlimSelect from 'slim-select';
 
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 
-import '../../styles/dtStyle.css';
-import '../../styles/datepickerStyle.css';
-import '../../styles/slimSelectStyle.css';
 import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchSchedule } from '../../services/gamesService.ts';
@@ -32,7 +29,11 @@ const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric'
 });
 
-
+const shortYearFormatter = new Intl.DateTimeFormat('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit'
+});
 
 export default function GamesList({
     setSelectedGame
@@ -43,6 +44,8 @@ export default function GamesList({
     const datePickerRef = useRef();
 
     const [dates, setDates] = useState([new Date(), new Date()]);
+    const [month, day, year] = shortYearFormatter.format(dates[0]).split('/');
+    const isSameDay = dates.length === 1 || (formatter.format(dates[0]) === formatter.format(dates[1]));
 
     const [isLiveGames, setIsLiveGames] = useState(false);
     const [isAutoUpdate, setIsAutoUpdate] = useState(false);
@@ -52,7 +55,7 @@ export default function GamesList({
     const [tableData, setTableData] = useState([]);
 
     const columns = [
-        { data: 'gamePk', title: '', visible: false},
+        { data: 'gamePk', title: '', visible: false },
         { data: 'date', title: 'Date' },
         { data: 'time', title: 'Time' },
         { data: 'away', title: 'Away' },
@@ -66,32 +69,6 @@ export default function GamesList({
     const { timeZone } = useBasedash();
 
     const updateTableRef = useRef(null);
-
-    // const reset = true;
-
-    // const datesButton = document.querySelector('#dates-button');
-    // const liveGamesSwitch = document.querySelector('#live-games');
-    // const autoUpdateSwitch = document.querySelector('#auto-update');
-    // const datesErrorSpan = document.querySelector('#dates-error');
-
-    // useEffect(() => {
-    //     if (dates.length > 0) {
-    //         const adjustedDates = dates.length === 1 ? [dates[0], dates[0]] : dates;
-    //         datesRef.current = adjustedDates.map(date => date.format('MM/DD/YYYY'));
-    //     }
-    // }, [dates]);
-
-    // const handleDateChange = (newDates) => {
-    //     setDates(newDates);
-    // }
-
-    // const formatDate = useMemo(() => {
-    //     if (dates.length >= 1) {
-    //         return dates[0].format('MM/DD/YY');
-    //     } else {
-    //         return '';
-    //     }
-    // }, [dates]);
 
     const handleSelect = (e, dt, type, indexes) => {
         setSelectedGame(tableData[indexes]['gamePk']);
@@ -159,7 +136,7 @@ export default function GamesList({
 
     return (
         <>
-            <Box sx={{ display: "flex", alignItems: "stretch", mb: 2, gap: 0 }} id="games-filters">
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 2 }} id="games-filters">
                 <DatePicker
                     ref={datePickerRef}
                     value={dates}
@@ -167,10 +144,9 @@ export default function GamesList({
                     minDate="01/01/20"
                     onChange={(e, newValue) => {
                         setDates(newValue.validatedValue.map(v => new Date(v)));
+
                         if (newValue.validatedValue.length === 2) {
-                            if (datePickerRef.current) {
-                                datePickerRef.current.closeCalendar();
-                            }
+                            datePickerRef.current?.closeCalendar();
                         }
                     }}
                     className="bg-dark"
@@ -179,12 +155,15 @@ export default function GamesList({
                     range
                     showOtherDays
                 />
-                <ButtonGroup variant="contained" sx={{ mr: 2 }}>
+                <ButtonGroup variant="contained">
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(-1)}>Yesterday</Button>
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(0)}>Today</Button>
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(1)}>Tomorrow</Button>
                 </ButtonGroup>
                 <Button variant="contained" className="margin" disabled={isLoading !== null} onClick={() => updateTableRef.current?.('manual')}>Update</Button>
+                {isSameDay && <Typography><a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/mlb-top-plays-${month}-${day}-${year}`}>
+                    {'Top Plays'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
+                </a></Typography>}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'stretch', mb: 2, gap: 0 }}>
                 <Box sx={{ mr: 3, width: 500 }}>
