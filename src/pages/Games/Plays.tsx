@@ -3,7 +3,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import $ from 'jquery';
 
@@ -445,14 +445,17 @@ export default function Plays({ selectedGame, setHighlightedPlayer }) {
 
     return (
         <>
-            <div id="news-content">
-                <p>Select a game</p>
-            </div>
-            <div id="plays-outer" style={{ display: 'none' }}>
-                <div id="plays-inner">
-                    <div id="plays"></div>
-                </div>
-            </div>
+            <Typography variant="h3">Plays</Typography>
         </>
+        // <>
+        //     <div id="news-content">
+        //         <p>Select a game</p>
+        //     </div>
+        //     <div id="plays-outer" style={{ display: 'none' }}>
+        //         <div id="plays-inner">
+        //             <div id="plays"></div>
+        //         </div>
+        //     </div>
+        // </>
     )
 }

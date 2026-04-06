@@ -3,7 +3,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import $ from 'jquery';
 
@@ -74,8 +74,11 @@ export default function Media({ gamePk }) {
 
     return (
         <>
-            <div id="news-content"></div>
+            <Typography variant="h3">Media</Typography>
         </>
+        // <>
+        //     <div id="news-content"></div>
+        // </>
     )
 
 }

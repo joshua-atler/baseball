@@ -3,7 +3,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import $ from 'jquery';
 
@@ -213,12 +213,15 @@ export default function WinProb({ gamePk }) {
 
     return (
         <>
-            <div id="news-content">
-                <p>Select a game</p>
-            </div>
-            <div id="win-prob-chart">
-                <canvas></canvas>
-            </div>
+            <Typography variant="h3">WinProb</Typography>
         </>
+        // <>
+        //     <div id="news-content">
+        //         <p>Select a game</p>
+        //     </div>
+        //     <div id="win-prob-chart">
+        //         <canvas></canvas>
+        //     </div>
+        // </>
     )
 }

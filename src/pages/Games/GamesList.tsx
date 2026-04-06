@@ -20,20 +20,9 @@ import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchSchedule } from '../../services/gamesService.ts';
 import { transformGames } from '../../utils/gameTransformers.ts';
+import { formatter, shortYearFormatter } from '../../utils/dateFormatters.ts';
 
 DataTable.use(DT);
-
-const formatter = new Intl.DateTimeFormat('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric'
-});
-
-const shortYearFormatter = new Intl.DateTimeFormat('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: '2-digit'
-});
 
 export default function GamesList({
     setSelectedGame
@@ -144,7 +133,6 @@ export default function GamesList({
                     minDate="01/01/20"
                     onChange={(e, newValue) => {
                         setDates(newValue.validatedValue.map(v => new Date(v)));
-
                         if (newValue.validatedValue.length === 2) {
                             datePickerRef.current?.closeCalendar();
                         }

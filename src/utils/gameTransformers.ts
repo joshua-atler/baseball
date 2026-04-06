@@ -1,5 +1,6 @@
 import { TimeZone } from "../context/BasedashContext";
 import { Consts } from "../consts/consts";
+import { shortYearFormatter } from "./dateFormatters";
 
 
 export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string[], timeZone: TimeZone, onProgress) => {
@@ -165,3 +166,31 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
     return allGames;
 };
+
+export const transformGameArticle = (content) => {
+
+    if (Object.keys(content?.editorial).length === 0) {
+        return null;
+    }
+
+    const editorial = content?.editorial?.recap?.mlb;
+    const authors = editorial.contributors.flatMap(c => c.name);
+
+    const article = {
+        headline: '',
+        author: '',
+        date: '',
+        imageURL: '',
+        body: '',
+        slug: '',
+    };
+
+    article.headline = editorial?.headline;
+    article.author = authors.join(', ');
+    article.imageURL = editorial?.photo?.cuts?.[0].src;
+    article.date = shortYearFormatter.format(new Date(editorial?.date));
+    article.body = editorial?.body;
+    article.slug = editorial?.slug;
+
+    return article;
+}

@@ -1,5 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    custom: {
+      dark: string;
+      accent: string;
+    };
+  }
+  interface PaletteOptions {
+    custom?: {
+      dark?: string;
+      accent?: string;
+    };
+  }
+}
+
+
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -24,6 +40,12 @@ export const baseDashTheme = createTheme({
                     },
                 },
             },
+        },
+    },
+    palette: {
+        mode: 'dark',
+        custom: {
+            dark: '#2c323a',
         },
     },
 });

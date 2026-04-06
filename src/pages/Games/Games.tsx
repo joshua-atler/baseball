@@ -8,10 +8,11 @@ import Grid from '@mui/material/Grid2';
 import GamesList from './GamesList';
 import Boxscore from './Boxscore';
 import Plays from './Plays';
-import News from './News';
+import GameArticle from './GameArticle';
 import Media from './Media';
 import WinProb from './WinProb';
 import { useBasedash } from '../../context/BasedashContext';
+import { GameTabContent } from '../../components/GameTabContent';
 
 
 const useScreenWidth = () => {
@@ -57,33 +58,39 @@ export const Games = () => {
                     />
                 </Grid>
                 {/* {screenWidth > 2550 ? */}
-                    {/* <> */}
-                        <Grid>
-                            <Boxscore
-                                selectedGame={selectedGame}
-                                highlightedPlayer={undefined}
-                                // highlightedPlayer={highlightedPlayer}
-                                setSelectedPlayer={setSelectedPlayer}
-                            />
-                        </Grid>
-                        <Grid>
-                            <Tabs value={getTabValue(tabValue)} onChange={(e, newValue) => {
-                                setTabValue(newValue);
-                            }} sx={{ mb: 4.5 }}>
-                                <Tab label="Plays" value={"Plays"} />
-                                <Tab label="News" value={"News"} />
-                                <Tab label="Media" value={"Media"} />
-                                <Tab label="Win Probability" value={"Win Probability"} />
-                            </Tabs>
-                            <Box sx={{ width: '100%' }}>
-                                {/* {getTabValue(tabValue) === "Plays" && <Plays selectedGame={selectedGame} setHighlightedPlayer={undefined} />}
-                                {getTabValue(tabValue) === "News" && <News gamePk={selectedGame?.['gamePk'] || null} />}
-                                {getTabValue(tabValue) === "Media" && <Media gamePk={selectedGame?.['gamePk'] || null} />}
-                                {getTabValue(tabValue) === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />} */}
-                            </Box>
-                        </Grid>
-                    {/* </> : <> */}
-                        {/* <Grid>
+                {/* <> */}
+                <Grid>
+                    <Boxscore
+                        selectedGame={selectedGame}
+                        highlightedPlayer={undefined}
+                        // highlightedPlayer={highlightedPlayer}
+                        setSelectedPlayer={setSelectedPlayer}
+                    />
+                </Grid>
+                <Grid>
+                    <Tabs value={getTabValue(tabValue)} onChange={(e, newValue) => {
+                        setTabValue(newValue);
+                    }} sx={{ mb: 4.5 }}>
+                        <Tab label="Plays" value={"Plays"} />
+                        <Tab label="News" value={"News"} />
+                        <Tab label="Media" value={"Media"} />
+                        <Tab label="Win Probability" value={"Win Probability"} />
+                    </Tabs>
+                    <Box sx={{ width: '100%' }}>
+                        {selectedGame ? <>
+                            {getTabValue(tabValue) === "Plays" && <Plays />}
+                            {getTabValue(tabValue) === "News" && <GameArticle />}
+                            {getTabValue(tabValue) === "Media" && <Media />}
+                            {getTabValue(tabValue) === "Win Probability" && <WinProb />}
+                        </> : <>
+                            <GameTabContent>
+                                <Typography variant="h5">Select a game</Typography>
+                            </GameTabContent>
+                        </>}
+                    </Box>
+                </Grid>
+                {/* </> : <> */}
+                {/* <Grid>
                             <Tabs value={tabValue} onChange={handleChange} sx={{ mb: 4.5 }}>
                                 <Tab label="Boxscore" value={"Boxscore"} />
                                 <Tab label="Plays" value={"Plays"} />
@@ -103,7 +110,7 @@ export const Games = () => {
                                 {tabValue === "Win Probability" && <WinProb gamePk={selectedGame?.['gamePk'] || null} />}
                             </Box>
                         </Grid> */}
-                    {/* </>} */}
+                {/* </>} */}
             </Grid>
         </>
     )

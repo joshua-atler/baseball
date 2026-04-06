@@ -5,3 +5,6 @@ export const fetchSchedule = (start: string, end: string) =>
 
 export const fetchGame = (gamePk: string) => 
     apiClient(true, `/game/${gamePk}/feed/live`);
+
+export const fetchContent = (gamePk: string) =>
+    apiClient(false, `/game/${gamePk}/content`);
