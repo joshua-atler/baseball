@@ -13,7 +13,7 @@ import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
-import { lightBlue } from '@mui/material/colors';
+import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
 
 function LinescoreRow({ currGame, team }) {
@@ -63,15 +63,7 @@ function ProbablePitcher({ pitcher }) {
     ];
 
     return <Stack spacing={2}>
-        <Box
-            component="img"
-            src={`https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${pitcher?.people?.[0]?.id}/headshot/silo/current`}
-            sx={{
-                width: 150,
-                height: 150,
-                objectFit: 'cover'
-            }}
-        />
+        <PlayerPhoto playerID={pitcher?.people?.[0]?.id} width={150} height={150} />
         <Typography>
             <Link to={`/players/${pitcher?.people?.[0]?.id}`}>{pitcher?.people?.[0]?.fullName}</Link>
             {` (${pitcher?.people?.[0]?.pitchHand?.code})`}
@@ -99,12 +91,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
 
-    async function fillBoxscore(selectedGame) {
-        setCurrGame(await fetchGame(selectedGame));
-        // setTeamRecords(await fetchRecords());
-    }
-
-    async function fetchProbablePitchers(currGame) {
+        async function fetchProbablePitchers() {
         const awayPitcherID = currGame?.gameData?.probablePitchers?.away?.id ?? null;
         const homePitcherID = currGame?.gameData?.probablePitchers?.home?.id ?? null;
         setProbablePitchers(await Promise.all([
@@ -168,7 +155,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
     useEffect(() => {
         if (selectedGame) {
             (async () => {
-                fillBoxscore(selectedGame);
+                setCurrGame(await fetchGame(selectedGame));
             })();
         } else {
             setCurrGame(null);
@@ -483,9 +470,24 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{currGame?.liveData?.decisions?.winner?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.winner?.fullName}</Link> : '-'}   </td>
-                        <td>{currGame?.liveData?.decisions?.loser?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.loser?.fullName}</Link> : '-'}</td>
-                        <td>{currGame?.liveData?.decisions?.save?.fullName ? <Link to='/players'>{currGame?.liveData?.decisions?.save?.fullName}</Link> : '-'}</td>
+                        <td>{currGame?.liveData?.decisions?.winner?.fullName ?
+                            <Tooltip title={<PlayerPhoto playerID={currGame?.liveData?.decisions?.winner?.id} width={150} height={150} />}>
+                                <Link to='/players/?'>{currGame?.liveData?.decisions?.winner?.fullName}</Link>
+                            </Tooltip>
+                            : '-'}
+                        </td>
+                        <td>{currGame?.liveData?.decisions?.loser?.fullName ?
+                            <Tooltip title={<PlayerPhoto playerID={currGame?.liveData?.decisions?.loser?.id} width={150} height={150} />}>
+                                <Link to='/players/?'>{currGame?.liveData?.decisions?.loser?.fullName}</Link>
+                            </Tooltip>
+                            : '-'}
+                        </td>
+                        <td>{currGame?.liveData?.decisions?.save?.fullName ?
+                            <Tooltip title={<PlayerPhoto playerID={currGame?.liveData?.decisions?.save?.id} width={150} height={150} />}>
+                                <Link to='/players/?'>{currGame?.liveData?.decisions?.save?.fullName}</Link>
+                            </Tooltip>
+                            : '-'}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -580,8 +582,13 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         const position = batter?.position?.abbreviation;
                         const gameStats = batter?.stats?.batting;
                         const seasonStats = batter?.seasonStats?.batting;
-                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID && detailedState !== 'Final') ? '#374bfb' : ''}}>
-                            <td>{isSub && `\u2937 ${batter?.stats?.batting?.note ? `${batter?.stats?.batting?.note[0]} -` : ''}\u00A0`}<Link to='/players/?'>{fullName}</Link></td>
+                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID && detailedState !== 'Final') ? '#374bfb' : '' }}>
+                            <td>{isSub && `\u2937 ${batter?.stats?.batting?.note ? `${batter?.stats?.batting?.note[0]} -` : ''}\u00A0`}
+
+                                <Tooltip title={<PlayerPhoto playerID={batter?.person?.id} width={150} height={150} />}>
+                                    <Link to='/players/?'>{fullName}</Link>
+                                </Tooltip>
+                            </td>
                             <td>#{jerseyNumber}</td>
                             <td>{position}</td>
                             <td>{gameStats?.atBats}</td>
@@ -673,7 +680,11 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         const gameStats = pitcher?.stats?.pitching;
                         const seasonStats = pitcher?.seasonStats?.pitching;
                         return <tr key={pitcherID}>
-                            <td><Link to='/players/?'>{fullName}</Link></td>
+                            <td>
+                                <Tooltip title={<PlayerPhoto playerID={pitcher?.person?.id} width={150} height={150} />}>
+                                    <Link to='/players/?'>{fullName}</Link>
+                                </Tooltip>
+                            </td>
                             <td>#{jerseyNumber}</td>
                             <td>{gameStats.inningsPitched}</td>
                             <td>{gameStats.hits}</td>
