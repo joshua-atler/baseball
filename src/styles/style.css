@@ -513,24 +513,6 @@ table.dataTable td:nth-child(8) {
     white-space: pre-line;
 }
 
-#games-filters {
-    margin-bottom: 20px;
-    display: flex;
-}
-
-#games-filters>.margin {
-    margin-right: 20px;
-}
-
-#games-filters>.small-margin {
-    margin-right: 5px;
-}
-
-/* #games-filters button {
-    width: 75px;
-    height: 34px;
-} */
-
 .date-select-input {
     height: 36px;
     width: 200px;
@@ -567,14 +549,6 @@ div.ss-values {
 #auto-update-container {
     width: 100px;
 }
-
-/* #subs,
-#info,
-#details {
-    width: 600px;
-    padding: 0px 8px;
-    margin-bottom: 20px;
-} */
 
 .inning-highlight {
     background-color: #374bfb;
@@ -696,10 +670,6 @@ table#pitchers colgroup col:nth-child(10) {
     max-width: 30px;
     word-break: break-all;
     white-space: pre-line;
-}
-
-table#boxscore tr.current-player {
-    background-color: #374bfb !important;
 }
 
 table.pitches {

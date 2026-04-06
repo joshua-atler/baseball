@@ -378,7 +378,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tfoot>
                 }
             </table>
-            <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+            <Box sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 <Stack>
                     {
                         boxscore?.teams?.[selectedSide].note.map((sub, i) => {
@@ -389,7 +389,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     }
                 </Stack>
             </Box>
-            <Box id="info" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+            <Box sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 {
                     boxscore?.teams?.[selectedSide].info.map((info, i) => {
                         return <Box key={i} sx={{ mb: 2 }}>
@@ -494,7 +494,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         </Box>
                     </Box>
                 </>}
-            <Box id="details" sx={{ width: '600px', paddingX: 2, mb: 2 }}>
+            <Box sx={{ width: '600px', paddingX: 2, mb: 2 }}>
                 {currGame && <Typography sx={{ fontWeight: 700, fontSize: 14, mb: 2 }}>GAME NOTES</Typography>}
                 {currGame?.liveData?.boxscore?.info?.map((detail, i) => {
                     return <Typography key={i} sx={{ fontSize: 14 }}>
