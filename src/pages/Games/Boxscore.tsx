@@ -53,15 +53,15 @@ function LinescoreRow({ currGame, team, theme }) {
 function ProbablePitcher({ pitcher }) {
 
     const pitcherStats = pitcher?.people?.[0]?.stats;
-    const seasonStats = pitcherStats.find(x => x.type.displayName === 'season')?.splits?.[0]?.stat;
+    const seasonStats = pitcherStats?.find(x => x.type.displayName === 'season')?.splits?.[0]?.stat;
 
     const stats = [
-        { label: 'W-L', description: 'Wins-Losses', value: `${seasonStats?.wins}-${seasonStats?.losses}` },
-        { label: 'ERA', description: 'Earned run average', value: seasonStats.era ?? '---' },
-        { label: 'WHIP', description: 'Walks plus hits per inning pitched', value: seasonStats.whip ?? '---' },
-        { label: 'IP', description: 'Innings pitched', value: seasonStats.inningsPitched ?? '---' },
-        { label: 'K/9', description: 'Strikeouts per 9 innings', value: seasonStats.strikeoutsPer9Inn ?? '---' },
-        { label: 'BB/9', description: 'Walks per 9 innings', value: seasonStats.walksPer9Inn ?? '---' },
+        { label: 'W-L', description: 'Wins-Losses', value: seasonStats?.wins ? `${seasonStats?.wins}-${seasonStats?.losses}` : '---'},
+        { label: 'ERA', description: 'Earned run average', value: seasonStats?.era ?? '---' },
+        { label: 'WHIP', description: 'Walks plus hits per inning pitched', value: seasonStats?.whip ?? '---' },
+        { label: 'IP', description: 'Innings pitched', value: seasonStats?.inningsPitched ?? '---' },
+        { label: 'K/9', description: 'Strikeouts per 9 innings', value: seasonStats?.strikeoutsPer9Inn ?? '---' },
+        { label: 'BB/9', description: 'Walks per 9 innings', value: seasonStats?.walksPer9Inn ?? '---' },
     ];
 
     return <Stack spacing={2}>
