@@ -1,22 +1,24 @@
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
-  interface Palette {
-    custom: {
-      dark: string;
-      white: string;
-      lightGray: string;
-      highlightBlue: string;
-    };
-  }
-  interface PaletteOptions {
-    custom?: {
-      dark?: string;
-      white?: string;
-      lightGray?: string;
-      highlightBlue?: string;
-    };
-  }
+    interface Palette {
+        custom: {
+            dark: string;
+            white: string;
+            lightGray: string;
+            darkGray: string;
+            highlightBlue: string;
+        };
+    }
+    interface PaletteOptions {
+        custom?: {
+            dark?: string;
+            white?: string;
+            lightGray?: string;
+            darkGray?: string;
+            highlightBlue?: string;
+        };
+    }
 }
 
 
@@ -45,13 +47,21 @@ export const baseDashTheme = createTheme({
                 },
             },
         },
+        MuiFormControlLabel: {
+            styleOverrides: {
+                label: {
+                    userSelect: 'none',
+                },
+            },
+        },
     },
     palette: {
         mode: 'dark',
         custom: {
             dark: '#2c323a',
             white: '#ffffff',
-            lightGray: '#cccccc',
+            lightGray: '#666666',
+            darkGray: '#444444',
             highlightBlue: '#374bfb'
         },
     },

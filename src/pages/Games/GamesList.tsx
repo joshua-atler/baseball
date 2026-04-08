@@ -7,6 +7,7 @@ import { HiExternalLink } from 'react-icons/hi';
 
 import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress, Skeleton, Typography } from '@mui/material';
 import DatePicker, { DateObject } from 'react-multi-date-picker';
+import { useTheme } from '@mui/material/styles';
 
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
@@ -27,6 +28,7 @@ DataTable.use(DT);
 export default function GamesList({
     setSelectedGame
 }) {
+    const theme = useTheme();
 
     const [progress, setProgress] = useState(0);
     const [isLoading, setIsLoading] = useState('manual');
@@ -149,7 +151,7 @@ export default function GamesList({
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(1)}>Tomorrow</Button>
                 </ButtonGroup>
                 <Button variant="contained" className="margin" disabled={isLoading !== null} onClick={() => updateTableRef.current?.('manual')}>Update</Button>
-                {isSameDay && <Typography><a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/mlb-top-plays-${month}-${day}-${year}`}>
+                {isSameDay && <Typography sx={{ userSelect: 'none' }}><a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/mlb-top-plays-${month}-${day}-${year}`}>
                     {'Top Plays'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
                 </a></Typography>}
             </Box>
@@ -180,7 +182,15 @@ export default function GamesList({
                         ))}
                     </Box>
                 ) : (
-                    <Box sx={{ width: 1200 }}>
+                    <Box sx={{
+                        width: 1200,
+                        '& .dataTable tbody tr:hover': {
+                            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
+                        },
+                        '& .dataTable tbody tr.selected': {
+                            backgroundColor: (theme) => `${theme.palette.custom.darkGray} !important`,
+                        }
+                    }}>
                         <DataTable
                             hidden={true}
                             data={tableData}
