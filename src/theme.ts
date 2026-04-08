@@ -4,13 +4,17 @@ declare module '@mui/material/styles' {
   interface Palette {
     custom: {
       dark: string;
-      accent: string;
+      white: string;
+      lightGray: string;
+      highlightBlue: string;
     };
   }
   interface PaletteOptions {
     custom?: {
       dark?: string;
-      accent?: string;
+      white?: string;
+      lightGray?: string;
+      highlightBlue?: string;
     };
   }
 }
@@ -46,6 +50,9 @@ export const baseDashTheme = createTheme({
         mode: 'dark',
         custom: {
             dark: '#2c323a',
+            white: '#ffffff',
+            lightGray: '#cccccc',
+            highlightBlue: '#374bfb'
         },
     },
 });

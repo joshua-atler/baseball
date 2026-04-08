@@ -6,6 +6,7 @@ import { HiExternalLink } from 'react-icons/hi';
 
 import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import { useTheme } from '@mui/material/styles';
 
 
 import { Consts } from '../../consts/consts.ts';
@@ -18,8 +19,7 @@ import { transformStandingsForBoxscore } from '../../utils/standingsTransformers
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
 
-function LinescoreRow({ currGame, team }) {
-
+function LinescoreRow({ currGame, team, theme }) {
     const currentInning = currGame?.liveData?.linescore?.currentInning;
     const currentTeam = currGame?.liveData?.linescore?.isTopInning ? 'away' : 'home';
 
@@ -29,7 +29,7 @@ function LinescoreRow({ currGame, team }) {
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
             const highlight = currentInning === inning.num && currentTeam === team && currGame?.gameData?.status?.detailedState !== 'Final';
             return <td key={i} style={{
-                backgroundColor: highlight ? '#374bfb' : undefined,
+                backgroundColor: highlight ? theme.palette.custom.highlightBlue : undefined,
                 borderRadius: highlight ? '50%' : undefined
             }} >{inning?.[team].runs ?? '-'}</td>
         })}
@@ -84,6 +84,7 @@ function ProbablePitcher({ pitcher }) {
 }
 
 export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
+    const theme = useTheme();
     const navigate = useNavigate();
     const { timeZone } = useBasedash();
 
@@ -215,8 +216,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </tr>
                 </thead>
                 <tbody>
-                    <LinescoreRow currGame={currGame} team='away' />
-                    <LinescoreRow currGame={currGame} team='home' />
+                    <LinescoreRow currGame={currGame} team='away' theme={theme} />
+                    <LinescoreRow currGame={currGame} team='home' theme={theme} />
                 </tbody>
             </table>
             <table id="pitching">
@@ -281,8 +282,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                     sx={{
                                         width: '50%',
                                         '&.Mui-selected': {
-                                            color: '#ffffff',
-                                            borderColor: '#cccccc',
+                                            color: theme.palette.custom.white,
+                                            borderColor: theme.palette.custom.lightGray,
                                             fontWeight: 'bold'
                                         }
                                     }}>{currGame ?
@@ -299,8 +300,8 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                                     sx={{
                                         width: '50%',
                                         '&.Mui-selected': {
-                                            color: '#ffffff',
-                                            borderColor: '#cccccc',
+                                            color: theme.palette.custom.white,
+                                            borderColor: theme.palette.custom.lightGray,
                                             fontWeight: 'bold'
                                         }
                                     }}>
@@ -341,7 +342,7 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                         const position = batter?.position?.abbreviation;
                         const gameStats = batter?.stats?.batting;
                         const seasonStats = batter?.seasonStats?.batting;
-                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID && detailedState !== 'Final') ? '#374bfb' : '' }}>
+                        return <tr key={batterID} style={{ backgroundColor: (currentBatterID === batterID && detailedState !== 'Final') ? theme.palette.custom.highlightBlue : '' }}>
                             <td>{isSub && `\u2937 ${batter?.stats?.batting?.note ? `${batter?.stats?.batting?.note[0]} -` : ''}\u00A0`}
 
                                 <Tooltip title={<PlayerPhoto playerID={batter?.person?.id} width={150} height={150} />}>
