@@ -1,84 +1,73 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import ReactPlayer from 'react-player';
 
 import { Box, Typography } from '@mui/material';
 
-import $ from 'jquery';
-
 import { Consts } from './consts.ts';
 import '../../styles/style.css';
+import { useBasedash } from '../../context/BasedashContext.tsx';
+import { fetchContent } from '../../services/gamesService.ts';
+import { GameTabContent } from '../../components/GameTabContent.tsx';
+import { transformGameMedia } from '../../utils/gameTransformers.ts';
 
 
-export default function Media({ gamePk }) {
+export default function Media() {
 
-    React.useEffect(() => {
-        (async () => {
+    const { selectedGame } = useBasedash();
+    const [media, setMedia] = useState(null);
+    const [isReady, setIsReady] = useState(false);
 
-            var newsDiv = $(document.querySelector('#news-content'));
-            var gameContent = null;
+    useEffect(() => {
+        const getMedia = async () => {
+            if (!selectedGame) {
+                setMedia(null);
+                return;
+            };
 
-            if (gamePk == null) {
-
-                newsDiv.html('<p>Select a game</p>');
-                // newsDiv.removeClass('news-active');
-                // newsDiv.parent().hide();
-            } else {
-                // https://statsapi.mlb.com/api/v1/game/745538/content
-
-                gameContent = await fetch(`https://statsapi.mlb.com/api/v1/game/${gamePk}/content`);
-                gameContent = await gameContent.json();
-
-                // console.log(`game: ${gamePk}`);
-                updateNewsContent(gameContent);
+            try {
+                const content = await fetchContent(selectedGame);
+                const formattedMedia = transformGameMedia(content);
+                setMedia(formattedMedia);
+            } catch (error) {
+                setMedia(null);
+                console.error("News fetch failed:", error);
             }
+        };
 
-            function updateNewsContent(gameContent) {
-                try {
-                    var mediaHighlights = gameContent['highlights']['highlights']['items'];
-                    var mediaContent = '';
-
-                    for (let i = 0; i < mediaHighlights.length; i++) {
-                        var mediaURL = mediaHighlights[i]['playbacks'].filter(mediaHighlight => {
-                            return mediaHighlight.name === 'mp4Avc'
-                        })[0]['url'];
-                        // mediaContent += `<video class="media" controls loading="lazy" poster="${mediaHighlights[i]['image']['cuts'][0]['src']}" data-src="${mediaURL}"></video>`;
-                        mediaContent += `<video class="media" controls loading="lazy" poster="${mediaHighlights[i]['image']['cuts'][0]['src']}"><source src="${mediaURL}" type="video/mp4"></video>`;
-                        mediaContent += `<p class="media-caption">${mediaHighlights[i]['headline']}</p>`;
-                    }
-
-                    newsDiv.html(mediaContent);
-
-                    var videos = document.querySelectorAll('video.media');
-
-                    videos.forEach((video) => {
-                        video.addEventListener('play', function () {
-                            videos.forEach((v) => {
-                                if (v !== video) {
-                                    v.pause();
-                                }
-                            });
-                        });
-                    });
-                } catch {
-                    newsDiv.html('<p>No content</p>');
-                }
-
-
-                // newsDiv.addClass('news-active');
-                // newsDiv.parent().show();
-            }
-        })();
-    }, [gamePk]);
+        getMedia();
+    }, [selectedGame]);
 
     return (
-        <>
-            <Typography variant="h3">Media</Typography>
-        </>
-        // <>
-        //     <div id="news-content"></div>
-        // </>
+        <GameTabContent>
+            {media ?
+                <>
+                    {media.map((m, i) => {
+                        return <Box key={i} sx={{ mb: 2 }}>
+                            <Box key={i} sx={{
+                                aspectRatio: '16 / 9',
+                                '&:hover': { opacity: 0.8 },
+                                transition: 'opacity 0.2s',
+                                overflow: 'hidden'
+                            }}>
+                                <ReactPlayer
+                                    key={m.videoURL}
+                                    src={m.videoURL}
+                                    light={m.imageURL}
+                                    width="100%"
+                                    height="100%"
+                                    controls
+                                />
+                            </Box>
+                            <Typography variant="h6">{m.title}</Typography>
+                        </Box>
+                    })}
+                </> :
+                <>
+                    <Typography variant="h5">No content</Typography>
+                </>}
+        </GameTabContent>
     )
-
 }

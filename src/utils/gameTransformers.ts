@@ -174,7 +174,7 @@ export const transformGameArticle = (content) => {
     }
 
     const editorial = content?.editorial?.recap?.mlb;
-    const authors = editorial.contributors.flatMap(c => c.name);
+    const authors = editorial.contributors?.flatMap(c => c.name);
 
     const article = {
         headline: '',
@@ -186,11 +186,42 @@ export const transformGameArticle = (content) => {
     };
 
     article.headline = editorial?.headline;
-    article.author = authors.join(', ');
+    article.author = (Object.keys(editorial?.contributors?.[0]).length > 0) ? authors.join(', ') : '';
     article.imageURL = editorial?.photo?.cuts?.[0].src;
     article.date = shortYearFormatter.format(new Date(editorial?.date));
     article.body = editorial?.body;
     article.slug = editorial?.slug;
 
     return article;
+}
+
+
+
+export const transformGameMedia = (content) => {
+
+    const highlights = content?.highlights?.highlights?.items;
+
+    if (!highlights) {
+        return null;
+    }
+
+    interface Media {
+        title: string,
+        imageURL: string,
+        videoURL: string
+    }
+
+    const media: Media[] = [];
+
+    highlights.forEach(highlight => {
+        console.log(highlight?.playbacks?.[2]?.url);
+        media.push({
+            title: highlight?.title,
+            imageURL: highlight?.image?.cuts?.[0]?.src,
+            videoURL: highlight?.playbacks?.[0]?.url
+        });
+    });
+
+
+    return media;
 }

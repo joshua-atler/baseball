@@ -78,10 +78,10 @@ export const Games = () => {
                     </Tabs>
                     <Box sx={{ width: '100%' }}>
                         {selectedGame ? <>
-                            {getTabValue(tabValue) === "Plays" && <Plays />}
-                            {getTabValue(tabValue) === "News" && <GameArticle />}
-                            {getTabValue(tabValue) === "Media" && <Media />}
-                            {getTabValue(tabValue) === "Win Probability" && <WinProb />}
+                            {getTabValue(tabValue) === "Plays" && <Plays key={selectedGame} />}
+                            {getTabValue(tabValue) === "News" && <GameArticle key={selectedGame} />}
+                            {getTabValue(tabValue) === "Media" && <Media key={selectedGame} />}
+                            {getTabValue(tabValue) === "Win Probability" && <WinProb key={selectedGame} />}
                         </> : <>
                             <GameTabContent>
                                 <Typography variant="h5">Select a game</Typography>

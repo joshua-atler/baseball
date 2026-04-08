@@ -897,16 +897,6 @@ div#roster-dt_wrapper div.dt-search {
     width: 75ch !important;
 } */
 
-/* #news-content {
-    background-color: #2c323a;
-    border-radius: 20px;
-    padding: 2rem;
-    margin: 0 auto;
-    width: 600px;
-    max-height: 900px;
-    overflow-y: auto;
-} */
-
 #win-prob-chart {
     background-color: #2c323a;
     border-radius: 20px;
@@ -914,66 +904,14 @@ div#roster-dt_wrapper div.dt-search {
     width: 600px;
 }
 
-
-/* .news-active {
-    overflow-y: scroll;
-} */
-
-/* table#news>thead>tr:nth-child(1)>th>span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    width: 40%;
-    background-color: #555555;
-    padding: 10px;
-    border-radius: 20px;
-    user-select: none;
-    transition: 0.5s;
-} */
-
-/* table#news>thead>tr:nth-child(1)>th>span:nth-child(1) {
-    float: left;
-}
-
-table#news>thead>tr:nth-child(1)>th>span:nth-child(2) {
-    float: right;
-} */
-
-/* table#news>thead>tr:nth-child(1)>th>span:hover {
-    background-color: #1735da;
-} */
-
-/* table#news h2 {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-table#news h3 {
-    font-size: 18px;
-    font-weight: normal;
-} */
-
-/* table#news p {
-    font-family: Georgia;
-} */
-
-#news-content blockquote.twitter-tweet {
+/* #news-content blockquote.twitter-tweet {
     background: #1b1b1f;
     border: 1px solid #e1e8ed;
     border-radius: 5px;
     padding: 15px;
     max-width: 550px;
     margin: auto;
-}
-
-#news-content .media {
-    width: 100%;
-}
-
-#news-content p.media-caption {
-    margin-bottom: 45px;
-}
+}*/
 
 #player-stats-photo {
     /* margin-top: 10px; */
