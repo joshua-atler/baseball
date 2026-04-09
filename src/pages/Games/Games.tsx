@@ -10,6 +10,7 @@ import Boxscore from './Boxscore';
 import Plays from './Plays';
 import GameArticle from './GameArticle';
 import Media from './Media';
+import GameStats from './GameStats';
 import WinProb from './WinProb';
 import { useBasedash } from '../../context/BasedashContext';
 import { GameTabContent } from '../../components/GameTabContent';
@@ -46,7 +47,7 @@ export const Games = () => {
     const [tabValue, setTabValue] = useState('Boxscore');
 
     const getTabValue = (value) => {
-        return ["Plays", "News", "Media", "Win Probability"].includes(value) ? value : "Plays";
+        return ["Plays", "News", "Media", "Stats", "Win Probability"].includes(value) ? value : "Plays";
     }
 
     return (
@@ -74,6 +75,7 @@ export const Games = () => {
                         <Tab label="Plays" value={"Plays"} />
                         <Tab label="News" value={"News"} />
                         <Tab label="Media" value={"Media"} />
+                        <Tab label="Stats" value={"Stats"} />
                         <Tab label="Win Probability" value={"Win Probability"} />
                     </Tabs>
                     <Box sx={{ width: '100%' }}>
@@ -81,6 +83,7 @@ export const Games = () => {
                             {getTabValue(tabValue) === "Plays" && <Plays key={selectedGame} />}
                             {getTabValue(tabValue) === "News" && <GameArticle key={selectedGame} />}
                             {getTabValue(tabValue) === "Media" && <Media key={selectedGame} />}
+                            {getTabValue(tabValue) === "Stats" && <GameStats key={selectedGame} />}
                             {getTabValue(tabValue) === "Win Probability" && <WinProb key={selectedGame} />}
                         </> : <>
                             <GameTabContent>

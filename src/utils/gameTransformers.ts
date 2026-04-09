@@ -196,7 +196,6 @@ export const transformGameArticle = (content) => {
 }
 
 
-
 export const transformGameMedia = (content) => {
 
     const highlights = content?.highlights?.highlights?.items;
@@ -224,4 +223,33 @@ export const transformGameMedia = (content) => {
 
 
     return media;
+}
+
+export const transformGameStats = (gameContent) => {
+
+    const awayTeamName = gameContent?.liveData?.boxscore?.teams?.away?.team?.name;
+    const homeTeamName = gameContent?.liveData?.boxscore?.teams?.home?.team?.name;
+    const awayTeam = Consts.teamsDetails[awayTeamName];
+    const homeTeam = Consts.teamsDetails[homeTeamName];
+
+    const awayStats = gameContent?.liveData?.boxscore?.teams?.away?.teamStats;
+    const homeStats = gameContent?.liveData?.boxscore?.teams?.home?.teamStats;
+
+    console.log('awayStats');
+    console.log(awayStats);
+
+    const gameStats = {
+        away: {
+            team: awayTeam,
+            stats: awayStats,
+        },
+        home: {
+            team: homeTeam,
+            stats: homeStats
+        }
+    };
+
+    console.log(gameStats);
+
+    return gameStats;
 }

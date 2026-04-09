@@ -8,6 +8,7 @@ declare module '@mui/material/styles' {
             lightGray: string;
             darkGray: string;
             highlightBlue: string;
+            highlightGreen: string;
         };
     }
     interface PaletteOptions {
@@ -17,6 +18,7 @@ declare module '@mui/material/styles' {
             lightGray?: string;
             darkGray?: string;
             highlightBlue?: string;
+            highlightGreen?: string;
         };
     }
 }
@@ -62,7 +64,8 @@ export const baseDashTheme = createTheme({
             white: '#ffffff',
             lightGray: '#666666',
             darkGray: '#444444',
-            highlightBlue: '#374bfb'
+            highlightBlue: '#374bfb',
+            highlightGreen: '#41ff4181'
         },
     },
 });
