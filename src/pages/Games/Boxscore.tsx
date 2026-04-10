@@ -19,7 +19,7 @@ import { transformStandingsForBoxscore } from '../../utils/standingsTransformers
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
 const cleanBroadcastName = (name) => {
-  return name.split(/\s+presented\s+by\s+/i)[0].trim();
+    return name.split(/\s+presented\s+by\s+/i)[0].trim();
 };
 
 function LinescoreRow({ currGame, team, theme }) {
@@ -90,6 +90,8 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
     const theme = useTheme();
     const navigate = useNavigate();
     const { selectedGame, selectedGameMetadata, timeZone } = useBasedash();
+
+    console.log(selectedGameMetadata);
 
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
@@ -196,48 +198,98 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                             <>
                                 {`${currGame?.gameData?.datetime?.officialDate} ${currGame?.gameData?.datetime?.time} ${currGame?.gameData?.datetime?.ampm}`}
                             </> : ''}</Typography>
-                        <a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/game/${selectedGame}`}>
-                            {'Recap'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
-                        </a>
-                        <a target="_blank" rel="noopener noreferrer" href={gamedayUrl}>
-                            {'mlb.com'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
-                        </a>
+                        <Chip
+                            component="a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={`https://www.mlb.com/stories/game/${selectedGame}`}
+                            label="Recap"
+                            color="info"
+                            icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                            sx={{
+                                flexDirection: 'row-reverse',
+                                '& .MuiChip-icon': {
+                                    margin: 0,
+                                    marginLeft: '4px',
+                                    marginRight: '10px',
+                                    fontSize: '1.2rem',
+                                },
+                                '& .MuiChip-label': {
+                                    paddingRight: '0px',
+                                }
+                            }}
+                            clickable
+                        >
+                        </Chip>
+                        <Chip
+                            component="a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={gamedayUrl}
+                            label="mlb.com"
+                            color="info"
+                            icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                            sx={{
+                                flexDirection: 'row-reverse',
+                                '& .MuiChip-icon': {
+                                    margin: 0,
+                                    marginLeft: '4px',
+                                    marginRight: '10px',
+                                    fontSize: '1.2rem',
+                                },
+                                '& .MuiChip-label': {
+                                    paddingRight: '0px',
+                                }
+                            }}
+                            clickable
+                        >
+                        </Chip>
                     </>
                 }
             </Box>}
             <Box sx={{ height: 40, display: 'flex', justifyContent: 'space-between', fontSize: 18 }}>
                 {currGame && <>
-                    <div style={{ minWidth: '120px', display: 'inline-block' }}>
-                        {selectedGameMetadata.tickets && (
-                            <Chip
-                                component="a"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={selectedGameMetadata.tickets}
-                                label="Tickets"
-                                color="success"
-                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
-                                sx={{
-                                    flexDirection: 'row-reverse',
-                                    '& .MuiChip-icon': {
-                                        margin: 0,
-                                        marginLeft: '4px',
-                                        marginRight: '10px',
-                                        fontSize: '1.2rem',
-                                    },
-                                    '& .MuiChip-label': {
-                                        paddingRight: '0px',
-                                    }
-                                }}
-                                clickable
-                            >
-                            </Chip>
-                        )}
-                    </div>
+                    {selectedGameMetadata?.tickets && (
+                        <Chip
+                            component="a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={selectedGameMetadata.tickets}
+                            label="Tickets"
+                            color="success"
+                            icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                            sx={{
+                                flexDirection: 'row-reverse',
+                                '& .MuiChip-icon': {
+                                    margin: 0,
+                                    marginLeft: '4px',
+                                    marginRight: '10px',
+                                    fontSize: '1.2rem',
+                                },
+                                '& .MuiChip-label': {
+                                    paddingRight: '0px',
+                                }
+                            }}
+                            clickable
+                        >
+                        </Chip>
+                    )}
+                    {/* <div style={{ minWidth: '120px', display: 'inline-block' }}>
+                    </div> */}
+                    {selectedGameMetadata?.seriesStatus && (
+                        <Chip
+                            target="_blank"
+                            label={`Game ${selectedGameMetadata.seriesStatus.gameNumber}/${selectedGameMetadata.seriesStatus.totalGames}${selectedGameMetadata.seriesStatus.result ? ` - ${selectedGameMetadata.seriesStatus.result}` : ''}`}
+                            color="warning"
+                            variant="outlined"
+                        >
+                        </Chip>
+                    )}
+                    {/* <div style={{ minWidth: '120px', display: 'inline-block' }}>
+                    </div> */}
                     <Stack direction="row" spacing={1}>
-                        {[...new Set(selectedGameMetadata.broadcasts)].map((b) => {
+                        {[...new Set(selectedGameMetadata?.broadcasts)].map((b) => {
                             return <Chip
-                                sx={{ userSelect: 'none' }}
                                 key={b}
                                 label={cleanBroadcastName(b)}
                                 color="info"

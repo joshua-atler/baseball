@@ -65,13 +65,15 @@ export default function GamesList({}) {
         setSelectedGame(tableData[indexes].gamePk);
         setSelectedGameMetadata({
             tickets: tableData[indexes].gameMetadata.tickets,
-            broadcasts: tableData[indexes].gameMetadata.broadcasts
+            broadcasts: tableData[indexes].gameMetadata.broadcasts,
+            seriesStatus: tableData[indexes].gameMetadata.seriesStatus
         })
-    }
+    };
 
     const handleDeselect = (e, dt, type, indexes) => {
         setSelectedGame(null);
-    }
+        setSelectedGameMetadata(null);
+    };
 
     const handleTeamChange = useCallback((val) => {
         setSelectedTeams(val);
