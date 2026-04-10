@@ -25,10 +25,9 @@ import { formatter, shortYearFormatter } from '../../utils/dateFormatters.ts';
 
 DataTable.use(DT);
 
-export default function GamesList({
-    setSelectedGame
-}) {
+export default function GamesList({}) {
     const theme = useTheme();
+    const { setSelectedGame, setSelectedGameMetadata } = useBasedash();
 
     const [progress, setProgress] = useState(0);
     const [isLoading, setIsLoading] = useState('manual');
@@ -47,6 +46,7 @@ export default function GamesList({
 
     const columns = [
         { data: 'gamePk', title: '', visible: false },
+        { data: 'gameMetadata', title: '', visible: false},
         { data: 'date', title: 'Date' },
         { data: 'time', title: 'Time' },
         { data: 'away', title: 'Away' },
@@ -62,7 +62,11 @@ export default function GamesList({
     const updateTableRef = useRef(null);
 
     const handleSelect = (e, dt, type, indexes) => {
-        setSelectedGame(tableData[indexes]['gamePk']);
+        setSelectedGame(tableData[indexes].gamePk);
+        setSelectedGameMetadata({
+            tickets: tableData[indexes].gameMetadata.tickets,
+            broadcasts: tableData[indexes].gameMetadata.broadcasts
+        })
     }
 
     const handleDeselect = (e, dt, type, indexes) => {

@@ -7,6 +7,7 @@ export type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 export const BasedashProvider = ({ children }) => {
 
     const [selectedGame, setSelectedGame] = useState(null);
+    const [selectedGameMetadata, setSelectedGameMetadata] = useState(null);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [timeZone, setTimeZone] = useState<TimeZone>('ET');
 
@@ -19,6 +20,8 @@ export const BasedashProvider = ({ children }) => {
     const state = useMemo(() => ({
         selectedGame,
         setSelectedGame,
+        selectedGameMetadata,
+        setSelectedGameMetadata,
         selectedPlayer,
         setSelectedPlayer,
         timeZone,

@@ -33,7 +33,6 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
     let progressAmount = 0;
 
-
     const gamePromises = gamesForDates.map(async (game) => {
         const url = 'https://statsapi.mlb.com' + game['link'];
 
@@ -113,51 +112,59 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         }
 
         const currGame = {
-            'gamePk': '',
-            'date': '',
-            'time': '',
-            'away': '',
-            'awayScore': '',
-            'home': '',
-            'homeScore': '',
-            'inning': '',
-            'status': ''
+            gamePk: '',
+            gameMetadata: {
+                tickets: '',
+                broadcasts: {}
+            },
+            date: '',
+            time: '',
+            away: '',
+            awayScore: '',
+            home: '',
+            homeScore: '',
+            inning: '',
+            status: ''
         };
-        currGame['gamePk'] = gameResponse['gamePk'];
-        currGame['date'] = dateString;
-        currGame['time'] = timeString;
+        currGame.gamePk = gameResponse.gamePk;
+        currGame.date = dateString;
+        currGame.time = timeString;
         if (awayTeam in Consts.teamsDetails) {
-            currGame['away'] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam].logo}"><span>${awayTeam}</span>`;
+            currGame.away = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam].logo}"><span>${awayTeam}</span>`;
         } else {
-            currGame['away'] = awayTeam;
+            currGame.away = awayTeam;
         }
-        currGame['awayScore'] = awayScore;
+        currGame.awayScore = awayScore;
         if (homeTeam in Consts.teamsDetails) {
-            currGame['home'] = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam].logo}"><span>${homeTeam}</span>`;
+            currGame.home = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam].logo}"><span>${homeTeam}</span>`;
         } else {
-            currGame['home'] = homeTeam;
+            currGame.home = homeTeam;
         }
-        currGame['homeScore'] = homeScore;
+        currGame.homeScore = homeScore;
 
         if (status == 'Final') {
             if (homeWin) {
-                currGame['home'] = `<span style="font-weight: bold;">${currGame['home']}</span>`
-                currGame['away'] = `<span style="color: #aaaaaa;">${currGame['away']}</span>`
-                currGame['awayScore'] = `<span style="color: #aaaaaa;">${currGame['awayScore']}</span>`;
+                currGame.home = `<span style="font-weight: bold;">${currGame.home}</span>`
+                currGame.away = `<span style="color: #aaaaaa;">${currGame.away}</span>`
+                currGame.awayScore = `<span style="color: #aaaaaa;">${currGame.awayScore}</span>`;
             } else {
-                currGame['away'] = `<span style="font-weight: bold;">${currGame['away']}</span>`;
-                currGame['home'] = `<span style="color: #aaaaaa;">${currGame['home']}</span>`;
-                currGame['homeScore'] = `<span style="color: #aaaaaa;">${currGame['homeScore']}</span>`;
+                currGame.away = `<span style="font-weight: bold;">${currGame.away}</span>`;
+                currGame.home = `<span style="color: #aaaaaa;">${currGame.home}</span>`;
+                currGame.homeScore = `<span style="color: #aaaaaa;">${currGame.homeScore}</span>`;
             }
         }
 
-        currGame['inning'] = inningData;
-        currGame['status'] = status;
+        currGame.inning = inningData;
+        currGame.status = status;
+
+        currGame.gameMetadata.tickets = game.tickets?.[0]?.ticketLinks?.home;
+        currGame.gameMetadata.broadcasts = game.broadcasts.filter(b => b.type === 'TV').map(b => b.name);
 
         progressAmount++;
         if (onProgress) {
             onProgress(100 * progressAmount / gamesForDates.length);
         }
+
         return currGame;
     });
 
@@ -213,7 +220,6 @@ export const transformGameMedia = (content) => {
     const media: Media[] = [];
 
     highlights.forEach(highlight => {
-        console.log(highlight?.playbacks?.[2]?.url);
         media.push({
             title: highlight?.title,
             imageURL: highlight?.image?.cuts?.[0]?.src,
@@ -235,9 +241,6 @@ export const transformGameStats = (gameContent) => {
     const awayStats = gameContent?.liveData?.boxscore?.teams?.away?.teamStats;
     const homeStats = gameContent?.liveData?.boxscore?.teams?.home?.teamStats;
 
-    console.log('awayStats');
-    console.log(awayStats);
-
     const gameStats = {
         away: {
             team: awayTeam,
@@ -248,8 +251,6 @@ export const transformGameStats = (gameContent) => {
             stats: homeStats
         }
     };
-
-    console.log(gameStats);
 
     return gameStats;
 }

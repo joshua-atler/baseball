@@ -39,7 +39,6 @@ export const Games = () => {
 
     const {
         selectedGame,
-        setSelectedGame,
         selectedPlayer,
         setSelectedPlayer
     } = useBasedash();
@@ -54,15 +53,12 @@ export const Games = () => {
         <>
             <Grid container spacing={2} id="games-grid">
                 <Grid>
-                    <GamesList
-                        setSelectedGame={setSelectedGame}
-                    />
+                    <GamesList/>
                 </Grid>
                 {/* {screenWidth > 2550 ? */}
                 {/* <> */}
                 <Grid>
                     <Boxscore
-                        selectedGame={selectedGame}
                         highlightedPlayer={undefined}
                         // highlightedPlayer={highlightedPlayer}
                         setSelectedPlayer={setSelectedPlayer}

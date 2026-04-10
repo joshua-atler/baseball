@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiExternalLink } from 'react-icons/hi';
+import { HiExternalLink, HiOutlineTicket } from 'react-icons/hi';
 
-import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider, Tooltip } from '@mui/material';
+import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider, Tooltip, Chip } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useTheme } from '@mui/material/styles';
 
@@ -18,13 +18,16 @@ import { fetchStandings } from '../../services/standingsService.ts';
 import { transformStandingsForBoxscore } from '../../utils/standingsTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
+const cleanBroadcastName = (name) => {
+  return name.split(/\s+presented\s+by\s+/i)[0].trim();
+};
 
 function LinescoreRow({ currGame, team, theme }) {
     const currentInning = currGame?.liveData?.linescore?.currentInning;
     const currentTeam = currGame?.liveData?.linescore?.isTopInning ? 'away' : 'home';
 
     return <tr>
-        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? 'Away'}</td>
+        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? team.charAt(0).toUpperCase() + team.slice(1)}</td>
 
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
             const highlight = currentInning === inning.num && currentTeam === team && currGame?.gameData?.status?.detailedState !== 'Final';
@@ -56,7 +59,7 @@ function ProbablePitcher({ pitcher }) {
     const seasonStats = pitcherStats?.find(x => x.type.displayName === 'season')?.splits?.[0]?.stat;
 
     const stats = [
-        { label: 'W-L', description: 'Wins-Losses', value: seasonStats?.wins ? `${seasonStats?.wins}-${seasonStats?.losses}` : '---'},
+        { label: 'W-L', description: 'Wins-Losses', value: seasonStats?.wins ? `${seasonStats?.wins}-${seasonStats?.losses}` : '---' },
         { label: 'ERA', description: 'Earned run average', value: seasonStats?.era ?? '---' },
         { label: 'WHIP', description: 'Walks plus hits per inning pitched', value: seasonStats?.whip ?? '---' },
         { label: 'IP', description: 'Innings pitched', value: seasonStats?.inningsPitched ?? '---' },
@@ -83,10 +86,10 @@ function ProbablePitcher({ pitcher }) {
     </Stack>
 }
 
-export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedPlayer }) {
+export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { timeZone } = useBasedash();
+    const { selectedGame, selectedGameMetadata, timeZone } = useBasedash();
 
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
@@ -202,6 +205,48 @@ export default function Boxscore({ selectedGame, highlightedPlayer, setSelectedP
                     </>
                 }
             </Box>}
+            <Box sx={{ height: 40, display: 'flex', justifyContent: 'space-between', fontSize: 18 }}>
+                {currGame && <>
+                    <div style={{ minWidth: '120px', display: 'inline-block' }}>
+                        {selectedGameMetadata.tickets && (
+                            <Chip
+                                component="a"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={selectedGameMetadata.tickets}
+                                label="Tickets"
+                                color="success"
+                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                                sx={{
+                                    flexDirection: 'row-reverse',
+                                    '& .MuiChip-icon': {
+                                        margin: 0,
+                                        marginLeft: '4px',
+                                        marginRight: '10px',
+                                        fontSize: '1.2rem',
+                                    },
+                                    '& .MuiChip-label': {
+                                        paddingRight: '0px',
+                                    }
+                                }}
+                                clickable
+                            >
+                            </Chip>
+                        )}
+                    </div>
+                    <Stack direction="row" spacing={1}>
+                        {[...new Set(selectedGameMetadata.broadcasts)].map((b) => {
+                            return <Chip
+                                sx={{ userSelect: 'none' }}
+                                key={b}
+                                label={cleanBroadcastName(b)}
+                                color="info"
+                                variant="outlined"
+                            />
+                        })}
+                    </Stack>
+                </>}
+            </Box>
             <table id="linescore">
                 <thead>
                     <tr>
