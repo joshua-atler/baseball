@@ -159,8 +159,6 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         currGame.inning = inningData;
         currGame.status = status;
 
-        console.log(game);
-
         currGame.gameMetadata.tickets = game.tickets?.[0]?.ticketLinks?.home;
         currGame.gameMetadata.broadcasts = game.broadcasts.filter(b => b.type === 'TV').map(b => b.name);
         currGame.gameMetadata.seriesStatus = game.seriesStatus;
@@ -258,4 +256,10 @@ export const transformGameStats = (gameContent) => {
     };
 
     return gameStats;
+}
+
+export const transformGamePlays = (playsContent) => {
+    console.log('transformGamePlays');
+
+    // return [];
 }
