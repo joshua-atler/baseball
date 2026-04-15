@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip } from '@mui/material';
 import { ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
-
+import { useTheme } from '@mui/material/styles';
 
 import $ from 'jquery';
 
@@ -18,46 +18,93 @@ import { fetchGame } from '../../services/gamesService.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGamePlays } from '../../utils/gameTransformers.ts';
+import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
-
-function Inning() {
+function Inning({ inning, theme }) {
     return (
         <Box>
             <Accordion>
                 <AccordionSummary
                     expandIcon={<KeyboardDoubleArrowDown />}
                     sx={{
-                        position: 'sticky',
+                        backgroundColor: theme.palette.custom.innings,
+                        // borderBottom: '1px solid',
+                        // borderColor: 'divider',
+                        '&:hover': {
+                            backgroundColor: theme.palette.custom.inningsHover,
+                        },
+                        display: 'flex',
+                        "& .MuiAccordionSummary-content": {
+                            // justifyContent: "space-between",
+                            alignItems: "center"
+                        },
                     }}
                 >
-                    <Typography component="span">Inning 1 <ArrowDropUp style={{ verticalAlign: 'middle' }} /></Typography>
+                    <img width="50" height="50" className="logo" src={inning.logo} />
+                    <Typography variant="h5">{inning.inningNum}
+                        {
+                            inning.half === 'Top' ? <>
+                                <ArrowDropUp sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+                            </> : <>
+                                <ArrowDropDown sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+                            </>
+                        }</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
                     </Typography>
-                    {Array.from({ length: 40 }).map((_, i) => {
-                        const inningNum = i + 1;
-                        return <Play key={i} description={`desc ${i}`} />
-                    })}
+                    {
+                        inning.plays.map((play, i) => {
+                            return <Play key={i} play={play} theme={theme} />
+                        })
+                    }
                 </AccordionDetails>
             </Accordion>
         </Box>
     );
 }
 
-function Play({ description }) {
+function Play({ play, theme }) {
+    console.log(play);
+    const result = play?.result?.event;
+    const matchup = play?.matchup;
+    console.log(matchup?.batter);
+    console.log(matchup?.pitcher);
+
     return (
         <>
             <Box>
-                <Accordion elevation={10}>
+                <Accordion variant="outlined">
                     <AccordionSummary
                         expandIcon={<KeyboardDoubleArrowDown />}
+                        sx={{
+                            backgroundColor: theme.palette.custom.plays,
+                            // borderBottom: '1px solid',
+                            // borderColor: 'divider',
+                            '&:hover': {
+                                backgroundColor: theme.palette.custom.playsHover,
+                            },
+                            display: 'flex',
+                            "& .MuiAccordionSummary-content": {
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                            },
+                        }}
                     >
-                        <Typography component="span">{description}</Typography>
+                        <Typography component="span">{result ? result : 'At Bat'}</Typography>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center'
+                        }}>
+                            <Typography component="span">{matchup?.batter?.fullName}</Typography>
+                            <PlayerPhoto playerID={matchup?.batter?.id} width={100} height={100} />
+                        </Box>
+                        {/* <PlayerPhoto playerID={matchup?.pitcher?.id} width={100} height={100} /> */}
+                        {/* <Typography component="span">{matchup?.pitcher?.fullName}</Typography> */}
                     </AccordionSummary>
                     <AccordionDetails>
                         <Typography>
-                            {description}
+                            play
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
@@ -68,8 +115,9 @@ function Play({ description }) {
 
 export default function Plays({ }) {
 
+    const theme = useTheme();
     const { selectedGame } = useBasedash();
-    const [plays, setPlays] = useState(null);
+    const [innings, setInnings] = useState([]);
 
     // React.useEffect(() => {
     //     (async () => {
@@ -502,17 +550,17 @@ export default function Plays({ }) {
     useEffect(() => {
         const getPlays = async () => {
             if (!selectedGame) {
-                setPlays(null);
+                setInnings([]);
                 return;
             };
 
             try {
-                const playsContent = await fetchGame(selectedGame, ['credits', 'alignment', 'flags']);
-                console.log(playsContent);
-                const formattedPlays = transformGamePlays(playsContent);
-                setPlays(formattedPlays);
+                const inningsContent = await fetchGame(selectedGame, ['credits', 'alignment', 'flags']);
+                console.log(inningsContent);
+                const formattedPlays = transformGamePlays(inningsContent);
+                setInnings(formattedPlays);
             } catch (error) {
-                setPlays(null);
+                setInnings([]);
                 console.error("Team stats fetch failed: ", error);
             }
         };
@@ -524,10 +572,13 @@ export default function Plays({ }) {
         <>
             <GameTabContent>
                 {
-                    plays ?
+                    innings.length !== 0 ?
                         <>
-                            <Typography variant="h3">Plays</Typography>
-                            <Inning />
+                            {
+                                innings.map((inning, i) => {
+                                    return <Inning key={i} inning={inning} theme={theme} />
+                                })
+                            }
                         </>
                         :
                         <>

@@ -9,6 +9,10 @@ declare module '@mui/material/styles' {
             darkGray: string;
             highlightBlue: string;
             highlightGreen: string;
+            plays: string;
+            playsHover: string;
+            innings: string;
+            inningsHover: string;
         };
     }
     interface PaletteOptions {
@@ -19,6 +23,10 @@ declare module '@mui/material/styles' {
             darkGray?: string;
             highlightBlue?: string;
             highlightGreen?: string;
+            plays: string;
+            playsHover: string;
+            innings: string;
+            inningsHover: string;
         };
     }
 }
@@ -65,7 +73,11 @@ export const baseDashTheme = createTheme({
             lightGray: '#666666',
             darkGray: '#444444',
             highlightBlue: '#374bfb',
-            highlightGreen: '#41ff4181'
+            highlightGreen: '#41ff4181',
+            innings: '#222222',
+            inningsHover: '#333333',
+            plays: '#555555',
+            playsHover: '#666666',
         },
     },
 });

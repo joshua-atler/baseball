@@ -91,8 +91,6 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
     const navigate = useNavigate();
     const { selectedGame, selectedGameMetadata, timeZone } = useBasedash();
 
-    console.log(selectedGameMetadata);
-
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
     const [teamRecords, setTeamRecords] = useState(null);

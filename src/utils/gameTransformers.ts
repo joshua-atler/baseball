@@ -259,7 +259,57 @@ export const transformGameStats = (gameContent) => {
 }
 
 export const transformGamePlays = (playsContent) => {
-    console.log('transformGamePlays');
+    // console.log('transformGamePlays');
 
-    // return [];
+
+    // organize returned data into innings and plays
+
+    const playsByInning = playsContent?.liveData?.plays?.playsByInning;
+    const allPlays = playsContent?.liveData?.plays?.allPlays;
+
+    if (allPlays.length === 0) {
+        return [];
+    }
+
+    const formattedPlays = [];
+    // relevant play data in each half inning
+
+    const awayAbbr = playsContent?.gameData?.teams?.away?.abbreviation;
+    const homeAbbr = playsContent?.gameData?.teams?.home?.abbreviation;
+
+    for (let i = 0; i < playsByInning.length; i++) {
+        const inning = playsByInning[i];
+
+        if (inning.top.length > 0) {
+            // const topPlays = inning.top;
+            const topPlays = allPlays.slice(inning.top.at(0), inning.top.at(-1) + 1);
+            formattedPlays.push({
+                inningNum: i + 1,
+                half: 'Top',
+                logo: `/teamLogos/${awayAbbr}.svg`,
+                plays: topPlays
+            });
+        }
+        if (inning.bottom.length > 0) {
+            const bottomPlays = allPlays.slice(inning.bottom.at(0), inning.bottom.at(-1) + 1);
+            formattedPlays.push({
+                inningNum: i + 1,
+                half: 'Bottom',
+                logo: `/teamLogos/${homeAbbr}.svg`,
+                plays: bottomPlays
+            });
+        }
+    }
+
+    // console.log('playsByInning');
+    // console.log(playsByInning);
+    // console.log('formattedPlays');
+    // console.log(formattedPlays);
+
+    for (let i = 0; i < 5; i++) {
+        const play = allPlays[i];
+        console.log(play);
+    }
+
+    return formattedPlays;
 }
