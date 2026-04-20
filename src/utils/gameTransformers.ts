@@ -306,10 +306,5 @@ export const transformGamePlays = (playsContent) => {
     // console.log('formattedPlays');
     // console.log(formattedPlays);
 
-    for (let i = 0; i < 5; i++) {
-        const play = allPlays[i];
-        console.log(play);
-    }
-
     return formattedPlays;
 }

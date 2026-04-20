@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip } from '@mui/material';
-import { ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack } from '@mui/material';
+import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import $ from 'jquery';
@@ -22,45 +22,46 @@ import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
 function Inning({ inning, theme }) {
     return (
-        <Box>
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<KeyboardDoubleArrowDown />}
-                    sx={{
-                        backgroundColor: theme.palette.custom.innings,
-                        // borderBottom: '1px solid',
-                        // borderColor: 'divider',
-                        '&:hover': {
-                            backgroundColor: theme.palette.custom.inningsHover,
-                        },
-                        display: 'flex',
-                        "& .MuiAccordionSummary-content": {
-                            // justifyContent: "space-between",
-                            alignItems: "center"
-                        },
-                    }}
-                >
-                    <img width="50" height="50" className="logo" src={inning.logo} />
-                    <Typography variant="h5">{inning.inningNum}
-                        {
-                            inning.half === 'Top' ? <>
-                                <ArrowDropUp sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
-                            </> : <>
-                                <ArrowDropDown sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
-                            </>
-                        }</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                    </Typography>
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<KeyboardDoubleArrowDown />}
+                sx={{
+                    backgroundColor: theme.palette.custom.innings,
+                    // borderBottom: '1px solid',
+                    // borderColor: 'divider',
+                    '&:hover': {
+                        backgroundColor: theme.palette.custom.inningsHover,
+                    },
+                    display: 'flex',
+                    "& .MuiAccordionSummary-content": {
+                        // justifyContent: "space-between",
+                        alignItems: "center"
+                    },
+                }}
+            >
+                <img width="50" height="50" className="logo" src={inning.logo} />
+                <Typography variant="h5">{inning.inningNum}
                     {
-                        inning.plays.map((play, i) => {
-                            return <Play key={i} play={play} theme={theme} />
-                        })
+                        inning.half === 'Top' ? <>
+                            <ArrowDropUp sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+                        </> : <>
+                            <ArrowDropDown sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+                        </>
                     }
-                </AccordionDetails>
-            </Accordion>
-        </Box>
+                </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>
+                </Typography>
+                {
+                    inning.plays.map((play, i) => {
+                        return <Box key={i}>
+                            <Play play={play} theme={theme} />
+                        </Box>
+                    })
+                }
+            </AccordionDetails>
+        </Accordion>
     );
 }
 
@@ -68,48 +69,134 @@ function Play({ play, theme }) {
     console.log(play);
     const result = play?.result?.event;
     const matchup = play?.matchup;
-    console.log(matchup?.batter);
-    console.log(matchup?.pitcher);
+
+    return (
+        <Accordion variant="outlined">
+            <AccordionSummary
+                expandIcon={<KeyboardDoubleArrowDown />}
+                sx={{
+                    backgroundColor: play?.about?.isScoringPlay ? '#008800' : theme.palette.custom.plays,
+                    // borderBottom: '1px solid',
+                    // borderColor: 'divider',
+                    '&:hover': {
+                        backgroundColor: play?.about?.isScoringPlay ? '#009900' : theme.palette.custom.playsHover,
+                    },
+                    // display: 'flex',
+                    // "& .MuiAccordionSummary-content": {
+                    //     justifyContent: "space-between",
+                    //     alignItems: "center"
+                    // },
+                }}
+            >
+                <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                    alignItems: 'center',
+                    width: '100%',
+                    gap: 2
+                }}>
+                    <Typography>{result ? result : 'At Bat'}</Typography>
+                    <Stack direction="row">
+                        {Array.from({ length: 3 - play?.count?.outs }).map((_, i) => {
+                            return <CircleOutlined key={`empty-${i}`} sx={{ verticalAlign: 'middle', fontSize: 20 }} />
+                        })}
+                        {Array.from({ length: play?.count?.outs }).map((_, i) => {
+                            return <Circle key={`filled-${i}`} sx={{ verticalAlign: 'middle', fontSize: 20 }} />
+                        })}
+                    </Stack>
+                    {/* TODO: runners */}
+                    <Typography>{matchup?.batter?.fullName}</Typography>
+                    <PlayerPhoto playerID={matchup?.batter?.id} width={100} height={100} />
+                </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography>
+                    {play?.result?.description}
+                </Typography>
+                <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    alignItems: 'center',
+                    width: '100%',
+                    gap: 2,
+                    mt: 2,
+                    padding: 5,
+                    backgroundColor: theme.palette.custom.dark
+                }}>
+                    <Typography>strike zone</Typography>
+                    <Stack direction="column" gap={2}>
+                        {play?.playEvents?.map((playEvent, i) => {
+                            return <PlayEvent key={i} playEvent={playEvent} />
+                        })}
+                    </Stack>
+                </Box>
+            </AccordionDetails>
+        </Accordion>
+    );
+}
+
+function PlayEvent({ playEvent, theme }) {
+    const callDescription = playEvent?.details?.call?.description;
+    const description = playEvent?.details?.type?.description;
+    const count = `${playEvent?.count?.balls}-${playEvent?.count?.strikes}`;
 
     return (
         <>
-            <Box>
-                <Accordion variant="outlined">
-                    <AccordionSummary
-                        expandIcon={<KeyboardDoubleArrowDown />}
-                        sx={{
-                            backgroundColor: theme.palette.custom.plays,
-                            // borderBottom: '1px solid',
-                            // borderColor: 'divider',
-                            '&:hover': {
-                                backgroundColor: theme.palette.custom.playsHover,
-                            },
-                            display: 'flex',
-                            "& .MuiAccordionSummary-content": {
-                                justifyContent: "space-between",
-                                alignItems: "center"
-                            },
-                        }}
-                    >
-                        <Typography component="span">{result ? result : 'At Bat'}</Typography>
+            {
+                playEvent?.isPitch ? <>
+                    <Box>
                         <Box sx={{
                             display: 'flex',
-                            alignItems: 'center'
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%',
                         }}>
-                            <Typography component="span">{matchup?.batter?.fullName}</Typography>
-                            <PlayerPhoto playerID={matchup?.batter?.id} width={100} height={100} />
+                            <Typography sx={{ fontWeight: 'bold' }}>
+                                {callDescription}
+                            </Typography>
+                            <Typography>{count}</Typography>
                         </Box>
-                        {/* <PlayerPhoto playerID={matchup?.pitcher?.id} width={100} height={100} /> */}
-                        {/* <Typography component="span">{matchup?.pitcher?.fullName}</Typography> */}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Typography>
-                            play
-                        </Typography>
-                    </AccordionDetails>
-                </Accordion>
-            </Box>
+                        <Typography>{description}</Typography>
+                    </Box>
+                </> : <>
+                    <Box>
+                        {/* <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            width: '100%',
+                        }}>
+                            <Typography sx={{ fontWeight: 'bold' }}>
+                                {callDescription}
+                            </Typography>
+                            <Typography>{count}</Typography>
+                        </Box> */}
+                        <Typography>{playEvent?.details?.description}</Typography>
+                    </Box>
+                </>
+            }
         </>
+        // {
+        //     description === 'Top' ? <>
+        //         <ArrowDropUp sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+        //     </> : <>
+        //         <ArrowDropDown sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
+        // </>
+        // }
+        // <Box>
+        //     <Box sx={{
+        //         display: 'flex',
+        //         justifyContent: 'space-between',
+        //         alignItems: 'center',
+        //         width: '100%',
+        //     }}>
+        //         <Typography sx={{ fontWeight: 'bold' }}>
+        //             {callDescription}
+        //         </Typography>
+        //         <Typography>{count}</Typography>
+        //     </Box>
+        //     <Typography>{description}</Typography>
+        // </Box>
     );
 }
 
@@ -569,24 +656,24 @@ export default function Plays({ }) {
     }, [selectedGame]);
 
     return (
-        <>
-            <GameTabContent>
-                {
-                    innings.length !== 0 ?
-                        <>
-                            {
-                                innings.map((inning, i) => {
-                                    return <Inning key={i} inning={inning} theme={theme} />
-                                })
-                            }
-                        </>
-                        :
-                        <>
-                            <Typography variant="h3">No Plays</Typography>
-                        </>
-                }
-            </GameTabContent>
-        </>
+        <GameTabContent>
+            {
+                innings.length !== 0 ?
+                    <>
+                        {
+                            innings.map((inning, i) => {
+                                return <Box key={i}>
+                                    <Inning inning={inning} theme={theme} />
+                                </Box>
+                            })
+                        }
+                    </>
+                    :
+                    <>
+                        <Typography variant="h3">No Plays</Typography>
+                    </>
+            }
+        </GameTabContent>
         // <>
         //     <div id="news-content">
         //         <p>Select a game</p>
