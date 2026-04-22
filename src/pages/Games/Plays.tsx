@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack, Chip, CircularProgress, LinearProgress } from '@mui/material';
+import { HiExternalLink } from 'react-icons/hi';
 import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
@@ -66,7 +67,6 @@ function Inning({ inning, theme }) {
 }
 
 function Play({ play, theme }) {
-    console.log(play);
     const result = play?.result?.event;
     const matchup = play?.matchup;
 
@@ -115,7 +115,7 @@ function Play({ play, theme }) {
                 </Typography>
                 <Box sx={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
+                    gridTemplateColumns: '2fr 3fr',
                     alignItems: 'center',
                     width: '100%',
                     gap: 2,
@@ -126,7 +126,7 @@ function Play({ play, theme }) {
                     <Typography>strike zone</Typography>
                     <Stack direction="column" gap={2}>
                         {play?.playEvents?.map((playEvent, i) => {
-                            return <PlayEvent key={i} playEvent={playEvent} />
+                            return <PlayEvent key={i} playEvent={playEvent} theme={theme} />
                         })}
                     </Stack>
                 </Box>
@@ -145,18 +145,46 @@ function PlayEvent({ playEvent, theme }) {
             {
                 playEvent?.isPitch ? <>
                     <Box>
-                        <Box sx={{
+                        {/* <Box sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             width: '100%',
+                        }}> */}
+                        <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '2fr 1fr 1fr',
+                            alignItems: 'center',
+                            width: '100%',
+                            gap: 2
                         }}>
                             <Typography sx={{ fontWeight: 'bold' }}>
                                 {callDescription}
                             </Typography>
                             <Typography>{count}</Typography>
+                            <Chip
+                                component="a"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={`https://baseballsavant.mlb.com/sporty-videos?playId=${playEvent?.playId}`}
+                                label=""
+                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                                sx={{
+                                    backgroundColor: theme.palette.custom.highlightGreen,
+                                    // flexDirection: 'row-reverse',
+                                    '& .MuiChip-icon': {
+                                        // margin: 0,
+                                        // marginLeft: '4px',
+                                        // marginRight: '5px',
+                                        fontSize: '1.2rem',
+                                    },
+                                }}
+                                clickable
+                            >
+                            </Chip>
                         </Box>
                         <Typography>{description}</Typography>
+                        <Typography>{playEvent?.pitchData?.startSpeed} mph</Typography>
                     </Box>
                 </> : <>
                     <Box>
@@ -205,6 +233,7 @@ export default function Plays({ }) {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
     const [innings, setInnings] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     // React.useEffect(() => {
     //     (async () => {
@@ -641,14 +670,16 @@ export default function Plays({ }) {
                 return;
             };
 
+            setIsLoading(true);
             try {
                 const inningsContent = await fetchGame(selectedGame, ['credits', 'alignment', 'flags']);
-                console.log(inningsContent);
                 const formattedPlays = transformGamePlays(inningsContent);
                 setInnings(formattedPlays);
             } catch (error) {
                 setInnings([]);
                 console.error("Team stats fetch failed: ", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -658,7 +689,22 @@ export default function Plays({ }) {
     return (
         <GameTabContent>
             {
-                innings.length !== 0 ?
+                isLoading ? <>
+                    <Box
+                        sx={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: '50%',
+                            border: '5px solid rgba(255, 255, 255, 0.1)',
+                            borderTop: (theme) => `5px solid ${theme.palette.custom.highlightGreen}`,
+                            animation: 'spin 1s linear infinite',
+                            '@keyframes spin': {
+                                '0%': { transform: 'rotate(0deg)' },
+                                '100%': { transform: 'rotate(360deg)' },
+                            },
+                        }}
+                    />
+                </> : innings.length !== 0 ?
                     <>
                         {
                             innings.map((inning, i) => {
