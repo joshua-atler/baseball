@@ -8,3 +8,6 @@ export const fetchGame = (gamePk: string, hydrations: string[] = []) =>
 
 export const fetchContent = (gamePk: string) =>
     apiClient(false, `/game/${gamePk}/content`);
+
+export const fetchWinProbability = (gamePk: string) =>
+    apiClient(false, `/game/${gamePk}/winProbability`);
