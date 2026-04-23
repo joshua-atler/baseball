@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 
 import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack, Chip, CircularProgress, LinearProgress } from '@mui/material';
 import { HiExternalLink } from 'react-icons/hi';
-import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp } from '@mui/icons-material';
+import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp, ArrowForward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import $ from 'jquery';
@@ -70,6 +70,36 @@ function Play({ play, theme }) {
     const result = play?.result?.event;
     const matchup = play?.matchup;
 
+    console.log(play?.result?.description);
+    // console.log(play?.runners);
+    // const starts = [];
+
+    // const ends = [];
+
+    // console.log(play?.playEvents?.length);
+    // console.log(play?.playEvents[0]?.offense);
+    // console.log(play?.playEvents[play?.playEvents?.length - 1]?.offense);
+
+    const starts = play?.playEvents[0]?.offense;
+    const ends = play?.playEvents[play?.playEvents?.length - 1]?.offense;
+    // console.log(playEvent[?.offense);
+
+    // play?.runners.forEach(runner => {
+    //     if (runner?.movement?.start !== null) {
+    //         starts.push(runner?.movement?.start);
+    //     }
+    //     if (runner?.movement?.end !== 'score') {
+    //         ends.push(runner?.movement?.end);
+    //     }
+    //     console.log(runner?.movement);
+    // });
+
+    console.log('starts');
+    console.log(starts);
+    console.log('ends');
+    console.log(ends);
+    // console.log('-------');
+
     return (
         <Accordion variant="outlined">
             <AccordionSummary
@@ -104,7 +134,11 @@ function Play({ play, theme }) {
                             return <Circle key={`filled-${i}`} sx={{ verticalAlign: 'middle', fontSize: 20 }} />
                         })}
                     </Stack>
-                    {/* TODO: runners */}
+                    <Stack direction="row">
+                        <Baserunners runners={starts} />
+                        <ArrowForward />
+                        <Baserunners runners={ends} />
+                    </Stack>
                     <Typography>{matchup?.batter?.fullName}</Typography>
                     <PlayerPhoto playerID={matchup?.batter?.id} width={100} height={100} />
                 </Box>
@@ -117,7 +151,7 @@ function Play({ play, theme }) {
                     display: 'grid',
                     gridTemplateColumns: '2fr 3fr',
                     alignItems: 'center',
-                    width: '100%',
+                    // width: '100%',
                     gap: 2,
                     mt: 2,
                     padding: 5,
@@ -135,10 +169,39 @@ function Play({ play, theme }) {
     );
 }
 
+function Baserunners({ runners = {}}) {
+
+    console.log(runners);
+
+    const baseData = [['#888888', '#AAAAAA'], ['#888888', '#AAAAAA'], ['#888888', '#AAAAAA']];
+    if (runners.first) {
+        baseData[2][0] = '#EFB21F';
+        baseData[2][1] = '#EFB21F';
+    }
+    if (runners.second) {
+        baseData[1][0] = '#EFB21F';
+        baseData[1][1] = '#EFB21F';
+    }
+    if (runners.third) {
+        baseData[0][0] = '#EFB21F';
+        baseData[0][1] = '#EFB21F';
+    }
+
+    return <svg class="svg" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base">
+        <rect fill={baseData[0][0]} stroke-width="1" stroke={baseData[0][1]} width="6" height="6" transform="translate(5, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
+        <rect fill={baseData[1][0]} stroke-width="1" stroke={baseData[1][1]} width="6" height="6" transform="translate(12, 0.5) rotate(-315)" rx="1px" ry="1px"></rect>
+        <rect fill={baseData[2][0]} stroke-width="1" stroke={baseData[2][1]} width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
+    </svg>;
+}
+
 function PlayEvent({ playEvent, theme }) {
     const callDescription = playEvent?.details?.call?.description;
     const description = playEvent?.details?.type?.description;
     const count = `${playEvent?.count?.balls}-${playEvent?.count?.strikes}`;
+
+    // console.log('playEvent');
+    // console.log(playEvent);
+    // console.log(playEvent?.offense);
 
     return (
         <>
@@ -183,6 +246,9 @@ function PlayEvent({ playEvent, theme }) {
                             >
                             </Chip>
                         </Box>
+                        {/* <Typography>{playEvent?.offense?.first !== undefined && '1'}</Typography>
+                        <Typography>{playEvent?.offense?.second !== undefined && '2'}</Typography>
+                        <Typography>{playEvent?.offense?.third !== undefined && '3'}</Typography> */}
                         <Typography>{description}</Typography>
                         <Typography>{playEvent?.pitchData?.startSpeed} mph</Typography>
                     </Box>
