@@ -119,10 +119,10 @@ function Play({ play, theme }) {
             >
                 <Box sx={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
                     alignItems: 'center',
                     width: '100%',
-                    gap: 2
+                    gap: 1
                 }}>
                     <Typography>{result ? result : 'At Bat'}</Typography>
                     <Stack direction="row">
