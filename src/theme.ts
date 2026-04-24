@@ -9,10 +9,13 @@ declare module '@mui/material/styles' {
             darkGray: string;
             highlightBlue: string;
             highlightGreen: string;
-            plays: string;
-            playsHover: string;
             innings: string;
             inningsHover: string;
+            plays: string;
+            playsHover: string;
+            basesIconEmptyFill: string,
+            basesIconEmptyEdge: string,
+            basesIconRunner: string
         };
     }
     interface PaletteOptions {
@@ -23,10 +26,13 @@ declare module '@mui/material/styles' {
             darkGray?: string;
             highlightBlue?: string;
             highlightGreen?: string;
-            plays: string;
-            playsHover: string;
             innings: string;
             inningsHover: string;
+            plays: string;
+            playsHover: string;
+            basesIconEmptyFill: string,
+            basesIconEmptyEdge: string,
+            basesIconRunner: string
         };
     }
 }
@@ -78,6 +84,9 @@ export const baseDashTheme = createTheme({
             inningsHover: '#333333',
             plays: '#555555',
             playsHover: '#666666',
+            basesIconEmptyFill: '#888888',
+            basesIconEmptyEdge: '#AAAAAA',
+            basesIconRunner: '#EFB21F'
         },
     },
 });

@@ -70,35 +70,34 @@ function Play({ play, theme }) {
     const result = play?.result?.event;
     const matchup = play?.matchup;
 
-    console.log(play?.result?.description);
-    // console.log(play?.runners);
-    // const starts = [];
-
-    // const ends = [];
-
-    // console.log(play?.playEvents?.length);
-    // console.log(play?.playEvents[0]?.offense);
-    // console.log(play?.playEvents[play?.playEvents?.length - 1]?.offense);
-
     const starts = play?.playEvents[0]?.offense;
-    const ends = play?.playEvents[play?.playEvents?.length - 1]?.offense;
-    // console.log(playEvent[?.offense);
+    const ends = structuredClone(starts);
 
-    // play?.runners.forEach(runner => {
-    //     if (runner?.movement?.start !== null) {
-    //         starts.push(runner?.movement?.start);
-    //     }
-    //     if (runner?.movement?.end !== 'score') {
-    //         ends.push(runner?.movement?.end);
-    //     }
-    //     console.log(runner?.movement);
-    // });
+    const nextEnds = { ...ends };
+    const mapBaseToKey = (key) => ({ '1B': 'first', '2B': 'second', '3B': 'third' }[key] || key);
 
-    console.log('starts');
-    console.log(starts);
-    console.log('ends');
-    console.log(ends);
-    // console.log('-------');
+    play?.runners.forEach(runner => {
+        const start = mapBaseToKey(runner.movement.start);
+        if (['first', 'second', 'third'].includes(start)) {
+            delete nextEnds[start];
+        }
+    });
+
+    const finalDestinations = {};
+
+    play?.runners.forEach(runner => {
+        const runnerId = runner.details.runner.id;
+        const endBase = mapBaseToKey(runner.movement.end);
+        const isOut = runner.movement.isOut;
+
+        finalDestinations[runnerId] = { base: endBase, isOut: isOut };
+    });
+
+    Object.values(finalDestinations).forEach(dest => {
+        if (!dest.isOut && ['first', 'second', 'third'].includes(dest.base)) {
+            nextEnds[dest.base] = true;
+        }
+    });
 
     return (
         <Accordion variant="outlined">
@@ -120,10 +119,10 @@ function Play({ play, theme }) {
             >
                 <Box sx={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
                     alignItems: 'center',
                     width: '100%',
-                    gap: 2
+                    gap: 1
                 }}>
                     <Typography>{result ? result : 'At Bat'}</Typography>
                     <Stack direction="row">
@@ -135,9 +134,9 @@ function Play({ play, theme }) {
                         })}
                     </Stack>
                     <Stack direction="row">
-                        <Baserunners runners={starts} />
+                        <Baserunners runners={starts} theme={theme} />
                         <ArrowForward />
-                        <Baserunners runners={ends} />
+                        <Baserunners runners={nextEnds} theme={theme} />
                     </Stack>
                     <Typography>{matchup?.batter?.fullName}</Typography>
                     <PlayerPhoto playerID={matchup?.batter?.id} width={100} height={100} />
@@ -169,28 +168,26 @@ function Play({ play, theme }) {
     );
 }
 
-function Baserunners({ runners = {}}) {
+function Baserunners({ runners = {}, theme }) {
 
-    console.log(runners);
-
-    const baseData = [['#888888', '#AAAAAA'], ['#888888', '#AAAAAA'], ['#888888', '#AAAAAA']];
+    const baseData = [[theme.palette.custom.basesIconEmptyFill, theme.palette.custom.basesIconEmptyEdge], [theme.palette.custom.basesIconEmptyFill, theme.palette.custom.basesIconEmptyEdge], [theme.palette.custom.basesIconEmptyFill, theme.palette.custom.basesIconEmptyEdge]];
     if (runners.first) {
-        baseData[2][0] = '#EFB21F';
-        baseData[2][1] = '#EFB21F';
+        baseData[2][0] = theme.palette.custom.basesIconRunner;
+        baseData[2][1] = theme.palette.custom.basesIconRunner;
     }
     if (runners.second) {
-        baseData[1][0] = '#EFB21F';
-        baseData[1][1] = '#EFB21F';
+        baseData[1][0] = theme.palette.custom.basesIconRunner;
+        baseData[1][1] = theme.palette.custom.basesIconRunner;
     }
     if (runners.third) {
-        baseData[0][0] = '#EFB21F';
-        baseData[0][1] = '#EFB21F';
+        baseData[0][0] = theme.palette.custom.basesIconRunner;
+        baseData[0][1] = theme.palette.custom.basesIconRunner;
     }
 
-    return <svg class="svg" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base">
-        <rect fill={baseData[0][0]} stroke-width="1" stroke={baseData[0][1]} width="6" height="6" transform="translate(5, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
-        <rect fill={baseData[1][0]} stroke-width="1" stroke={baseData[1][1]} width="6" height="6" transform="translate(12, 0.5) rotate(-315)" rx="1px" ry="1px"></rect>
-        <rect fill={baseData[2][0]} stroke-width="1" stroke={baseData[2][1]} width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
+    return <svg className="svg" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base">
+        <rect fill={baseData[0][0]} strokeWidth="1" stroke={baseData[0][1]} width="6" height="6" transform="translate(5, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
+        <rect fill={baseData[1][0]} strokeWidth="1" stroke={baseData[1][1]} width="6" height="6" transform="translate(12, 0.5) rotate(-315)" rx="1px" ry="1px"></rect>
+        <rect fill={baseData[2][0]} strokeWidth="1" stroke={baseData[2][1]} width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
     </svg>;
 }
 
@@ -198,10 +195,6 @@ function PlayEvent({ playEvent, theme }) {
     const callDescription = playEvent?.details?.call?.description;
     const description = playEvent?.details?.type?.description;
     const count = `${playEvent?.count?.balls}-${playEvent?.count?.strikes}`;
-
-    // console.log('playEvent');
-    // console.log(playEvent);
-    // console.log(playEvent?.offense);
 
     return (
         <>
