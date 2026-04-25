@@ -21,6 +21,15 @@ import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGamePlays } from '../../utils/gameTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 
+const strikeZoneWidth = 180;
+const strikeZoneHeight = 240;
+const strikeZoneSide = 17 / 24;
+const sizeMult = 55;
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function Inning({ inning, theme }) {
     return (
         <Accordion>
@@ -82,6 +91,8 @@ function Play({ play, theme }) {
             delete nextEnds[start];
         }
     });
+
+    const pitches = play?.playEvents.filter(p => p.isPitch);
 
     const finalDestinations = {};
 
@@ -149,14 +160,12 @@ function Play({ play, theme }) {
                 <Box sx={{
                     display: 'grid',
                     gridTemplateColumns: '2fr 3fr',
-                    alignItems: 'center',
-                    // width: '100%',
                     gap: 2,
                     mt: 2,
                     padding: 5,
                     backgroundColor: theme.palette.custom.dark
                 }}>
-                    <Typography>strike zone</Typography>
+                    <StrikeZone pitches={pitches} />
                     <Stack direction="column" gap={2}>
                         {play?.playEvents?.map((playEvent, i) => {
                             return <PlayEvent key={i} playEvent={playEvent} theme={theme} />
@@ -191,6 +200,41 @@ function Baserunners({ runners = {}, theme }) {
     </svg>;
 }
 
+function PlayIcon({ desc }) {
+    let pathData = '';
+    console.log(desc);
+    if (desc !== undefined) {
+        if (desc.includes('steals')) {
+            pathData = Consts.pitchIcons['steals'];
+        } else if (desc.includes('error')) {
+            pathData = Consts.pitchIcons['error'];
+        } else if (desc.includes('replaces') || desc.includes('switch')) {
+            pathData = Consts.pitchIcons['switch'];
+        } else if (desc.includes('Visit') || desc.includes('Timeout') || desc.includes('Step Off')) {
+            pathData = Consts.pitchIcons['pause'];
+        } else if (desc.includes('Status Change')) {
+            console.log('STATUS CHANGE');
+            pathData = Consts.pitchIcons['status'];
+        } else if (desc.includes('caught') || desc.includes('Automatic')) {
+            pathData = Consts.pitchIcons['caught'];
+        } else if (desc.includes('remains')) {
+            pathData = Consts.pitchIcons['remains'];
+        } else if (desc.includes('Pickoff Attempt') || desc.includes('picks off') || desc.includes('Wild pitch') || desc.includes('Passed ball') || desc.includes('Delay')) {
+            pathData = Consts.pitchIcons['warning'];
+        } else if (desc.includes('Timer Violation')) {
+            pathData = Consts.pitchIcons['timer'];
+        }
+    }
+
+    if (pathData === '') {
+        return null;
+    }
+
+    return <svg height="20px" viewBox="0 -960 960 960" width="20px">
+        <path d={pathData} fill="#ffffff" />
+    </svg>;
+}
+
 function PlayEvent({ playEvent, theme }) {
     const callDescription = playEvent?.details?.call?.description;
     const description = playEvent?.details?.type?.description;
@@ -201,91 +245,102 @@ function PlayEvent({ playEvent, theme }) {
             {
                 playEvent?.isPitch ? <>
                     <Box>
-                        {/* <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%',
-                        }}> */}
                         <Box sx={{
                             display: 'grid',
-                            gridTemplateColumns: '2fr 1fr 1fr',
+                            gridTemplateColumns: 'auto 1fr 1fr',
                             alignItems: 'center',
+                            justifyContent: 'space-between',
                             width: '100%',
                             gap: 2
                         }}>
+                            <PlayIcon desc={playEvent?.details?.description} />
                             <Typography sx={{ fontWeight: 'bold' }}>
                                 {callDescription}
                             </Typography>
-                            <Typography>{count}</Typography>
-                            <Chip
-                                component="a"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={`https://baseballsavant.mlb.com/sporty-videos?playId=${playEvent?.playId}`}
-                                label=""
-                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
-                                sx={{
-                                    backgroundColor: theme.palette.custom.highlightGreen,
-                                    // flexDirection: 'row-reverse',
-                                    '& .MuiChip-icon': {
-                                        // margin: 0,
-                                        // marginLeft: '4px',
-                                        // marginRight: '5px',
-                                        fontSize: '1.2rem',
-                                    },
-                                }}
-                                clickable
-                            >
-                            </Chip>
+                            <a target="_blank" rel="noopener noreferrer" href={`https://baseballsavant.mlb.com/sporty-videos?playId=${playEvent?.playId}`}>
+                                <HiExternalLink style={{ verticalAlign: 'middle' }} />
+                            </a>
                         </Box>
-                        {/* <Typography>{playEvent?.offense?.first !== undefined && '1'}</Typography>
-                        <Typography>{playEvent?.offense?.second !== undefined && '2'}</Typography>
-                        <Typography>{playEvent?.offense?.third !== undefined && '3'}</Typography> */}
-                        <Typography>{description}</Typography>
-                        <Typography>{playEvent?.pitchData?.startSpeed} mph</Typography>
+                        <Typography>{count}</Typography>
+                        <Stack direction="row">
+                            <Typography>{description}</Typography>
+                            <Typography>{playEvent?.pitchData?.startSpeed} mph</Typography>
+                        </Stack>
                     </Box>
                 </> : <>
-                    <Box>
-                        {/* <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            width: '100%',
-                        }}>
-                            <Typography sx={{ fontWeight: 'bold' }}>
-                                {callDescription}
-                            </Typography>
-                            <Typography>{count}</Typography>
-                        </Box> */}
+                    <Box sx={{
+                        display: 'grid',
+                        gridTemplateColumns: 'auto 3fr',
+                        alignItems: 'center',
+                        width: '100%',
+                        gap: 2
+                    }}>
+                        <PlayIcon desc={playEvent?.details?.description} />
                         <Typography>{playEvent?.details?.description}</Typography>
                     </Box>
                 </>
             }
         </>
-        // {
-        //     description === 'Top' ? <>
-        //         <ArrowDropUp sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
-        //     </> : <>
-        //         <ArrowDropDown sx={{ fontSize: 40 }} style={{ verticalAlign: 'middle' }} />
-        // </>
-        // }
-        // <Box>
-        //     <Box sx={{
-        //         display: 'flex',
-        //         justifyContent: 'space-between',
-        //         alignItems: 'center',
-        //         width: '100%',
-        //     }}>
-        //         <Typography sx={{ fontWeight: 'bold' }}>
-        //             {callDescription}
-        //         </Typography>
-        //         <Typography>{count}</Typography>
-        //     </Box>
-        //     <Typography>{description}</Typography>
-        // </Box>
     );
 }
+
+function StrikeZone({ pitches }) {
+
+    const strikeZoneTop = pitches[0]?.pitchData?.strikeZoneTop;
+    const strikeZoneBottom = pitches[0]?.pitchData?.strikeZoneBottom;
+
+    const strikeZoneVertSize = strikeZoneTop - strikeZoneBottom;
+    const strikeZoneCanvasLeft = (strikeZoneWidth / 2) - strikeZoneSide * sizeMult;
+    const strikeZoneCanvasRight = (strikeZoneWidth / 2) + strikeZoneSide * sizeMult;
+    const strikeZoneCanvasTop = (strikeZoneHeight / 2) - strikeZoneVertSize / 2 * sizeMult;
+    const strikeZoneCanvasBottom = (strikeZoneHeight / 2) + strikeZoneVertSize / 2 * sizeMult;
+
+
+
+    return (
+        <svg width={strikeZoneWidth} height={strikeZoneHeight} viewBox={`0 0 ${strikeZoneWidth} ${strikeZoneHeight}`} style={{ border: '1px solid #ffffff' }}>
+            <line x1={strikeZoneCanvasLeft} y1={strikeZoneCanvasBottom} x2={strikeZoneCanvasLeft} y2={strikeZoneCanvasTop} stroke='#cccccc' strokeWidth="2" />
+            <line x1={strikeZoneCanvasRight} y1={strikeZoneCanvasBottom} x2={strikeZoneCanvasRight} y2={strikeZoneCanvasTop} stroke='#cccccc' strokeWidth="2" />
+            <line x1={strikeZoneCanvasLeft} y1={strikeZoneCanvasTop} x2={strikeZoneCanvasRight} y2={strikeZoneCanvasTop} stroke='#cccccc' strokeWidth="2" />
+            <line x1={strikeZoneCanvasLeft} y1={strikeZoneCanvasBottom} x2={strikeZoneCanvasRight} y2={strikeZoneCanvasBottom} stroke='#cccccc' strokeWidth="2" />
+
+            {pitches.map((pitch, i) => {
+                const rawPitchX = Math.round(pitch?.pitchData?.coordinates?.pX * 1000) / 1000;
+                const rawPitchY = Math.round(pitch?.pitchData?.coordinates?.pZ * 1000) / 1000;
+
+                const topY = (strikeZoneHeight / 2) - (strikeZoneVertSize / 2) * sizeMult;
+                const bottomY = (strikeZoneHeight / 2) + (strikeZoneVertSize / 2) * sizeMult;
+                const percentFromBottomY = (rawPitchY - strikeZoneBottom) / strikeZoneVertSize;
+
+                const pitchX = (strikeZoneWidth / 2) + rawPitchX * sizeMult;
+                const pitchY = bottomY - (percentFromBottomY * (bottomY - topY));
+
+                return <g key={pitch?.playId}>
+                    <circle
+                        key={i}
+                        cx={pitchX}
+                        cy={pitchY}
+                        r="8"
+                        fill={pitch?.details?.ballColor}
+                        stroke={'#000000'}
+                        strokeWidth={2}
+                    />
+
+                    <text
+                        x={pitchX}
+                        y={pitchY}
+                        fill="white"
+                        fontSize="14"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                    >
+                        {i + 1}
+                    </text>
+                </g>
+            })}
+        </svg>
+    )
+};
 
 export default function Plays({ }) {
 
