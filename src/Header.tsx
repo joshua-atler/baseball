@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Box, Toolbar, Typography, Chip, Avatar } from '@mui/material';
+import { Box, Toolbar, Typography } from '@mui/material';
 import backgroundImage from './assets/baseballs.jpg';
 
 
@@ -40,26 +40,6 @@ export const Header = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: 'white',
-                    }}
-                />
-                <Chip
-                    component="a"
-                    href="https://reddit.com/r/mlb"
-                    target="_blank"
-                    clickable
-                    avatar={
-                        <Avatar
-                            src="https://www.redditstatic.com/desktop2x/img/favicon/apple-icon-57x57.png"
-                            alt="Reddit"
-                        />
-                    }
-                    label="r/mlb"
-                    variant="outlined"
-                    sx={{
-                        textDecoration: 'none',
-                        '&:hover': {
-                            backgroundColor: 'action.hover',
-                        },
                     }}
                 />
             </Toolbar>

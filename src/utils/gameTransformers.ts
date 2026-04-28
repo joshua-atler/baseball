@@ -3,7 +3,7 @@ import { Consts } from "../consts/consts";
 import { shortYearFormatter } from "./dateFormatters";
 
 
-export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string[], timeZone: TimeZone, onProgress) => {
+export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string, timeZone: TimeZone, onProgress) => {
     let gamesForDates = [];
     for (let i = 0; i < gamesJson['dates'].length; i++) {
         for (let j = 0; j < gamesJson['dates'][i]['games'].length; j++) {
