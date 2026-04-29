@@ -24,7 +24,8 @@ import {
     Tooltip,
     IconButton,
     Tabs,
-    Tab
+    Tab,
+    Stack
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import Grid from '@mui/material/Grid2';
@@ -43,38 +44,54 @@ import 'datatables.net-select-dt';
 DataTable.use(DT);
 
 import { Consts } from '../consts/consts.ts';
+import { fetchStandings } from '../services/standingsService.ts';
+import { transformStandings } from '../utils/standingsTransformers.ts';
 
 
-const divisionNames = ['AL East', 'NL East', 'AL Central', 'NL Central', 'AL West', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
+// const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
-function StandingsTable({ index }) { // table data
+function StandingsTable({ tableData, index }) { // table data
     const columns = [
-        { data: 'divisionName', title: `${divisionNames[index]}`, visible: true },
-        { data: 'wins', title: 'W', visible: true },
+        {
+            data: 'team', title: `${tableData?.division}`, width: '20%',
+            render: function (data) {
+                return `<img src=${data.teamLogo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`
+            }
+        },
+        { data: 'wins', title: 'W' },
         { data: 'losses', title: 'L' },
         { data: 'gamesBack', title: 'GB' },
-        { data: 'homeRecord', title: 'Home' },
-        { data: 'awayRecord', title: 'Away' },
-        { data: 'runsScored', title: 'RS' }, // tooltip
-        { data: 'runsAllowed', title: 'RA' }, // tooltip
-        { data: 'streak', title: 'Streak' },
-        { data: 'last10', title: 'L10' },
+        // { data: 'homeRecord', title: 'Home' },
+        // { data: 'awayRecord', title: 'Away' },
+        // { data: 'runsScored', title: 'RS' }, // tooltip
+        // { data: 'runsAllowed', title: 'RA' }, // tooltip
+        { data: 'streak.streakCode', title: 'Streak' },
+        { data: 'records', title: 'L10',
+            render: function (data) {
+                console.log(data?.splitRecords?.filter(record => record.type === 'lastTen'));
+                const lastTen = data?.splitRecords?.find(record => record.type === 'lastTen');
+                console.log(lastTen);
+                // return 'a';
+            }},
     ];
 
-    const tableData = [
-        {
-            divisionName: 'abc',
-            wins: 10,
-            losses: 20,
-            gamesBack: 3,
-            homeRecord: 4,
-            awayRecord: 6,
-            runsScored: 20,
-            runsAllowed: 10,
-            streak: 10,
-            last10: 2
-        }
-    ];
+    console.log('tableData');
+    console.log(tableData);
+
+    // const tableData = [
+    //     {
+    //         team: 'abc',
+    //         wins: 10,
+    //         losses: 20,
+    //         gamesBack: 3,
+    //         homeRecord: 4,
+    //         awayRecord: 6,
+    //         runsScored: 20,
+    //         runsAllowed: 10,
+    //         streak: 10,
+    //         last10: 2
+    //     }
+    // ];
 
     return (
         // <table className="standings-dt">
@@ -97,7 +114,7 @@ function StandingsTable({ index }) { // table data
         // </table>
 
         <DataTable
-            data={tableData}
+            data={tableData?.teamRecords}
             columns={columns}
             options={{
                 searching: false,
@@ -108,16 +125,21 @@ function StandingsTable({ index }) { // table data
                     info: false
                 },
                 dom: "t",
+                // autoWidth: false,
+                // width: "100%"
             }}
         />
     )
 }
 
 export default function Standings() {
-    const [standingsYear, setStandingsYear] = useState(2026);
+    const [standingsYear, setStandingsYear] = useState(Temporal.Now.plainDateISO().year);
+    const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
     const [standingsMode, setStandingsMode] = useState('regular season');
     const [leagueTab, setLeagueTab] = useState('AL');
-    const tableIndices = leagueTab === 'AL' ? [0, 2, 4] : [1, 3, 5];
+    const tableIndices = leagueTab === 'AL' ? [0, 1, 2] : [3, 4, 5];
+
+    const [standings, setStandings] = useState(null);
 
     const handleYearChange = (event: SelectChangeEvent) => {
         setStandingsYear(event.target.value as string);
@@ -132,26 +154,36 @@ export default function Standings() {
     };
 
     useEffect(() => {
+        const getStandings = async () => {
+            console.log(`standingsYear: ${standingsYear}`);
+            console.log(`isCurrentYear: ${isCurrentYear}`);
 
-        // var tables = document.querySelectorAll('.standings-dt');
+            const today = Temporal.Now.plainDateISO();
+            let year = standingsYear;
+            let month = 0;
+            let day = 0;
+            if (isCurrentYear) {
+                console.log('isCurrentYear');
+                month = today.month;
+                day = today.day;
+            } else {
+                console.log('is not current year');
+                month = 10;
+                day = 31;
+            }
 
-        // var dts = [];
+            try {
+                const standings = await fetchStandings(month, day, year);
+                const formattedStandings = await transformStandings(standings);
+                setStandings(formattedStandings);
+            } catch (error) {
+                console.error("Team stats fetch failed: ", error);
+                setStandings(null);
+            }
+        }
 
-        // for (var table of tables) {
-        //     if ($.fn.DataTable.isDataTable(table)) {
-        //         dt = $(table).DataTable();
-        //     } else {
-        //         var dt = $(table).DataTable({
-        //             select: false,
-        //             dom: 'Bfrt',
-        //             searching: false,
-        //             ordering: false,
-        //             pageLength: 50
-        //         })
-        //     }
-        //     dt.clear();
-        //     dts.push(dt);
-        // }
+        getStandings();
+
 
         // fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${standingsYear}&standingsTypes=regularSeason&hydrate=team(league)`)
         //     .then(response => {
@@ -204,6 +236,7 @@ export default function Standings() {
         //     .catch(error => { });
 
         // // wild card
+
 
 
         // // spring training
@@ -260,6 +293,10 @@ export default function Standings() {
         //     })
         //     .catch(error => { });
     }, [standingsYear]);
+
+    console.log('standings');
+    console.log(standings);
+    console.log(Array.isArray(standings));
 
     return (
         <Box>
@@ -319,17 +356,18 @@ export default function Standings() {
                         <Tab label="AL" value={'AL'} />
                         <Tab label="NL" value={'NL'} />
                     </Tabs>
-                    <Grid container spacing={0} alignItems="center" sx={{ width: 1200 }}>
-                        {Array.from({ length: 6 }).map((_, index) => (
-                            <Grid key={index}>
-                                <Box sx={{ width: 1200 }}
-                                    hidden={(leagueTab === "AL" && [1, 3, 5].includes(index)) || (leagueTab === "NL" && [0, 2, 4].includes(index))}
-                                >
-                                    <StandingsTable index={index} />
+                    {standings ? <>
+                        <Stack container spacing={0} alignItems="center" sx={{ width: '1200px' }}>
+                            {standings.map((divisionData, index) => (
+                                <Box key={divisionData.division || index} sx={{ width: '100%', mb: 4 }}>
+                                    <StandingsTable tableData={divisionData} index={index} style={{ width: '1200px' }} />
                                 </Box>
-                            </Grid>
-                        ))}
-                    </Grid>
+                            ))}
+                        </Stack>
+                    </> : <>
+                        <Typography>LOADING</Typography>
+                        {/* TODO: add loading icon */}
+                    </>}
                 </>
             </div>
             {/* <div style={{ display: standingsMode === 'wild card' ? 'block' : 'none' }}>
