@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -25,7 +25,8 @@ import {
     IconButton,
     Tabs,
     Tab,
-    Stack
+    Stack,
+    Slider
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import Grid from '@mui/material/Grid2';
@@ -81,7 +82,12 @@ function StandingsTable({ tableData, index }) {
         },
         { data: 'runsScored', title: 'RS' },
         { data: 'runsAllowed', title: 'RA' },
-        { data: 'streak.streakCode', title: 'Streak' },
+        {
+            data: 'streak.streakCode', title: 'Streak', render: function (data) {
+                const streakCode = data ?? '-';
+                return streakCode;
+            }
+        },
         {
             data: 'records', title: 'L10',
             render: function (data) {
@@ -123,12 +129,18 @@ function StandingsTable({ tableData, index }) {
     )
 }
 
+
+
 export default function Standings() {
     const [standingsYear, setStandingsYear] = useState(Temporal.Now.plainDateISO().year);
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
     const [standingsMode, setStandingsMode] = useState('regular season');
     const [leagueTab, setLeagueTab] = useState('AL');
     const firstYear = 2000;
+    const [selectedDate, setSelectedDate] = useState(Date.now());
+    const [sliderValue, setSliderValue] = useState(0);
+    const [debouncedValue, setDebouncedValue] = useState(0);
+    const [seasonBounds, setSeasonBounds] = useState({});
 
     const [standings, setStandings] = useState(null);
 
@@ -144,92 +156,147 @@ export default function Standings() {
         setLeagueTab(newValue);
     };
 
+    const formatLabel = (value) => {
+        if (!seasonBounds || !seasonBounds.start) return "";
+
+        const date = new Date(seasonBounds.start);
+        date.setDate(date.getDate() + value);
+
+        return date.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+        });
+    }
+
+    const sliderMarks = useMemo(() => {
+        if (!seasonBounds) return [];
+
+        return [
+            { value: 0, label: 'Opening Day' },
+            { value: Math.floor(seasonBounds.totalDays / 2), label: 'Mid-Season' },
+            { value: seasonBounds.totalDays, label: 'Final Day' }
+        ];
+    }, [seasonBounds]);
+
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(sliderValue);
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [sliderValue]);
+
+    const selectedDateApiString = useMemo(() => {
+        if (!seasonBounds || !seasonBounds.start) return "";
+
+        const date = new Date(seasonBounds.start);
+        date.setDate(date.getDate() + sliderValue);
+
+        return date.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric'
+        });
+    }, [debouncedValue, standingsYear]);
+
+
+    useEffect(() => {
+        const updateSeasonBounds = async () => {
+            const data = await fetchSeason(standingsYear);
+            const season = data.seasons[0];
+
+            const start = new Date(season.regularSeasonStartDate);
+            start.setDate(start.getDate() + 1);
+            const end = new Date(season.regularSeasonEndDate);
+            const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
+            const effectiveEnd = isCurrentYear ? new Date() : end;
+            const diffTime = Math.abs(effectiveEnd - start);
+            const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            setSeasonBounds({ start, effectiveEnd, totalDays });
+            setSliderValue(totalDays);
+        };
+
+        updateSeasonBounds();
+    }, [standingsYear]);
+
+
+    useEffect(() => {
+        if (!selectedDateApiString) return;
+
         const getStandings = async () => {
-
-            const today = Temporal.Now.plainDateISO();
-            let year = standingsYear;
-            let month = 0;
-            let day = 0;
-            if (isCurrentYear) {
-                month = today.month;
-                day = today.day;
-            } else {
-                const seasonInfo = await fetchSeason(year);
-                const regularSeasonEndDate = seasonInfo?.seasons[0].regularSeasonEndDate;
-                month = regularSeasonEndDate.split('-')[1];
-                day = regularSeasonEndDate.split('-')[2];
-            }
-
             try {
+                const [month, day, year] = selectedDateApiString.split('/');
+
                 const standings = await fetchStandings(month, day, year);
                 const formattedStandings = await transformStandings(standings);
                 setStandings(formattedStandings);
             } catch (error) {
                 setStandings(null);
             }
-        }
+        };
 
         getStandings();
+    }, [selectedDateApiString]);
 
-        // // wild card
+    // // wild card
 
 
 
-        // // spring training
-        // fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${standingsYear}&standingsTypes=springTraining&hydrate=team(league)`)
-        //     .then(response => {
-        //         return response.json();
-        //     })
-        //     .then(standingsData => {
-        //         standingsData = standingsData['records'];
+    // // spring training
+    // fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${standingsYear}&standingsTypes=springTraining&hydrate=team(league)`)
+    //     .then(response => {
+    //         return response.json();
+    //     })
+    //     .then(standingsData => {
+    //         standingsData = standingsData['records'];
 
-        //         var allTeamsStandings = standingsData.flatMap(obj => obj.teamRecords);
+    //         var allTeamsStandings = standingsData.flatMap(obj => obj.teamRecords);
 
-        //         var cactusLeague = allTeamsStandings.filter(team => team.team.springLeague.id === 114);
-        //         var grapefruitLeague = allTeamsStandings.filter(team => team.team.springLeague.id === 115);
+    //         var cactusLeague = allTeamsStandings.filter(team => team.team.springLeague.id === 114);
+    //         var grapefruitLeague = allTeamsStandings.filter(team => team.team.springLeague.id === 115);
 
-        //         var cactusLeague = cactusLeague.sort((a, b) => Number(a.springLeagueRank) - Number(b.springLeagueRank));
-        //         var grapefruitLeague = grapefruitLeague.sort((a, b) => Number(a.springLeagueRank) - Number(b.springLeagueRank));
+    //         var cactusLeague = cactusLeague.sort((a, b) => Number(a.springLeagueRank) - Number(b.springLeagueRank));
+    //         var grapefruitLeague = grapefruitLeague.sort((a, b) => Number(a.springLeagueRank) - Number(b.springLeagueRank));
 
-        //         var springLeagues = [cactusLeague, grapefruitLeague];
+    //         var springLeagues = [cactusLeague, grapefruitLeague];
 
-        //         for (let i = 8; i < springLeagues.length + 8; i++) {
-        //             var records = springLeagues[i - 8];
+    //         for (let i = 8; i < springLeagues.length + 8; i++) {
+    //             var records = springLeagues[i - 8];
 
-        //             for (let j = 0; j < records.length; j++) {
-        //                 var record = records[j];
+    //             for (let j = 0; j < records.length; j++) {
+    //                 var record = records[j];
 
-        //                 var teamName = record['team']['name'];
-        //                 var wins = record['wins'];
-        //                 var losses = record['losses'];
-        //                 var gamesBack = record['springLeagueGamesBack'];
+    //                 var teamName = record['team']['name'];
+    //                 var wins = record['wins'];
+    //                 var losses = record['losses'];
+    //                 var gamesBack = record['springLeagueGamesBack'];
 
-        //                 var splitRecords = record['records']['splitRecords'];
-        //                 var homeRecord = splitRecords.find(splitRecords => splitRecords.type === 'home');
-        //                 var awayRecord = splitRecords.find(splitRecords => splitRecords.type === 'away');
-        //                 var lastTen = splitRecords.find(splitRecords => splitRecords.type === 'lastTen');
+    //                 var splitRecords = record['records']['splitRecords'];
+    //                 var homeRecord = splitRecords.find(splitRecords => splitRecords.type === 'home');
+    //                 var awayRecord = splitRecords.find(splitRecords => splitRecords.type === 'away');
+    //                 var lastTen = splitRecords.find(splitRecords => splitRecords.type === 'lastTen');
 
-        //                 homeRecord = `${homeRecord['wins']}-${homeRecord['losses']}`;
-        //                 awayRecord = `${awayRecord['wins']}-${awayRecord['losses']}`;
-        //                 lastTen = `${lastTen['wins']}-${lastTen['losses']}`;
+    //                 homeRecord = `${homeRecord['wins']}-${homeRecord['losses']}`;
+    //                 awayRecord = `${awayRecord['wins']}-${awayRecord['losses']}`;
+    //                 lastTen = `${lastTen['wins']}-${lastTen['losses']}`;
 
-        //                 var runsScored = record['runsScored'];
-        //                 var runsAllowed = record['runsAllowed'];
-        //                 var streak = '-';
-        //                 if ('streak' in record) {
-        //                     streak = record['streak']['streakCode'];
-        //                 }
+    //                 var runsScored = record['runsScored'];
+    //                 var runsAllowed = record['runsAllowed'];
+    //                 var streak = '-';
+    //                 if ('streak' in record) {
+    //                     streak = record['streak']['streakCode'];
+    //                 }
 
-        //                 teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName].logo}"><span>${teamName}</span>`;
+    //                 teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName].logo}"><span>${teamName}</span>`;
 
-        //                 dts[i].row.add([teamName, wins, losses, gamesBack, homeRecord, awayRecord, runsScored, runsAllowed, streak, lastTen]);
-        //             }
-        //             dts[i].draw(true);
-        //         }
-        //     })
-        //     .catch(error => { });
-    }, [standingsYear]);
+    //                 dts[i].row.add([teamName, wins, losses, gamesBack, homeRecord, awayRecord, runsScored, runsAllowed, streak, lastTen]);
+    //             }
+    //             dts[i].draw(true);
+    //         }
+    //     })
+    //     .catch(error => { });
+
 
     return (
         <Box>
@@ -246,7 +313,7 @@ export default function Standings() {
                                 value={standingsYear}
                                 onChange={handleYearChange}
                             >
-                                {Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1}).map((_, i) => {
+                                {Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
                                     const year = Temporal.Now.plainDateISO().year - i;
                                     return <MenuItem key={year} value={year}>{year}</MenuItem>
                                 })}
@@ -286,11 +353,28 @@ export default function Standings() {
                     </Tooltip>
                 </Grid>
             </Grid>
-            <div style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}>
-                <Tabs value={leagueTab} onChange={handleChange} sx={{ mb: 4.5 }}>
-                    <Tab label="AL" value={'AL'} />
-                    <Tab label="NL" value={'NL'} />
-                </Tabs>
+            <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}>
+                <Box display='flex' gap={4} sx={{ width: '1500px', mb: 4 }}>
+                    <Tabs value={leagueTab} onChange={handleChange}>
+                        <Tab label="AL" value={'AL'} />
+                        <Tab label="NL" value={'NL'} />
+                    </Tabs>
+                    <Box sx={{ width: '1100px', display: 'flex', alignItems: 'center' }} gap={4}>
+                        <Typography component={"span"} sx={{ whiteSpace: 'nowrap' }}>Selected date: {selectedDateApiString.split('/').slice(0, 2).join('/')}</Typography>
+                        {seasonBounds &&
+                            <Slider
+                                defaultValue={30}
+                                min={0}
+                                max={seasonBounds.totalDays}
+                                value={sliderValue}
+                                valueLabelDisplay="auto"
+                                onChange={(e, val) => setSliderValue(val)}
+                                valueLabelFormat={formatLabel}
+                                step={1}
+                            />
+                        }
+                    </Box>
+                </Box>
                 {standings ?
                     <Stack spacing={0} sx={{ width: '1500px' }}>
                         {standings.map((divisionData, index) => {
@@ -300,7 +384,7 @@ export default function Standings() {
                     </Stack> : <>
                         <LoadingCircle size={60} />
                     </>}
-            </div>
+            </Box>
             {/* <div style={{ display: standingsMode === 'wild card' ? 'block' : 'none' }}>
                 {Array.from({ length: 2 }).map((_, index) => (
                     <Grid key={index + 6}>
