@@ -97,8 +97,5 @@ export const transformStandings = async (standingsJson) => {
 
     // return [awayTeamWinsLosses, homeTeamWinsLosses];
 
-    console.log('standings');
-    console.log(standings);
-
     return standings;
 };

@@ -44,13 +44,15 @@ import 'datatables.net-select-dt';
 DataTable.use(DT);
 
 import { Consts } from '../consts/consts.ts';
-import { fetchStandings } from '../services/standingsService.ts';
+import { fetchStandings, fetchSeason } from '../services/standingsService.ts';
 import { transformStandings } from '../utils/standingsTransformers.ts';
+import { LoadingCircle } from '../components/LoadingCircle.tsx';
+import { Visibility } from '@mui/icons-material';
 
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
-function StandingsTable({ tableData, index }) { // table data
+function StandingsTable({ tableData, index }) {
     const columns = [
         {
             data: 'team', title: `${tableData?.division}`, width: '20%',
@@ -61,22 +63,34 @@ function StandingsTable({ tableData, index }) { // table data
         { data: 'wins', title: 'W' },
         { data: 'losses', title: 'L' },
         { data: 'gamesBack', title: 'GB' },
-        // { data: 'homeRecord', title: 'Home' },
-        // { data: 'awayRecord', title: 'Away' },
-        // { data: 'runsScored', title: 'RS' }, // tooltip
-        // { data: 'runsAllowed', title: 'RA' }, // tooltip
-        { data: 'streak.streakCode', title: 'Streak' },
-        { data: 'records', title: 'L10',
+        {
+            data: 'records', title: 'Home',
             render: function (data) {
-                console.log(data?.splitRecords?.filter(record => record.type === 'lastTen'));
+                const home = data?.splitRecords?.find(record => record.type === 'home');
+                const homeRecord = `${home?.wins}-${home?.losses}`;
+                return homeRecord;
+            }
+        },
+        {
+            data: 'records', title: 'Away',
+            render: function (data) {
+                const away = data?.splitRecords?.find(record => record.type === 'away');
+                const awayRecord = `${away?.wins}-${away?.losses}`;
+                return awayRecord;
+            }
+        },
+        { data: 'runsScored', title: 'RS' },
+        { data: 'runsAllowed', title: 'RA' },
+        { data: 'streak.streakCode', title: 'Streak' },
+        {
+            data: 'records', title: 'L10',
+            render: function (data) {
                 const lastTen = data?.splitRecords?.find(record => record.type === 'lastTen');
-                console.log(lastTen);
-                // return 'a';
-            }},
+                const lastTenRecord = `${lastTen?.wins}-${lastTen?.losses}`;
+                return lastTenRecord;
+            }
+        },
     ];
-
-    console.log('tableData');
-    console.log(tableData);
 
     // const tableData = [
     //     {
@@ -94,24 +108,6 @@ function StandingsTable({ tableData, index }) { // table data
     // ];
 
     return (
-        // <table className="standings-dt">
-        //     <thead>
-        //         <tr>
-        //             <th>{divisionNames[index]}</th>
-        //             <th>W</th>
-        //             <th>L</th>
-        //             <th>GB</th>
-        //             <th>Home</th>
-        //             <th>Away</th>
-        //             <th>RS</th>
-        //             <th>RA</th>
-        //             <th>Streak</th>
-        //             <th>L10</th>
-        //         </tr>
-        //     </thead>
-        //     <tbody>
-        //     </tbody>
-        // </table>
 
         <DataTable
             data={tableData?.teamRecords}
@@ -121,14 +117,9 @@ function StandingsTable({ tableData, index }) { // table data
                 paging: false,
                 info: false,
                 ordering: false,
-                select: {
-                    info: false
-                },
-                dom: "t",
-                // autoWidth: false,
-                // width: "100%"
-            }}
-        />
+                dom: "t"
+            }}>
+        </DataTable>
     )
 }
 
@@ -137,7 +128,7 @@ export default function Standings() {
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
     const [standingsMode, setStandingsMode] = useState('regular season');
     const [leagueTab, setLeagueTab] = useState('AL');
-    const tableIndices = leagueTab === 'AL' ? [0, 1, 2] : [3, 4, 5];
+    const firstYear = 2000;
 
     const [standings, setStandings] = useState(null);
 
@@ -155,21 +146,19 @@ export default function Standings() {
 
     useEffect(() => {
         const getStandings = async () => {
-            console.log(`standingsYear: ${standingsYear}`);
-            console.log(`isCurrentYear: ${isCurrentYear}`);
 
             const today = Temporal.Now.plainDateISO();
             let year = standingsYear;
             let month = 0;
             let day = 0;
             if (isCurrentYear) {
-                console.log('isCurrentYear');
                 month = today.month;
                 day = today.day;
             } else {
-                console.log('is not current year');
-                month = 10;
-                day = 31;
+                const seasonInfo = await fetchSeason(year);
+                const regularSeasonEndDate = seasonInfo?.seasons[0].regularSeasonEndDate;
+                month = regularSeasonEndDate.split('-')[1];
+                day = regularSeasonEndDate.split('-')[2];
             }
 
             try {
@@ -177,63 +166,11 @@ export default function Standings() {
                 const formattedStandings = await transformStandings(standings);
                 setStandings(formattedStandings);
             } catch (error) {
-                console.error("Team stats fetch failed: ", error);
                 setStandings(null);
             }
         }
 
         getStandings();
-
-
-        // fetch(`https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${standingsYear}&standingsTypes=regularSeason&hydrate=team(league)`)
-        //     .then(response => {
-        //         return response.json();
-        //     })
-        //     .then(standingsData => {
-        //         standingsData = standingsData['records'];
-
-        //         var divisionsOrder = [201, 204, 202, 205, 200, 203];
-        //         standingsData.sort((a, b) => divisionsOrder.indexOf(a['division']['id']) - divisionsOrder.indexOf(b['division']['id']));
-
-        //         for (let i = 0; i < standingsData.length; i++) {
-        //             var records = standingsData[i]['teamRecords'];
-        //             for (let j = 0; j < records.length; j++) {
-        //                 var record = records[j];
-
-        //                 var teamName = record['team']['name'];
-        //                 var wins = record['wins'];
-        //                 var losses = record['losses'];
-        //                 var gamesBack = record['gamesBack'];
-
-        //                 var splitRecords = record['records']['splitRecords'];
-        //                 var homeRecord = splitRecords.find(splitRecords => splitRecords.type === 'home');
-        //                 var awayRecord = splitRecords.find(splitRecords => splitRecords.type === 'away');
-        //                 var lastTen = splitRecords.find(splitRecords => splitRecords.type === 'lastTen');
-
-        //                 homeRecord = `${homeRecord['wins']}-${homeRecord['losses']}`;
-        //                 awayRecord = `${awayRecord['wins']}-${awayRecord['losses']}`;
-        //                 lastTen = `${lastTen['wins']}-${lastTen['losses']}`;
-
-        //                 var runsScored = record['runsScored'];
-        //                 var runsAllowed = record['runsAllowed'];
-        //                 var streak = '-';
-        //                 if ('streak' in record) {
-        //                     streak = record['streak']['streakCode'];
-        //                 }
-
-        //                 var clinched = '';
-        //                 if ('clinchIndicator' in record) {
-        //                     clinched = `-${record['clinchIndicator']}`;
-        //                 }
-
-        //                 teamName = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[teamName].logo}"><span>${teamName} ${clinched}</span>`;
-
-        //                 dts[i].row.add([teamName, wins, losses, gamesBack, homeRecord, awayRecord, runsScored, runsAllowed, streak, lastTen]);
-        //             }
-        //             dts[i].draw(true);
-        //         }
-        //     })
-        //     .catch(error => { });
 
         // // wild card
 
@@ -294,47 +231,44 @@ export default function Standings() {
         //     .catch(error => { });
     }, [standingsYear]);
 
-    console.log('standings');
-    console.log(standings);
-    console.log(Array.isArray(standings));
-
     return (
         <Box>
-            <Grid container spacing={2} id="standings-grid" alignItems="center" mt={2} ml={2} mb={3}>
-                <Grid>
-                    <Typography variant="h6" noWrap component="div">
+            <Grid container spacing={2} alignItems="center" mt={2} ml={2} mb={3}>
+                <Grid size="auto">
+                    <Typography variant="h6">
                         Year
                     </Typography>
                 </Grid>
-                <Grid>
+                <Grid size="auto">
                     <Box sx={{ minWidth: 120, width: 200 }}>
                         <FormControl fullWidth>
-                            <Select defaultValue={30} displayEmpty
+                            <Select displayEmpty
                                 value={standingsYear}
                                 onChange={handleYearChange}
                             >
-                                <MenuItem value={2026}>2026</MenuItem>
-                                <MenuItem value={2025}>2025</MenuItem>
-                                <MenuItem value={2024}>2024</MenuItem>
-                                <MenuItem value={2023}>2023</MenuItem>
-                                <MenuItem value={2022}>2022</MenuItem>
+                                {Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1}).map((_, i) => {
+                                    const year = Temporal.Now.plainDateISO().year - i;
+                                    return <MenuItem key={year} value={year}>{year}</MenuItem>
+                                })}
                             </Select>
                         </FormControl>
                     </Box>
                 </Grid>
-                <Grid>
-                    <ToggleButtonGroup
-                        color="primary"
-                        value={standingsMode}
-                        exclusive
-                        onChange={handleModeChange}
-                    >
-                        <ToggleButton value="regular season">Regular Season</ToggleButton>
-                        <ToggleButton value="wild card">Wild Card</ToggleButton>
-                        <ToggleButton value="spring training">Spring Training</ToggleButton>
-                    </ToggleButtonGroup>
+                <Grid size="auto">
+                    <Box>
+                        <ToggleButtonGroup
+                            color="primary"
+                            value={standingsMode}
+                            exclusive
+                            onChange={handleModeChange}
+                        >
+                            <ToggleButton value="regular season">Regular Season</ToggleButton>
+                            <ToggleButton value="wild card">Wild Card</ToggleButton>
+                            <ToggleButton value="spring training">Spring Training</ToggleButton>
+                        </ToggleButtonGroup>
+                    </Box>
                 </Grid>
-                <Grid>
+                <Grid size="auto">
                     <Tooltip
                         title={
                             <Typography variant="body1" sx={{ fontSize: "1rem" }}>
@@ -344,31 +278,28 @@ export default function Standings() {
                             </Typography>
                         }
                     >
-                        <IconButton>
-                            <InfoIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton>
+                                <InfoIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
             </Grid>
             <div style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}>
-                <>
-                    <Tabs value={leagueTab} onChange={handleChange} sx={{ mb: 4.5 }}>
-                        <Tab label="AL" value={'AL'} />
-                        <Tab label="NL" value={'NL'} />
-                    </Tabs>
-                    {standings ? <>
-                        <Stack container spacing={0} alignItems="center" sx={{ width: '1200px' }}>
-                            {standings.map((divisionData, index) => (
-                                <Box key={divisionData.division || index} sx={{ width: '100%', mb: 4 }}>
-                                    <StandingsTable tableData={divisionData} index={index} style={{ width: '1200px' }} />
-                                </Box>
-                            ))}
-                        </Stack>
-                    </> : <>
-                        <Typography>LOADING</Typography>
-                        {/* TODO: add loading icon */}
+                <Tabs value={leagueTab} onChange={handleChange} sx={{ mb: 4.5 }}>
+                    <Tab label="AL" value={'AL'} />
+                    <Tab label="NL" value={'NL'} />
+                </Tabs>
+                {standings ?
+                    <Stack spacing={0} sx={{ width: '1500px' }}>
+                        {standings.map((divisionData, index) => {
+                            const isVisible = divisionData.division.includes(leagueTab);
+                            return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} index={index} />
+                        })}
+                    </Stack> : <>
+                        <LoadingCircle size={60} />
                     </>}
-                </>
             </div>
             {/* <div style={{ display: standingsMode === 'wild card' ? 'block' : 'none' }}>
                 {Array.from({ length: 2 }).map((_, index) => (

@@ -6,3 +6,6 @@ export const fetchStandings = (month: number, day: number, year: number) =>
 
 export const fetchDivision = (id: number) =>
     apiClient(false, `/divisions/${id}`);
+
+export const fetchSeason = (year: number) =>
+    apiClient(false, `/seasons/${year}?sportId=1`);

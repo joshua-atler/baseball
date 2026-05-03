@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack, Chip, CircularProgress, LinearProgress } from '@mui/material';
+import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack, Chip } from '@mui/material';
 import { HiExternalLink } from 'react-icons/hi';
 import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp, ArrowForward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -14,6 +14,7 @@ import { useBasedash } from '../../context/BasedashContext';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGamePlays } from '../../utils/gameTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
+import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 
 const strikeZoneWidth = 180;
 const strikeZoneHeight = 240;
@@ -373,7 +374,7 @@ export default function Plays({ }) {
         <GameTabContent>
             {
                 isLoading ? <>
-                    <Box
+                    {/* <Box
                         sx={{
                             width: 60,
                             height: 60,
@@ -386,7 +387,8 @@ export default function Plays({ }) {
                                 '100%': { transform: 'rotate(360deg)' },
                             },
                         }}
-                    />
+                    /> */}
+                    <LoadingCircle size={60} />
                 </> : innings.length !== 0 ?
                     <>
                         {
@@ -399,7 +401,7 @@ export default function Plays({ }) {
                     </>
                     :
                     <>
-                        <Typography variant="h3">No Plays</Typography>
+                        <Typography variant="h5">No Plays</Typography>
                     </>
             }
         </GameTabContent>
