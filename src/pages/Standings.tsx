@@ -53,7 +53,7 @@ import { Visibility } from '@mui/icons-material';
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
-function StandingsTable({ tableData, index }) {
+function StandingsTable({ tableData, groupingsMode }) {
     const columns = [
         {
             data: 'team', title: `${tableData?.division}`, width: '20%',
@@ -63,7 +63,10 @@ function StandingsTable({ tableData, index }) {
         },
         { data: 'wins', title: 'W' },
         { data: 'losses', title: 'L' },
-        { data: 'gamesBack', title: 'GB' },
+        ...(groupingsMode === 'division' ? [{ data: 'gamesBack', title: 'GB' }] : []),
+        ...(groupingsMode === 'league' ? [{ data: 'leagueGamesBack', title: 'GB' }] : []),
+        ...(groupingsMode === 'MLB' ? [{ data: 'sportGamesBack', title: 'GB' }] : []),
+
         {
             data: 'records', title: 'Home',
             render: function (data) {
@@ -135,6 +138,7 @@ export default function Standings() {
     const [standingsYear, setStandingsYear] = useState(Temporal.Now.plainDateISO().year);
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
     const [standingsMode, setStandingsMode] = useState('regular season');
+    const [groupingsMode, setGroupingsMode] = useState('division');
     const [leagueTab, setLeagueTab] = useState('AL');
     const firstYear = 2000;
     const [selectedDate, setSelectedDate] = useState(Date.now());
@@ -148,11 +152,15 @@ export default function Standings() {
         setStandingsYear(event.target.value as string);
     };
 
-    const handleModeChange = (event: SelectChangeEvent) => {
+    const handleStandingsModeChange = (event: SelectChangeEvent) => {
         setStandingsMode(event.target.value as string);
     };
 
-    const handleChange = (event, newValue) => {
+    const handleGroupingsModeChange = (event: SelectChangeEvent) => {
+        setGroupingsMode(event.target.value as string);
+    };
+
+    const handleLeagueChange = (event, newValue) => {
         setLeagueTab(newValue);
     };
 
@@ -228,16 +236,19 @@ export default function Standings() {
             try {
                 const [month, day, year] = selectedDateApiString.split('/');
 
-                const standings = await fetchStandings(month, day, year);
-                const formattedStandings = await transformStandings(standings);
+                const standings = await fetchStandings(month, day, year, standingsMode, groupingsMode);
+                console.log('standings');
+                console.log(standings);
+                const formattedStandings = await transformStandings(standings, standingsMode, groupingsMode);
                 setStandings(formattedStandings);
+                console.log(formattedStandings);
             } catch (error) {
                 setStandings(null);
             }
         };
 
         getStandings();
-    }, [selectedDateApiString]);
+    }, [selectedDateApiString, standingsMode, groupingsMode]);
 
     // // wild card
 
@@ -322,18 +333,18 @@ export default function Standings() {
                     </Box>
                 </Grid>
                 <Grid size="auto">
-                    <Box>
-                        <ToggleButtonGroup
-                            color="primary"
-                            value={standingsMode}
-                            exclusive
-                            onChange={handleModeChange}
-                        >
-                            <ToggleButton value="regular season">Regular Season</ToggleButton>
-                            <ToggleButton value="wild card">Wild Card</ToggleButton>
-                            <ToggleButton value="spring training">Spring Training</ToggleButton>
-                        </ToggleButtonGroup>
-                    </Box>
+                    {/* <Box> */}
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={standingsMode}
+                        exclusive
+                        onChange={handleStandingsModeChange}
+                    >
+                        <ToggleButton value="regular season">Regular Season</ToggleButton>
+                        <ToggleButton value="wild card">Wild Card</ToggleButton>
+                        <ToggleButton value="spring training">Spring Training</ToggleButton>
+                    </ToggleButtonGroup>
+                    {/* </Box> */}
                 </Grid>
                 <Grid size="auto">
                     <Tooltip
@@ -353,33 +364,58 @@ export default function Standings() {
                     </Tooltip>
                 </Grid>
             </Grid>
-            <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}>
+            {/* <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}> */}
+            <Box>
                 <Box display='flex' gap={4} sx={{ width: '1500px', mb: 4 }}>
-                    <Tabs value={leagueTab} onChange={handleChange}>
-                        <Tab label="AL" value={'AL'} />
-                        <Tab label="NL" value={'NL'} />
-                    </Tabs>
-                    <Box sx={{ width: '1100px', display: 'flex', alignItems: 'center' }} gap={4}>
-                        <Typography component={"span"} sx={{ whiteSpace: 'nowrap' }}>Selected date: {selectedDateApiString.split('/').slice(0, 2).join('/')}</Typography>
-                        {seasonBounds &&
-                            <Slider
-                                defaultValue={30}
-                                min={0}
-                                max={seasonBounds.totalDays}
-                                value={sliderValue}
-                                valueLabelDisplay="auto"
-                                onChange={(e, val) => setSliderValue(val)}
-                                valueLabelFormat={formatLabel}
-                                step={1}
-                            />
-                        }
-                    </Box>
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={groupingsMode}
+                        exclusive
+                        onChange={handleGroupingsModeChange}
+                    >
+                        <ToggleButton value="division">Division</ToggleButton>
+                        <ToggleButton value="league">League</ToggleButton>
+                        <ToggleButton value="MLB">MLB</ToggleButton>
+                    </ToggleButtonGroup>
+                    {groupingsMode !== 'MLB' &&
+                        <Tabs value={leagueTab} onChange={handleLeagueChange}>
+                            <Tab label="AL" value={'AL'} />
+                            <Tab label="NL" value={'NL'} />
+                        </Tabs>
+                    }
+                </Box>
+                <Box sx={{ width: '1200px', mb: 4 }}>
+                    <Typography component={"span"} sx={{ whiteSpace: 'nowrap' }}>Selected date: {selectedDateApiString.split('/').slice(0, 2).join('/')}</Typography>
+                    {seasonBounds &&
+                        <Slider
+                            defaultValue={30}
+                            min={0}
+                            max={seasonBounds.totalDays}
+                            value={sliderValue}
+                            valueLabelDisplay="auto"
+                            onChange={(e, val) => setSliderValue(val)}
+                            valueLabelFormat={formatLabel}
+                            step={1}
+                        />
+                    }
                 </Box>
                 {standings ?
-                    <Stack spacing={0} sx={{ width: '1500px' }}>
+                    <Stack spacing={0} sx={{ width: '1250px' }}>
                         {standings.map((divisionData, index) => {
-                            const isVisible = divisionData.division.includes(leagueTab);
-                            return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} index={index} />
+                            switch (groupingsMode) {
+                                case 'division': {
+                                    const isVisible = divisionData.division.includes(leagueTab);
+                                    return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
+                                }
+                                case 'league': {
+                                    const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
+                                    return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
+                                }
+                                case 'MLB':
+                                    return <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
+                                default:
+                                    return <></>
+                            }
                         })}
                     </Stack> : <>
                         <LoadingCircle size={60} />

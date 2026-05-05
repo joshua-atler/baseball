@@ -382,6 +382,19 @@ class Consts {
 
         return null;
     }
+
+    static STANDING_TYPES = Object.freeze({
+        REGULAR_SEASON: 'regularSeason',
+        WILD_CARD: 'wildCard',
+        DIVISION_LEADERS: 'divisionLeaders',
+        WILD_CARD_WITH_LEADERS: 'wildCardWithLeaders',
+        SPRING_TRAINING: 'springTraining',
+        POSTSEASON: 'postSeason',
+        BY_DIVISION: 'byDivision',
+        BY_CONFERENCE: 'byConference',
+        BY_LEAGUE: 'byLeague',
+        BY_ORGANIZATION: 'byOrganization',
+    });
 }
 
 export { Consts };
