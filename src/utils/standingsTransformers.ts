@@ -60,7 +60,6 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
                     const mlbTeams = allProcessedRecords.flatMap(r => r.teamRecords);
                     mlbTeams.sort((a, b) => parseInt(a.sportRank) - parseInt(b.sportRank));
 
-                    console.log(mlbTeams);
                     return [{
                         division: 'Major League Baseball',
                         teamRecords: mlbTeams
@@ -70,24 +69,28 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
                     return [];
             }
         case 'wild card':
-            const wildCardTeams = allProcessedRecords.filter(r => r.standingsType === 'wildCard');
-            console.log('wildCardTeams');
-            console.log(wildCardTeams);
-            console.log(allProcessedRecords);
-
-            // add leaders
-            return allProcessedRecords.filter(r => r.standingsType === 'wildCard').map((record) => ({
+            const wildCardTeams = allProcessedRecords.filter(r => r.standingsType === 'wildCard').map((record) => ({
                 division: record.league.id === 103 ? 'American League' : 'National League',
                 teamRecords: record.teamRecords
             }));
+            const divisionLeaders = await Promise.all(allProcessedRecords.filter(r => r.standingsType === 'divisionLeaders').map(async (record) => ({
+                division: (await fetchDivision(record.division.id))?.divisions?.[0]?.nameShort || "Unknown",
+                teamRecords: record.teamRecords
+            })));
+
+            const allWildCardTeams = [...divisionLeaders, ...wildCardTeams];
+            const order = ['AL East', 'AL Central', 'AL West', 'American League', 'NL East', 'NL Central', 'NL West', 'National League'];
+            const orderMap = new Map(order.map((value, index) => [value, index]));
+
+            const sortedAllWildCardTeams = allWildCardTeams.sort((a, b) => {
+                return (orderMap.get(a.division) ?? Infinity) - (orderMap.get(b.division) ?? Infinity);
+            });
+
+            return sortedAllWildCardTeams;
 
         case 'spring training':
-            console.log('spring training');
             return [];
         default:
-            console.log(standingsMode);
             return [];
     }
-
-
 };

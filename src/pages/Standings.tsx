@@ -53,7 +53,17 @@ import { Visibility } from '@mui/icons-material';
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
-function StandingsTable({ tableData, groupingsMode }) {
+function StandingsTable({ tableData, standingsMode, groupingsMode }) {
+
+    const isLeague = tableData?.division.includes('League');
+    const lastPlayoffIndex = isLeague ? tableData?.teamRecords
+        .map((row, i) => ({ row, i }))
+        .filter(({ row }) =>
+            row.wildCardGamesBack === '-'
+        )
+        .at(-1)?.i
+        : undefined;
+
     const columns = [
         {
             data: 'team', title: `${tableData?.division}`, width: '20%',
@@ -63,10 +73,16 @@ function StandingsTable({ tableData, groupingsMode }) {
         },
         { data: 'wins', title: 'W' },
         { data: 'losses', title: 'L' },
-        ...(groupingsMode === 'division' ? [{ data: 'gamesBack', title: 'GB' }] : []),
-        ...(groupingsMode === 'league' ? [{ data: 'leagueGamesBack', title: 'GB' }] : []),
-        ...(groupingsMode === 'MLB' ? [{ data: 'sportGamesBack', title: 'GB' }] : []),
-
+        ...(standingsMode === 'regular season' && groupingsMode === 'division' ? [{ data: 'gamesBack', title: 'GB' }] : []),
+        ...(standingsMode === 'regular season' && groupingsMode === 'league' ? [{ data: 'leagueGamesBack', title: 'GB' }] : []),
+        ...(standingsMode === 'regular season' && groupingsMode === 'MLB' ? [{ data: 'sportGamesBack', title: 'GB' }] : []),
+        ...(standingsMode === 'wild card' ? [{
+            data: 'wildCardGamesBack',
+            title: 'GB',
+            render: (data) => {
+                return `<div style="text-align: right;">${data ?? ''}</div>`;
+            }
+        }] : []),
         {
             data: 'records', title: 'Home',
             render: function (data) {
@@ -126,9 +142,14 @@ function StandingsTable({ tableData, groupingsMode }) {
                 paging: false,
                 info: false,
                 ordering: false,
-                dom: "t"
-            }}>
-        </DataTable>
+                dom: "t",
+                createdRow: (row, data, dataIndex) => {
+                    if (dataIndex === lastPlayoffIndex) {
+                        row.style.borderBottom = '2px solid white';
+                    }
+                }
+            }}
+        />
     )
 }
 
@@ -237,11 +258,8 @@ export default function Standings() {
                 const [month, day, year] = selectedDateApiString.split('/');
 
                 const standings = await fetchStandings(month, day, year, standingsMode, groupingsMode);
-                console.log('standings');
-                console.log(standings);
                 const formattedStandings = await transformStandings(standings, standingsMode, groupingsMode);
                 setStandings(formattedStandings);
-                console.log(formattedStandings);
             } catch (error) {
                 setStandings(null);
             }
@@ -249,9 +267,6 @@ export default function Standings() {
 
         getStandings();
     }, [selectedDateApiString, standingsMode, groupingsMode]);
-
-    // // wild card
-
 
 
     // // spring training
@@ -367,7 +382,7 @@ export default function Standings() {
             {/* <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}> */}
             <Box>
                 <Box display='flex' gap={4} sx={{ width: '1500px', mb: 4 }}>
-                    <ToggleButtonGroup
+                    {standingsMode === 'regularSeason' && <ToggleButtonGroup
                         color="primary"
                         value={groupingsMode}
                         exclusive
@@ -376,7 +391,7 @@ export default function Standings() {
                         <ToggleButton value="division">Division</ToggleButton>
                         <ToggleButton value="league">League</ToggleButton>
                         <ToggleButton value="MLB">MLB</ToggleButton>
-                    </ToggleButtonGroup>
+                    </ToggleButtonGroup>}
                     {groupingsMode !== 'MLB' &&
                         <Tabs value={leagueTab} onChange={handleLeagueChange}>
                             <Tab label="AL" value={'AL'} />
@@ -402,19 +417,27 @@ export default function Standings() {
                 {standings ?
                     <Stack spacing={0} sx={{ width: '1250px' }}>
                         {standings.map((divisionData, index) => {
-                            switch (groupingsMode) {
-                                case 'division': {
-                                    const isVisible = divisionData.division.includes(leagueTab);
-                                    return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
-                                }
-                                case 'league': {
-                                    const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
-                                    return isVisible && <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
-                                }
-                                case 'MLB':
-                                    return <StandingsTable key={divisionData.division || index} tableData={divisionData} groupingsMode={groupingsMode} />
+                            switch (standingsMode) {
+                                case 'regular season':
+                                    switch (groupingsMode) {
+                                        case 'division': {
+                                            const isVisible = divisionData.division.includes(leagueTab);
+                                            return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                        }
+                                        case 'league': {
+                                            const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
+                                            return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                        }
+                                        case 'MLB':
+                                            return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                        default:
+                                            return <></>
+                                    }
+                                case 'wild card':
+                                    const isVisible = divisionData.division.includes(leagueTab) || (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League');
+                                    return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
                                 default:
-                                    return <></>
+                                    return <Box key={index} >other</Box>
                             }
                         })}
                     </Stack> : <>

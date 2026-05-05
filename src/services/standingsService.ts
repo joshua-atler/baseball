@@ -3,8 +3,6 @@ import { Consts } from '../consts/consts';
 import { apiClient } from './apiClient';
 
 export const fetchStandings = (month: number, day: number, year: number, standingsMode: string, groupingsMode: string) => {
-    console.log('fetchStandings');
-    console.log(standingsMode);
     switch (standingsMode) {
         case 'regular season':
             const standingsTypes = {
