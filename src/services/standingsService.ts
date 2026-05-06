@@ -2,7 +2,7 @@
 import { Consts } from '../consts/consts';
 import { apiClient } from './apiClient';
 
-export const fetchStandings = (month: number, day: number, year: number, standingsMode: string, groupingsMode: string) => {
+export const fetchStandings = async (month: number, day: number, year: number, standingsMode: string, groupingsMode: string) => {
     switch (standingsMode) {
         case 'regular season':
             const standingsTypes = {
@@ -15,8 +15,7 @@ export const fetchStandings = (month: number, day: number, year: number, standin
         case 'wild card':
             return apiClient(false, `/standings?leagueId=103,104&season=${year}&standingsTypes=wildCardWithLeaders&date=${month}/${day}/${year}`);
         case 'spring training':
-            // todo
-            return [];
+            return apiClient(false, `/standings?leagueId=103,104&season=${year}&standingsTypes=springTraining&date=${month}/${day}/${year}`)
     }
 }
 

@@ -16,12 +16,14 @@ export const transformStandingsForBoxscore = (standingsJson: object, awayTeamID:
 
 export const transformStandings = async (standingsJson, standingsMode, groupingsMode) => {
 
+
     const allProcessedRecords = await Promise.all(standingsJson.records.map(async (record) => {
         const updatedTeamRecords = await Promise.all(record.teamRecords.map(async (teamRec) => {
             const teamName = (await fetchTeamDetails(teamRec.team.id))?.teams?.[0]?.name;
             return {
                 ...teamRec,
                 team: {
+                    ...teamRec.team,
                     name: teamName,
                     teamLogo: Consts.teamsDetails[teamName].logo,
                 }
@@ -89,6 +91,38 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
             return sortedAllWildCardTeams;
 
         case 'spring training':
+
+            const grapefruitLeagueTeams = allProcessedRecords
+                .map(division => ({
+                    ...division,
+                    teamRecords: division.teamRecords.filter(r =>
+                        r.team?.springLeague?.id === 115
+                    )
+                }))
+                .filter(division => division.teamRecords.length > 0)
+                .flatMap(r => r.teamRecords)
+                .sort((a, b) => parseInt(a.springLeagueRank) - parseInt(b.springLeagueRank));
+            const cactusLeagueTeams = allProcessedRecords
+                .map(division => ({
+                    ...division,
+                    teamRecords: division.teamRecords.filter(r =>
+                        r.team?.springLeague?.id === 114
+                    )
+                }))
+                .filter(division => division.teamRecords.length > 0)
+                .flatMap(r => r.teamRecords)
+                .sort((a, b) => parseInt(a.springLeagueRank) - parseInt(b.springLeagueRank));
+
+            return [
+                {
+                    division: 'Grapefruit League',
+                    teamRecords: grapefruitLeagueTeams
+                },
+                {
+                    division: 'Cactus League',
+                    teamRecords: cactusLeagueTeams
+                }
+            ];
             return [];
         default:
             return [];
