@@ -16,7 +16,6 @@ export const transformStandingsForBoxscore = (standingsJson: object, awayTeamID:
 
 export const transformStandings = async (standingsJson, standingsMode, groupingsMode) => {
 
-
     const allProcessedRecords = await Promise.all(standingsJson.records.map(async (record) => {
         const updatedTeamRecords = await Promise.all(record.teamRecords.map(async (teamRec) => {
             const teamName = (await fetchTeamDetails(teamRec.team.id))?.teams?.[0]?.name;
@@ -123,8 +122,66 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
                     teamRecords: cactusLeagueTeams
                 }
             ];
-            return [];
         default:
             return [];
     }
+};
+
+export const transformLineChartStandings = async (scheduleJson, standingsMode, groupingsMode) => {
+
+    console.log('scheduleJson');
+    console.log(scheduleJson);
+    console.log('transformLineChartStandings');
+
+    // array with keys for each .date
+
+    // create teamRecordsByDate
+
+    const runningScores = {};
+    Object.keys(Consts.teamsDetails).filter(t => t !== 'Oakland Athletics').forEach(team => {
+        runningScores[team] = 0;
+    });
+
+    const teamRecordsByDate = scheduleJson.dates.map((date) => {
+        date.games.forEach(game => {
+            if (game.status.abstractGameState !== 'Final') return;
+            console.log(game);
+            const homeTeam = game.teams.home.team.name;
+            const awayTeam = game.teams.away.team.name;
+            const homeScore = game.teams.home.score;
+            const awayScore = game.teams.away.score;
+
+            if (homeScore > awayScore) {
+                runningScores[homeTeam] += 1;
+                runningScores[awayTeam] -= 1;
+            } else if (awayScore > homeScore) {
+                runningScores[awayTeam] += 1;
+                runningScores[homeScore] -= 1;
+            }
+        });
+
+        // B. Create the snapshot for Recharts
+        // We spread the current state of runningScores into the object
+        return {
+            date: date.date,
+            ...runningScores
+        };
+    });
+
+    console.log(teamRecordsByDate);
+
+    switch (groupingsMode) {
+        case 'division':
+            console.log('line chart division');
+
+            break;
+        case 'league':
+            console.log('line chart league');
+            break;
+        case 'MLB':
+            console.log('line chart MLB');
+            break;
+    }
+
+    return [];
 };

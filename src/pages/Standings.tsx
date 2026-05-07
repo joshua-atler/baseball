@@ -30,28 +30,77 @@ import {
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import Grid from '@mui/material/Grid2';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+// import { RechartsDevtools } from '@recharts/devtools';
+import { useTheme } from '@mui/material/styles';
 
-import $ from 'jquery';
+
+// import $ from 'jquery';
 import '../styles/style.css';
-import 'datatables.net-dt';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-select-dt';
-import 'datatables.net-rowgroup';
+// import 'datatables.net-dt';
+// import 'datatables.net-buttons/js/buttons.colVis.mjs';
+// import 'datatables.net-select-dt';
+// import 'datatables.net-rowgroup';
 
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
-import 'datatables.net-select-dt';
+// import 'datatables.net-select-dt';
 
 DataTable.use(DT);
 
 import { Consts } from '../consts/consts.ts';
-import { fetchStandings, fetchSeason } from '../services/standingsService.ts';
-import { transformStandings } from '../utils/standingsTransformers.ts';
+import { fetchStandings, fetchLineChartStandings, fetchSeason } from '../services/standingsService.ts';
+import { transformStandings, transformLineChartStandings } from '../utils/standingsTransformers.ts';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { Visibility } from '@mui/icons-material';
 
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
+
+const lineChartData = [
+    {
+        name: 'A',
+        uv: 400,
+        pv: 240,
+        amt: -2400,
+    },
+    {
+        name: 'B',
+        uv: 300,
+        pv: 456,
+        amt: 3000,
+    },
+    {
+        name: 'C',
+        uv: 300,
+        pv: 139,
+        amt: -2400,
+    },
+    {
+        name: 'D',
+        uv: 200,
+        pv: 980,
+        amt: 3000,
+    },
+    {
+        name: 'E',
+        uv: 278,
+        pv: 390,
+        amt: -5000,
+    },
+    {
+        name: 'F',
+        uv: 189,
+        pv: 480,
+        amt: 5000,
+    },
+    {
+        name: 'G',
+        uv: -50,
+        pv: 480,
+        amt: -9000,
+    },
+];
 
 function StandingsTable({ tableData, standingsMode, groupingsMode }) {
 
@@ -143,6 +192,7 @@ function StandingsTable({ tableData, standingsMode, groupingsMode }) {
 
 
 export default function Standings() {
+    const theme = useTheme();
     const [standingsYear, setStandingsYear] = useState(Temporal.Now.plainDateISO().year);
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
     const [standingsMode, setStandingsMode] = useState('regular season');
@@ -153,8 +203,8 @@ export default function Standings() {
     const [sliderValue, setSliderValue] = useState(0);
     const [debouncedValue, setDebouncedValue] = useState(0);
     const [seasonBounds, setSeasonBounds] = useState({});
-
     const [standings, setStandings] = useState(null);
+
 
     const handleYearChange = (event: SelectChangeEvent) => {
         setStandingsYear(event.target.value as string);
@@ -218,23 +268,23 @@ export default function Standings() {
 
     useEffect(() => {
         const updateSeasonBounds = async () => {
-            const data = await fetchSeason(standingsYear);
-            const season = data.seasons[0];
+            const season = await fetchSeason(standingsYear);
+            const seasonData = season.seasons[0];
 
 
             if (standingsMode === 'spring training') {
-                const start = new Date(season.springStartDate);
+                const start = new Date(seasonData.springStartDate);
                 start.setDate(start.getDate() + 1);
-                const end = new Date(season.springEndDate);
+                const end = new Date(seasonData.springEndDate);
                 const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
                 const diffTime = Math.abs(end - start);
                 const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 setSeasonBounds({ start, end, totalDays });
                 setSliderValue(totalDays);
             } else {
-                const start = new Date(season.regularSeasonStartDate);
+                const start = new Date(seasonData.regularSeasonStartDate);
                 start.setDate(start.getDate() + 1);
-                const end = new Date(season.regularSeasonEndDate);
+                const end = new Date(seasonData.regularSeasonEndDate);
                 const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
                 const effectiveEnd = isCurrentYear ? new Date() : end;
                 const diffTime = Math.abs(effectiveEnd - start);
@@ -249,15 +299,39 @@ export default function Standings() {
 
 
     useEffect(() => {
-        if (!selectedDateApiString) return;
-
         const getStandings = async () => {
             try {
-                const [month, day, year] = selectedDateApiString.split('/');
+                if (standingsMode !== 'line chart') {
+                    if (!selectedDateApiString) return;
+                    const [month, day, year] = selectedDateApiString.split('/');
 
-                const standings = await fetchStandings(month, day, year, standingsMode, groupingsMode);
-                const formattedStandings = await transformStandings(standings, standingsMode, groupingsMode);
-                setStandings(formattedStandings);
+                    const rawStandings = await fetchStandings(month, day, year, standingsMode, groupingsMode);
+                    console.log('after fetch standings');
+                    console.log(rawStandings);
+                    const formattedStandings = await transformStandings(rawStandings, standingsMode, groupingsMode);
+                    console.log('after formatted standings');
+                    console.log(formattedStandings);
+                    setStandings(formattedStandings);
+                } else {
+                    // const startDate;
+                    // const endDate;
+                    const season = await fetchSeason(standingsYear);
+                    const seasonData = season.seasons[0];
+                    console.log('seasonData');
+                    console.log(seasonData);
+                    const startDate = seasonData.regularSeasonStartDate;
+                    const endDate = seasonData.regularSeasonEndDate;
+                    
+                    const rawStandings = await fetchLineChartStandings(startDate, endDate);
+                    console.log('after fetch standings');
+                    console.log(rawStandings);
+
+                    const formattedStandings = await transformLineChartStandings(rawStandings, standingsMode, groupingsMode);
+                    console.log('after formatted standings');
+                    console.log('formattedStandings');
+                    console.log(formattedStandings);
+                    setStandings(formattedStandings);
+                }
             } catch (error) {
                 setStandings(null);
             }
@@ -266,6 +340,7 @@ export default function Standings() {
         getStandings();
     }, [selectedDateApiString, standingsMode, groupingsMode]);
 
+    console.log(standings);
 
     return (
         <Box>
@@ -301,6 +376,7 @@ export default function Standings() {
                         <ToggleButton value="regular season">Regular Season</ToggleButton>
                         <ToggleButton value="wild card">Wild Card</ToggleButton>
                         <ToggleButton value="spring training">Spring Training</ToggleButton>
+                        <ToggleButton value="line chart">Line Chart</ToggleButton>
                     </ToggleButtonGroup>
                     {/* </Box> */}
                 </Grid>
@@ -325,7 +401,7 @@ export default function Standings() {
             {/* <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}> */}
             <Box>
                 <Box display='flex' gap={4} sx={{ width: '1500px', mb: 4 }}>
-                    {standingsMode === 'regular season' && <ToggleButtonGroup
+                    {['regular season', 'line chart'].includes(standingsMode) && <ToggleButtonGroup
                         color="primary"
                         value={groupingsMode}
                         exclusive
@@ -359,32 +435,82 @@ export default function Standings() {
                 </Box>
                 {standings ?
                     <Stack spacing={0} sx={{ width: '1250px' }}>
-                        {standings.map((divisionData, index) => {
-                            switch (standingsMode) {
-                                case 'regular season':
-                                    switch (groupingsMode) {
-                                        case 'division': {
-                                            const isVisible = divisionData.division.includes(leagueTab);
-                                            return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+
+                        {standingsMode !== 'line chart' ?
+                            standings.map((divisionData, index) => {
+                                switch (standingsMode) {
+                                    case 'regular season':
+                                        switch (groupingsMode) {
+                                            case 'division': {
+                                                const isVisible = divisionData.division.includes(leagueTab);
+                                                return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                            }
+                                            case 'league': {
+                                                const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
+                                                return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                            }
+                                            case 'MLB':
+                                                return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                            default:
+                                                return <></>
                                         }
-                                        case 'league': {
-                                            const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
-                                            return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                        }
-                                        case 'MLB':
-                                            return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                        default:
-                                            return <></>
-                                    }
-                                case 'wild card':
-                                    const isVisible = divisionData.division.includes(leagueTab) || (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League');
-                                    return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                case 'spring training':
-                                    return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                default:
-                                    return <></>
-                            }
-                        })}
+                                    case 'wild card':
+                                        const isVisible = divisionData.division.includes(leagueTab) || (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League');
+                                        return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                    case 'spring training':
+                                        return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                    default:
+                                        return <></>
+                                }
+                            }) :
+                            <>
+                                {standings.map((divisionData, index) => {
+                                    return <Box key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', justifyContent: 'flex-start' }} >
+                                        <LineChart style={{ maxHeight: '500px', width: '80%', aspectRatio: 1.618 }} responsive data={lineChartData}>
+                                            <CartesianGrid stroke="#ffffff" strokeDasharray="10 10" />
+                                            <XAxis dataKey="name" stroke={theme.palette.custom.white} />
+                                            <YAxis width="auto" stroke={theme.palette.custom.white} />
+                                            {/* map over division data */}
+                                            <Line
+                                                type="monotone"
+                                                dataKey="uv"
+                                                stroke="#00ff00"
+                                                dot={{
+                                                    fill: '#005500',
+                                                }}
+                                                activeDot={{
+                                                    stroke: '#008800',
+                                                }}
+                                            />
+                                            {/* <Line
+                                                type="monotone"
+                                                dataKey="pv"
+                                                stroke="#0000ff"
+                                                dot={{
+                                                    fill: '#000055',
+                                                }}
+                                                activeDot={{
+                                                    stroke: '#000066',
+                                                }}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="amt"
+                                                stroke="#0000ff"
+                                                dot={{
+                                                    fill: '#000055',
+                                                }}
+                                                activeDot={{
+                                                    stroke: '#000066',
+                                                }}
+                                            /> */}
+                                        </LineChart>
+                                    </Box>
+                                })}
+                                {/* <Box>abcd</Box> */}
+                            </>
+                        }
+
                     </Stack> : <>
                         <LoadingCircle size={60} />
                     </>}
