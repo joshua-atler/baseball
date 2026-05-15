@@ -315,6 +315,7 @@ export default function Standings() {
                 } else {
                     // const startDate;
                     // const endDate;
+                    console.log('line chart');
                     const season = await fetchSeason(standingsYear);
                     const seasonData = season.seasons[0];
                     console.log('seasonData');
@@ -340,6 +341,7 @@ export default function Standings() {
         getStandings();
     }, [selectedDateApiString, standingsMode, groupingsMode]);
 
+    console.log('standings');
     console.log(standings);
 
     return (
@@ -481,32 +483,14 @@ export default function Standings() {
                                                 activeDot={{
                                                     stroke: '#008800',
                                                 }}
-                                            />
-                                            {/* <Line
-                                                type="monotone"
-                                                dataKey="pv"
-                                                stroke="#0000ff"
-                                                dot={{
-                                                    fill: '#000055',
-                                                }}
-                                                activeDot={{
-                                                    stroke: '#000066',
-                                                }}
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="amt"
-                                                stroke="#0000ff"
-                                                dot={{
-                                                    fill: '#000055',
-                                                }}
-                                                activeDot={{
-                                                    stroke: '#000066',
-                                                }}
-                                            /> */}
+                                                />
                                         </LineChart>
                                     </Box>
+                                    // {divisionData.teamRecords.map((row,)).map((_, i) => {
+                                    // const year = Temporal.Now.plainDateISO().year - i;
+                                    // return <MenuItem key={year} value={year}>{year}</MenuItem>
                                 })}
+                                {/* }) */}
                                 {/* <Box>abcd</Box> */}
                             </>
                         }

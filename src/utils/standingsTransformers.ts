@@ -129,13 +129,9 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
 
 export const transformLineChartStandings = async (scheduleJson, standingsMode, groupingsMode) => {
 
-    console.log('scheduleJson');
-    console.log(scheduleJson);
-    console.log('transformLineChartStandings');
-
-    // array with keys for each .date
-
-    // create teamRecordsByDate
+    // console.log('scheduleJson');
+    // console.log(scheduleJson);
+    // console.log('transformLineChartStandings');
 
     const runningScores = {};
     Object.keys(Consts.teamsDetails).filter(t => t !== 'Oakland Athletics').forEach(team => {
@@ -145,7 +141,6 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
     const teamRecordsByDate = scheduleJson.dates.map((date) => {
         date.games.forEach(game => {
             if (game.status.abstractGameState !== 'Final') return;
-            console.log(game);
             const homeTeam = game.teams.home.team.name;
             const awayTeam = game.teams.away.team.name;
             const homeScore = game.teams.home.score;
@@ -156,30 +151,43 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
                 runningScores[awayTeam] -= 1;
             } else if (awayScore > homeScore) {
                 runningScores[awayTeam] += 1;
-                runningScores[homeScore] -= 1;
+                runningScores[homeTeam] -= 1;
             }
         });
 
-        // B. Create the snapshot for Recharts
-        // We spread the current state of runningScores into the object
         return {
             date: date.date,
             ...runningScores
         };
     });
 
+    console.log('teamRecordsByDate');
     console.log(teamRecordsByDate);
+
+
+    // return teamRecordsByDate;
 
     switch (groupingsMode) {
         case 'division':
             console.log('line chart division');
-
+            return [{
+                division: 'Major League Baseball',
+                teamRecords: teamRecordsByDate
+            }];
             break;
         case 'league':
             console.log('line chart league');
+            return [{
+                division: 'Major League Baseball',
+                teamRecords: teamRecordsByDate
+            }];
             break;
         case 'MLB':
             console.log('line chart MLB');
+            return [{
+                division: 'Major League Baseball',
+                teamRecords: teamRecordsByDate
+            }];
             break;
     }
 
