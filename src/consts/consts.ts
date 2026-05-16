@@ -111,7 +111,7 @@ class Consts {
         'Houston Astros': createTeam('HOU'),
         'Los Angeles Angels': createTeam('LAA'),
         'Seattle Mariners': createTeam('SEA'),
-        'Oakland Athletics': createTeam('ATH'),
+        // 'Oakland Athletics': createTeam('ATH'),
         'Athletics': createTeam('ATH'),
         'Cleveland Guardians': createTeam('CLE'),
         'Kansas City Royals': createTeam('KC'),
@@ -225,8 +225,14 @@ class Consts {
             "primary": "rgb(0, 92, 92)",
             "secondary": "rgb(12, 44, 86)"
         },
+        // "ATH": {
+        //     "name": "Oakland Athletics",
+        //     "nickname": "athletics",
+        //     "primary": "rgb(0, 56, 49)",
+        //     "secondary": "rgb(239, 178, 30)"
+        // },
         "ATH": {
-            "name": "Oakland Athletics",
+            "name": "Athletics",
             "nickname": "athletics",
             "primary": "rgb(0, 56, 49)",
             "secondary": "rgb(239, 178, 30)"

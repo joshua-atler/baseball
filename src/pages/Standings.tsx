@@ -30,7 +30,7 @@ import {
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import Grid from '@mui/material/Grid2';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, LabelList, Legend, Tooltip as RechartsTooltip } from 'recharts';
 // import { RechartsDevtools } from '@recharts/devtools';
 import { useTheme } from '@mui/material/styles';
 
@@ -53,6 +53,7 @@ import { fetchStandings, fetchLineChartStandings, fetchSeason } from '../service
 import { transformStandings, transformLineChartStandings } from '../utils/standingsTransformers.ts';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { Visibility } from '@mui/icons-material';
+import { formatter } from '../utils/dateFormatters.ts';
 
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
@@ -306,11 +307,11 @@ export default function Standings() {
                     const [month, day, year] = selectedDateApiString.split('/');
 
                     const rawStandings = await fetchStandings(month, day, year, standingsMode, groupingsMode);
-                    console.log('after fetch standings');
-                    console.log(rawStandings);
+                    // console.log('after fetch standings');
+                    // console.log(rawStandings);
                     const formattedStandings = await transformStandings(rawStandings, standingsMode, groupingsMode);
-                    console.log('after formatted standings');
-                    console.log(formattedStandings);
+                    // console.log('after formatted standings');
+                    // console.log(formattedStandings);
                     setStandings(formattedStandings);
                 } else {
                     // const startDate;
@@ -321,8 +322,11 @@ export default function Standings() {
                     console.log('seasonData');
                     console.log(seasonData);
                     const startDate = seasonData.regularSeasonStartDate;
-                    const endDate = seasonData.regularSeasonEndDate;
-                    
+                    const endDate = isCurrentYear ? formatter.format(new Date()) : seasonData.regularSeasonEndDate;
+                    // console.log('endDate');
+                    // console.log(endDate);
+                    // const endDate = seasonData.regularSeasonEndDate;
+
                     const rawStandings = await fetchLineChartStandings(startDate, endDate);
                     console.log('after fetch standings');
                     console.log(rawStandings);
@@ -420,7 +424,7 @@ export default function Standings() {
                         </Tabs>
                     }
                 </Box>
-                <Box sx={{ width: '1200px', mb: 4 }}>
+                {standingsMode !== 'line chart' && <Box sx={{ width: '1200px', mb: 4 }}>
                     <Typography component={"span"} sx={{ whiteSpace: 'nowrap' }}>Selected date: {selectedDateApiString.split('/').slice(0, 2).join('/')}</Typography>
                     {seasonBounds &&
                         <Slider
@@ -434,7 +438,7 @@ export default function Standings() {
                             step={1}
                         />
                     }
-                </Box>
+                </Box>}
                 {standings ?
                     <Stack spacing={0} sx={{ width: '1250px' }}>
 
@@ -467,13 +471,17 @@ export default function Standings() {
                             }) :
                             <>
                                 {standings.map((divisionData, index) => {
+                                    console.log(divisionData.teamRecords);
                                     return <Box key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', justifyContent: 'flex-start' }} >
-                                        <LineChart style={{ maxHeight: '500px', width: '80%', aspectRatio: 1.618 }} responsive data={lineChartData}>
+
+
+                                        <LineChart style={{ maxHeight: '500px', width: '80%', aspectRatio: 1.618 }} responsive data={divisionData.teamRecords}>
                                             <CartesianGrid stroke="#ffffff" strokeDasharray="10 10" />
-                                            <XAxis dataKey="name" stroke={theme.palette.custom.white} />
+                                            <XAxis dataKey="date" stroke={theme.palette.custom.white} />
                                             <YAxis width="auto" stroke={theme.palette.custom.white} />
                                             {/* map over division data */}
-                                            <Line
+
+                                            {/* <Line
                                                 type="monotone"
                                                 dataKey="uv"
                                                 stroke="#00ff00"
@@ -483,8 +491,72 @@ export default function Standings() {
                                                 activeDot={{
                                                     stroke: '#008800',
                                                 }}
-                                                />
+                                            /> */}
+                                            <RechartsTooltip
+                                                contentStyle={{ backgroundColor: theme.palette.custom.dark, border: '0px' }}
+                                                itemStyle={{ color: theme.palette.custom.white, fontSize: '10px' }}
+                                                labelStyle={{ color: theme.palette.custom.white, fontWeight: 'bold' }}
+                                            />
+                                            {/* <Legend
+                                                layout="horizontal"
+                                                verticalAlign="top"
+                                                align="center"
+                                                wrapperStyle={{ paddingBottom: '20px' }}
+                                            /> */}
+
+                                            {Object.keys(Consts.teamsDetails).map((teamName, i) => {
+                                                return <Line
+                                                    key={teamName}
+                                                    type="monotone"
+                                                    dataKey={teamName}
+                                                    label="aaaa"
+                                                    stroke={Consts.teamInfo[Consts.teamNameToKey[teamName]].primary}
+                                                    dot={false}
+                                                    // dot={{
+                                                    // fill: Consts.teamInfo[Consts.teamNameToKey[teamName]].primary,
+                                                    // }}
+                                                    activeDot={{
+                                                        stroke: theme.palette.custom.white,
+                                                    }}
+                                                >
+                                                    {/* <LabelList
+                                                        dataKey={teamName}
+                                                        position="right"
+                                                        offset={10}
+                                                        // Custom formatter: only show the label on the last index of data
+                                                        content={(props) => {
+                                                            const { x, y, index, value } = props;
+                                                            const isLastPoint = index === lineChartData.length - 1;
+
+                                                            if (!isLastPoint) return null;
+
+                                                            return (
+                                                                <Typography
+                                                                // sx={{
+                                                                //     color: '#ff0000'
+                                                                // }}
+                                                                // x={x + 5}
+                                                                // y={y + 4}
+                                                                // fill={teamColor}
+                                                                // fontSize={12}
+                                                                // color={theme.palette.custom.white}
+                                                                // fontWeight="bold"
+                                                                >
+                                                                    {teamName}
+                                                                </Typography>
+                                                            );
+                                                        }}
+                                                    /> */}
+                                                </Line>
+                                            })}
                                         </LineChart>
+                                        {/* <Stack key={index}>
+                                            {divisionData.teamRecords.map((teamRecord, index) => {
+                                                console.log(teamRecord);
+                                                return <Box key={index}>{index}</Box>
+                                            })}
+                                        </Stack> */}
+                                        {/* })} */}
                                     </Box>
                                     // {divisionData.teamRecords.map((row,)).map((_, i) => {
                                     // const year = Temporal.Now.plainDateISO().year - i;

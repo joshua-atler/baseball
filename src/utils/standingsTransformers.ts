@@ -167,28 +167,28 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
 
     // return teamRecordsByDate;
 
+    console.log(`groupingsMode: ${groupingsMode}`);
+
     switch (groupingsMode) {
+
         case 'division':
             console.log('line chart division');
             return [{
                 division: 'Major League Baseball',
                 teamRecords: teamRecordsByDate
             }];
-            break;
         case 'league':
             console.log('line chart league');
             return [{
                 division: 'Major League Baseball',
                 teamRecords: teamRecordsByDate
             }];
-            break;
         case 'MLB':
             console.log('line chart MLB');
             return [{
                 division: 'Major League Baseball',
                 teamRecords: teamRecordsByDate
             }];
-            break;
     }
 
     return [];
