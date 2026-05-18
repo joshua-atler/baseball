@@ -139,6 +139,8 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
     });
 
     const teamRecordsByDate = scheduleJson.dates.map((date) => {
+        console.log(date);
+
         date.games.forEach(game => {
             if (game.status.abstractGameState !== 'Final') return;
             const homeTeam = game.teams.home.team.name;
@@ -156,16 +158,13 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
         });
 
         return {
-            date: date.date,
+            date: `${date.date.split('-')[1]}/${date.date.split('-')[2]}`,
             ...runningScores
         };
     });
 
     console.log('teamRecordsByDate');
     console.log(teamRecordsByDate);
-
-
-    // return teamRecordsByDate;
 
     console.log(`groupingsMode: ${groupingsMode}`);
 

@@ -470,32 +470,23 @@ export default function Standings() {
                                 }
                             }) :
                             <>
+                                <Typography variant="h4">Wins - Losses</Typography>
                                 {standings.map((divisionData, index) => {
-                                    console.log(divisionData.teamRecords);
-                                    return <Box key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', justifyContent: 'flex-start' }} >
-
-
-                                        <LineChart style={{ maxHeight: '500px', width: '80%', aspectRatio: 1.618 }} responsive data={divisionData.teamRecords}>
+                                    return <Box key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                            <Typography variant="h5">{divisionData.division}</Typography>
+                                        </Box>
+                                        <LineChart style={{ maxHeight: '500px', aspectRatio: 1.618 }} responsive data={divisionData.teamRecords}>
                                             <CartesianGrid stroke="#ffffff" strokeDasharray="10 10" />
                                             <XAxis dataKey="date" stroke={theme.palette.custom.white} />
                                             <YAxis width="auto" stroke={theme.palette.custom.white} />
                                             {/* map over division data */}
 
-                                            {/* <Line
-                                                type="monotone"
-                                                dataKey="uv"
-                                                stroke="#00ff00"
-                                                dot={{
-                                                    fill: '#005500',
-                                                }}
-                                                activeDot={{
-                                                    stroke: '#008800',
-                                                }}
-                                            /> */}
                                             <RechartsTooltip
                                                 contentStyle={{ backgroundColor: theme.palette.custom.dark, border: '0px' }}
                                                 itemStyle={{ color: theme.palette.custom.white, fontSize: '10px' }}
                                                 labelStyle={{ color: theme.palette.custom.white, fontWeight: 'bold' }}
+                                                itemSorter={(item) => -item.value}
                                             />
                                             {/* <Legend
                                                 layout="horizontal"
@@ -509,7 +500,6 @@ export default function Standings() {
                                                     key={teamName}
                                                     type="monotone"
                                                     dataKey={teamName}
-                                                    label="aaaa"
                                                     stroke={Consts.teamInfo[Consts.teamNameToKey[teamName]].primary}
                                                     dot={false}
                                                     // dot={{
