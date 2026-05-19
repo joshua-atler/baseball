@@ -129,17 +129,12 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
 
 export const transformLineChartStandings = async (scheduleJson, standingsMode, groupingsMode) => {
 
-    // console.log('scheduleJson');
-    // console.log(scheduleJson);
-    // console.log('transformLineChartStandings');
-
     const runningScores = {};
     Object.keys(Consts.teamsDetails).filter(t => t !== 'Oakland Athletics').forEach(team => {
         runningScores[team] = 0;
     });
 
     const teamRecordsByDate = scheduleJson.dates.map((date) => {
-        console.log(date);
 
         date.games.forEach(game => {
             if (game.status.abstractGameState !== 'Final') return;
@@ -163,27 +158,58 @@ export const transformLineChartStandings = async (scheduleJson, standingsMode, g
         };
     });
 
-    console.log('teamRecordsByDate');
-    console.log(teamRecordsByDate);
-
-    console.log(`groupingsMode: ${groupingsMode}`);
 
     switch (groupingsMode) {
 
         case 'division':
-            console.log('line chart division');
-            return [{
-                division: 'Major League Baseball',
-                teamRecords: teamRecordsByDate
-            }];
+            const divisionConfigs = [
+                { name: 'AL East', league: 'AL', index: 0 },
+                { name: 'AL Central', league: 'AL', index: 1 },
+                { name: 'AL West', league: 'AL', index: 2 },
+                { name: 'NL East', league: 'NL', index: 0 },
+                { name: 'NL Central', league: 'NL', index: 1 },
+                { name: 'NL West', league: 'NL', index: 2 },
+            ];
+
+            return divisionConfigs.map(({ name, league, index }) => {
+                const allowedTeams = new Set([...Consts.teams[league][index], 'date']);
+
+                return {
+                    division: name,
+                    teamRecords: teamRecordsByDate.map(row =>
+                        Object.fromEntries(
+                            Object.entries(row).filter(([key]) => allowedTeams.has(key))
+                        )
+                    )
+                };
+            });
         case 'league':
-            console.log('line chart league');
-            return [{
-                division: 'Major League Baseball',
-                teamRecords: teamRecordsByDate
-            }];
+            const americanLeagueTeams = new Set([...Consts.teams.AL.flat(), 'date']);
+            const nationalLeagueTeams = new Set([...Consts.teams.NL.flat(), 'date']);
+
+            return [
+                {
+                    division: 'American League',
+                    teamRecords: teamRecordsByDate.map(row => {
+                        return Object.fromEntries(
+                            Object.entries(row).filter(([key]) =>
+                                key === 'date' || americanLeagueTeams.has(key)
+                            )
+                        );
+                    })
+                },
+                {
+                    division: 'National League',
+                    teamRecords: teamRecordsByDate.map(row => {
+                        return Object.fromEntries(
+                            Object.entries(row).filter(([key]) =>
+                                key === 'date' || nationalLeagueTeams.has(key)
+                            )
+                        );
+                    })
+                }
+            ];
         case 'MLB':
-            console.log('line chart MLB');
             return [{
                 division: 'Major League Baseball',
                 teamRecords: teamRecordsByDate
