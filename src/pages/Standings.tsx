@@ -174,11 +174,7 @@ function StandingsTable({ tableData, standingsMode, groupingsMode }) {
                 info: false,
                 ordering: false,
                 dom: "t",
-                // createdRow: (row, data, dataIndex) => {
-                //     if (dataIndex === lastPlayoffIndex) {
-                //         row.style.borderBottom = '2px solid white';
-                //     }
-                // }
+                destroy: true,
             }}
         />
     )
@@ -199,17 +195,21 @@ export default function Standings() {
     const [debouncedValue, setDebouncedValue] = useState(0);
     const [seasonBounds, setSeasonBounds] = useState({});
     const [standings, setStandings] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
 
     const handleYearChange = (event: SelectChangeEvent) => {
+        setIsLoading(true);
         setStandingsYear(event.target.value as string);
     };
 
     const handleStandingsModeChange = (event: SelectChangeEvent) => {
+        setIsLoading(true);
         setStandingsMode(event.target.value as string);
     };
 
     const handleGroupingsModeChange = (event: SelectChangeEvent) => {
+        setIsLoading(true);
         setGroupingsMode(event.target.value as string);
     };
 
@@ -241,6 +241,7 @@ export default function Standings() {
 
     useEffect(() => {
         const handler = setTimeout(() => {
+            setIsLoading(true);
             setDebouncedValue(sliderValue);
         }, 300);
 
@@ -295,6 +296,15 @@ export default function Standings() {
 
     useEffect(() => {
         const getStandings = async () => {
+            setStandings(null);
+
+            if (standingsMode !== 'line chart' && !selectedDateApiString) {
+                setIsLoading(false);
+                return;
+            }
+
+            setIsLoading(true);
+
             try {
                 if (standingsMode !== 'line chart') {
                     if (!selectedDateApiString) return;
@@ -316,6 +326,8 @@ export default function Standings() {
                 }
             } catch (error) {
                 setStandings(null);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -413,91 +425,91 @@ export default function Standings() {
                         />
                     }
                 </Box>}
-                {standings ?
-                    <Stack spacing={0} sx={{ width: '1250px' }}>
-
-                        {standingsMode !== 'line chart' ?
-                            standings.map((divisionData, index) => {
-                                switch (standingsMode) {
-                                    case 'regular season':
-                                        switch (groupingsMode) {
-                                            case 'division': {
-                                                const isVisible = divisionData.division.includes(leagueTab);
-                                                return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                            }
-                                            case 'league': {
-                                                const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
-                                                return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                            }
-                                            case 'MLB':
-                                                return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                {isLoading ?
+                    <LoadingCircle size={60} /> : <>
+                        {standingsMode !== 'line chart' ? (
+                            <Stack key="table-view-container" spacing={0} sx={{ width: '1250px' }}>
+                                <Box key={`${standingsMode}-${groupingsMode}-${leagueTab}`}>
+                                    {standings && standings.map((divisionData, index) => {
+                                        switch (standingsMode) {
+                                            case 'regular season':
+                                                switch (groupingsMode) {
+                                                    case 'division': {
+                                                        const isVisible = divisionData.division.includes(leagueTab);
+                                                        return isVisible && <StandingsTable key={`table-${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                                    }
+                                                    case 'league': {
+                                                        const isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
+                                                        return isVisible && <StandingsTable key={`table-${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                                    }
+                                                    case 'MLB':
+                                                        return <StandingsTable key={`table-${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                                    default:
+                                                        return <></>
+                                                }
+                                            case 'wild card':
+                                                const isVisible = divisionData.division.includes(leagueTab) || (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League');
+                                                return isVisible && <StandingsTable key={`table-${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
+                                            case 'spring training':
+                                                return <StandingsTable key={`table-${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
                                             default:
                                                 return <></>
                                         }
-                                    case 'wild card':
-                                        const isVisible = divisionData.division.includes(leagueTab) || (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League');
-                                        return isVisible && <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                    case 'spring training':
-                                        return <StandingsTable key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} tableData={divisionData} standingsMode={standingsMode} groupingsMode={groupingsMode} />
-                                    default:
-                                        return <></>
-                                }
-                            }) :
-                            <>
-                                <Typography variant="h4">Wins - Losses</Typography>
-                                {standings.map((divisionData, index) => {
-                                    let isVisible = true;
-                                    switch (groupingsMode) {
-                                        case 'division':
-                                            isVisible = divisionData.division.includes(leagueTab);
-                                            break;
-                                        case 'league':
-                                            isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
-                                            break;
-                                        case 'MLB':
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    return isVisible && <Box key={`${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                            <Typography variant="h5">{divisionData.division}</Typography>
-                                        </Box>
-                                        <LineChart style={{ maxHeight: '500px', aspectRatio: 1.618 }} responsive data={divisionData.teamRecords}>
-                                            <CartesianGrid stroke={theme.palette.custom.white} fill={theme.palette.custom.darkGray} strokeDasharray="10 10" />
-                                            <XAxis dataKey="date" stroke={theme.palette.custom.white} />
-                                            <YAxis width="auto" stroke={theme.palette.custom.white} />
-                                            {/* map over division data */}
-
-                                            <RechartsTooltip
-                                                contentStyle={{ backgroundColor: theme.palette.custom.dark, border: '0px' }}
-                                                itemStyle={{ color: theme.palette.custom.white, fontSize: '15px' }}
-                                                labelStyle={{ color: theme.palette.custom.white, fontWeight: 'bold' }}
-                                                itemSorter={(item) => -item.value}
-                                            />
-
-                                            {Object.keys(Consts.teamsDetails).map((teamName, i) => {
-                                                return <Line
-                                                    key={teamName}
-                                                    type="monotone"
-                                                    dataKey={teamName}
-                                                    stroke={Consts.teamInfo[Consts.teamNameToKey[teamName]].primary}
-                                                    strokeWidth={3}
-                                                    dot={false}
-                                                    activeDot={{
-                                                        stroke: theme.palette.custom.white,
-                                                    }}
-                                                >
-                                                </Line>
-                                            })}
-                                        </LineChart>
-                                    </Box>
-                                })}
-                            </>
-                        }
-
-                    </Stack> : <>
-                        <LoadingCircle size={60} />
+                                    })}
+                                </Box>
+                            </Stack>
+                        ) : (
+                            <Stack key="chart-view-container" spacing={0} sx={{ width: '1250px' }}>
+                                <Box key="chart-view-content">
+                                    <Typography variant="h4">Wins - Losses</Typography>
+                                    {standings && standings.map((divisionData, index) => {
+                                        let isVisible = true;
+                                        switch (groupingsMode) {
+                                            case 'division':
+                                                isVisible = divisionData.division.includes(leagueTab);
+                                                break;
+                                            case 'league':
+                                                isVisible = (leagueTab === 'AL' && divisionData.division === 'American League') || (leagueTab === 'NL' && divisionData.division === 'National League')
+                                                break;
+                                            case 'MLB':
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        return isVisible && (
+                                            <Box key={`chart-${divisionData.division}-${standingsMode}-${groupingsMode}`} sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Typography variant="h5">{divisionData.division}</Typography>
+                                                </Box>
+                                                <LineChart style={{ maxHeight: '500px', aspectRatio: 1.618 }} responsive data={divisionData.teamRecords}>
+                                                    <CartesianGrid stroke={theme.palette.custom.white} fill={theme.palette.custom.darkGray} strokeDasharray="10 10" />
+                                                    <XAxis dataKey="date" stroke={theme.palette.custom.white} />
+                                                    <YAxis width="auto" stroke={theme.palette.custom.white} />
+                                                    <RechartsTooltip
+                                                        contentStyle={{ backgroundColor: theme.palette.custom.dark, border: '0px' }}
+                                                        itemStyle={{ color: theme.palette.custom.white, fontSize: '15px' }}
+                                                        labelStyle={{ color: theme.palette.custom.white, fontWeight: 'bold' }}
+                                                        itemSorter={(item) => -item.value}
+                                                    />
+                                                    {Object.keys(Consts.teamsDetails).map((teamName, i) => {
+                                                        return <Line
+                                                            key={teamName}
+                                                            type="monotone"
+                                                            dataKey={teamName}
+                                                            stroke={Consts.teamInfo[Consts.teamNameToKey[teamName]].primary}
+                                                            strokeWidth={3}
+                                                            dot={false}
+                                                            activeDot={{
+                                                                stroke: theme.palette.custom.white,
+                                                            }}
+                                                        />
+                                                    })}
+                                                </LineChart>
+                                            </Box>
+                                        );
+                                    })}
+                                </Box>
+                            </Stack>)}
                     </>}
             </Box>
         </Box>
