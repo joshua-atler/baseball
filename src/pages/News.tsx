@@ -86,9 +86,7 @@ export function News() {
     const [selectedTeam, setSelectedTeam] = useState<string>('');
     const { isMobileDevice } = useBasedash();
     const { articles, isLoading, isError } = useNews(selectedTeam ? Consts.teamInfo[selectedTeam].nickname : '');
-
-
-    const newsTeamLogo = selectedTeam ? `/teamLogos/${selectedTeam}.svg` : '';
+    const newsTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
     const handleTeamChange = useCallback((val) => {
         if (val.length === 1) {
@@ -140,7 +138,7 @@ export function News() {
                                 <img src={newsTeamLogo} style={{ width: 80, height: 80 }} ></img>
                             }
                             <Typography variant='h6'>
-                                {selectedTeam ? Consts.teamInfo[selectedTeam].name : ''}
+                                {selectedTeam}
                             </Typography>
                             <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
                                 <TeamSelect
@@ -149,8 +147,8 @@ export function News() {
                                     multiple={false} />
                             </Box>
                         </Box>
-                        <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].primary : '' }}></Box>
-                        <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].secondary : '' }}></Box>
+                        <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
+                        <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
                     </Box>
 
                     <Box sx={{ width: '90%', mx: 'auto', alignItems: 'center' }}>

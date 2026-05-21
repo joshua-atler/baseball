@@ -327,7 +327,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     team = '';
                 } else if ('team' in pitchingRow) {
                     team = pitchingRow['team']['name'];
-                    team = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[team][0]}">`;
+                    team = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[team][0]}">`;
                 } else {
                     team = pitchingRow['numTeams'];
                 }
@@ -476,7 +476,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     team = '';
                 } else if ('team' in hittingRow) {
                     team = hittingRow['team']['name'];
-                    team = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[team][0]}">`;
+                    team = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[team][0]}">`;
                 } else {
                     team = hittingRow['numTeams'];
                 }
@@ -1133,8 +1133,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
                         var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
                         var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
-                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
-                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamInfo[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamInfo[opponent][0]}">`;
                         var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
                         var matchup = `${team}${vsOrAt}${opponent}`;
 
@@ -1693,8 +1693,8 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
 
                         var teamWins = gameLog[i]['isWin'] ? 'winner' : '';
                         var opponentWins = gameLog[i]['isWin'] ? '' : 'winner';
-                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamsDetails[team][0]}">`;
-                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamsDetails[opponent][0]}">`;
+                        team = `<img width="30" height="30" class="logo ${teamWins}" src="${Consts.teamInfo[team][0]}">`;
+                        opponent = `<img width="30" height="30" class="logo ${opponentWins}" src="${Consts.teamInfo[opponent][0]}">`;
                         var vsOrAt = gameLog[i]['isHome'] ? '&nbsp;vs.&nbsp;' : '&nbsp;@&nbsp;&nbsp;';
                         var matchup = `${team}${vsOrAt}${opponent}`;
 
@@ -2287,7 +2287,7 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                                                             var imagePromises = [];
                                                             for (let i = 0; i < allTeams.length; i++) {
                                                                 // console.log(Consts.teamsDetails[allTeams[i]['name']][0]);
-                                                                imagePromises.push(loadSVGToImage(Consts.teamsDetails[allTeams[i]['name']][0]));
+                                                                imagePromises.push(loadSVGToImage(Consts.teamInfo[allTeams[i]['name']][0]));
                                                                 // imagePromises.push(Consts.teamsDetails[allTeams[i]['name']][0]);
                                                             }
 
@@ -2626,11 +2626,11 @@ export default function PlayerStats({ selectedPlayer, setSelectedGame }) {
                     gameLogDetails.html(`
                 <table id="playerStatsGameLog">
                     <tr>
-                        <td><img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam][0]}">${awayTeamAbbr}</td>
+                        <td><img width="30" height="30" class="logo" src="${Consts.teamInfo[awayTeam][0]}">${awayTeamAbbr}</td>
                         <td>${awayTeamRuns}</td>
                     </tr>
                     <tr>
-                        <td><img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam][0]}">${homeTeamAbbr}</td>
+                        <td><img width="30" height="30" class="logo" src="${Consts.teamInfo[homeTeam][0]}">${homeTeamAbbr}</td>
                         <td>${homeTeamRuns}</td>
                     </tr>
                 </table>

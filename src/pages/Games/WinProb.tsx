@@ -57,23 +57,10 @@ export default function WinProb({ }) {
                     chartRef.current.destroy();
                 }
 
-                const awayTeam = gameContent.gameData.teams.away;
-                const homeTeam = gameContent.gameData.teams.home;
+                const awayTeam = gameContent.gameData.teams.away.name;
+                const homeTeam = gameContent.gameData.teams.home.name;
 
-                const awayTeamAbbr = awayTeam.abbreviation;
-                const homeTeamAbbr = homeTeam.abbreviation;
-
-                const awayTeamIndex = Consts.findTeamIndex(awayTeam['name'] === 'Athletics' ? 'Oakland Athletics' : awayTeam['name']);
-                const homeTeamIndex = Consts.findTeamIndex(homeTeam['name'] === 'Athletics' ? 'Oakland Athletics' : homeTeam['name']);
-
-                const awayTeamColors = [
-                    Consts.teamInfo[awayTeam.abbreviation].primary,
-                    Consts.teamInfo[awayTeam.abbreviation].secondary,
-                ];
-                const homeTeamColors = [
-                    Consts.teamInfo[homeTeam.abbreviation].primary,
-                    Consts.teamInfo[homeTeam.abbreviation].secondary,
-                ];
+                console.log(Consts.teamInfo[awayTeam]);
 
                 const shadedRegions = {};
 
@@ -87,8 +74,8 @@ export default function WinProb({ }) {
                             type: 'box',
                             xMin: prevAtBatIndex,
                             xMax: atBatIndex,
-                            backgroundColor: prevInning.half === 'top' ? rgbaColor(awayTeamColors[0]) : rgbaColor(homeTeamColors[0]),
-                            borderColor: prevInning.half === 'top' ? awayTeamColors[0] : homeTeamColors[0],
+                            backgroundColor: prevInning.half === 'top' ? rgbaColor(Consts.teamInfo[awayTeam].colors.primary) : rgbaColor(Consts.teamInfo[homeTeam].colors.primary),
+                            borderColor: prevInning.half === 'top' ? rgbaColor(Consts.teamInfo[awayTeam].colors.primary) : rgbaColor(Consts.teamInfo[homeTeam].colors.primary),
                             borderWidth: 1
                         };
                         prevInning = currInning;
@@ -111,9 +98,9 @@ export default function WinProb({ }) {
                         labels: labels,
                         datasets: [
                             {
-                                label: `${homeTeamAbbr} Winning %`,
+                                label: `${Consts.teamInfo[homeTeam].abbr} Winning %`,
                                 data: homeTeamWinProbs,
-                                backgroundColor: homeTeamColors[0],
+                                backgroundColor: Consts.teamInfo[homeTeam].colors.primary,
                                 borderColor: 'white',
                                 borderWidth: 1,
                             }
@@ -164,7 +151,7 @@ export default function WinProb({ }) {
                                     },
                                     footer: function (context) {
                                         const dataAtIndex = winProbData[context[0]['dataIndex']];
-                                        const footer = `${dataAtIndex['about']['halfInning']} ${dataAtIndex['about']['inning']}\n${awayTeamAbbr}: ${dataAtIndex['result']['awayScore']}, ${homeTeamAbbr}: ${dataAtIndex['result']['homeScore']}`;
+                                        const footer = `${dataAtIndex['about']['halfInning']} ${dataAtIndex['about']['inning']}\n${Consts.teamInfo[awayTeam].abbr}: ${dataAtIndex['result']['awayScore']}, ${Consts.teamInfo[homeTeam].abbr}: ${dataAtIndex['result']['homeScore']}`;
                                         return footer;
                                     }
                                 }

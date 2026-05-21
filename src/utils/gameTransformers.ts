@@ -5,16 +5,16 @@ import { shortYearFormatter } from "./dateFormatters";
 
 export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string, timeZone: TimeZone, onProgress) => {
     let gamesForDates = [];
-    for (let i = 0; i < gamesJson['dates'].length; i++) {
-        for (let j = 0; j < gamesJson['dates'][i]['games'].length; j++) {
-            if (isLiveGames && gamesJson['dates'][i]['games'][j]['status']['abstractGameState'] != 'Live') {
+    for (let i = 0; i < gamesJson.dates.length; i++) {
+        for (let j = 0; j < gamesJson.dates[i].games.length; j++) {
+            if (isLiveGames && gamesJson.dates[i].games[j].status.abstractGameState != 'Live') {
                 // skip
             } else {
                 if (selectedTeams.length === 0) {
-                    gamesForDates.push(gamesJson['dates'][i]['games'][j]);
+                    gamesForDates.push(gamesJson.dates[i].games[j]);
                 } else {
-                    const awayTeam = Consts.teamNameToKey[gamesJson['dates'][i]['games'][j]['teams']['away']['team']['name']];
-                    const homeTeam = Consts.teamNameToKey[gamesJson['dates'][i]['games'][j]['teams']['home']['team']['name']];
+                    const awayTeam = gamesJson.dates[i].games[j].teams.away.team.name;
+                    const homeTeam = gamesJson.dates[i].games[j].teams.home.team.name;
 
                     if (selectedTeams.includes(awayTeam) || selectedTeams.includes(homeTeam)) {
                         gamesForDates.push(gamesJson['dates'][i]['games'][j]);
@@ -131,14 +131,14 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         currGame.gamePk = gameResponse.gamePk;
         currGame.date = dateString;
         currGame.time = timeString;
-        if (awayTeam in Consts.teamsDetails) {
-            currGame.away = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[awayTeam].logo}"><span>${awayTeam}</span>`;
+        if (awayTeam in Consts.teamInfo) {
+            currGame.away = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[awayTeam].logo}"><span>${awayTeam}</span>`;
         } else {
             currGame.away = awayTeam;
         }
         currGame.awayScore = awayScore;
-        if (homeTeam in Consts.teamsDetails) {
-            currGame.home = `<img width="30" height="30" class="logo" src="${Consts.teamsDetails[homeTeam].logo}"><span>${homeTeam}</span>`;
+        if (homeTeam in Consts.teamInfo) {
+            currGame.home = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[homeTeam].logo}"><span>${homeTeam}</span>`;
         } else {
             currGame.home = homeTeam;
         }
@@ -238,8 +238,8 @@ export const transformGameStats = (gameContent) => {
 
     const awayTeamName = gameContent?.liveData?.boxscore?.teams?.away?.team?.name;
     const homeTeamName = gameContent?.liveData?.boxscore?.teams?.home?.team?.name;
-    const awayTeam = Consts.teamsDetails[awayTeamName];
-    const homeTeam = Consts.teamsDetails[homeTeamName];
+    const awayTeam = Consts.teamInfo[awayTeamName];
+    const homeTeam = Consts.teamInfo[homeTeamName];
 
     const awayStats = gameContent?.liveData?.boxscore?.teams?.away?.teamStats;
     const homeStats = gameContent?.liveData?.boxscore?.teams?.home?.teamStats;

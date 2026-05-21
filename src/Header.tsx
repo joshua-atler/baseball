@@ -22,7 +22,7 @@ export const Header = () => {
             />
             <Toolbar>
                 <Typography variant="h4" noWrap component="div">
-                    <Link to="/" style={{ textDecoration: 'none', color: 'inherit', userSelect: 'none' }}>
+                    <Link to="/games" style={{ textDecoration: 'none', color: 'inherit', userSelect: 'none' }}>
                         Basedash
                     </Link>
                 </Typography>

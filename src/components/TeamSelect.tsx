@@ -22,14 +22,14 @@ export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
 
         const group = {
             label: divName,
-            options: Consts.teamAbbrs[league][divIndex].map((abbr) => {
+            options: Consts.teams[league][divIndex].map((teamName) => {
                 return {
-                    text: abbr,
-                    value: abbr,
+                    text: Consts.teamInfo[teamName].abbr,
+                    value: teamName,
                     html: `
                     <div style="display: flex; align-items: center;">
-                        <img src="teamLogos/${abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
-                        <span style="font-weight: bold;">${abbr}</span>
+                        <img src="teamLogos/${Consts.teamInfo[teamName].abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
+                        <span style="font-weight: bold;">${Consts.teamInfo[teamName].abbr}</span>
                     </div>
                     `
                 };

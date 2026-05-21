@@ -11,10 +11,136 @@ Object.keys(svgs).forEach(key => {
     svgs[key] = 'data:image/svg+xml;base64,' + btoa(svgs[key])
 });
 
-const createTeam = (abbr) => ({
+const createTeam = (abbr, nickname) => ({
     logo: `/teamLogos/${abbr}.svg`,
-    abbr: abbr
+    abbr: abbr,
+    nickname: nickname,
+    colors: teamColors[abbr] || { primary: '#777777', secondary: '#555555' }
 });
+
+const teamColors = {
+    NYY: {
+        primary: "rgb(19, 36, 72)",
+        secondary: "rgb(255, 255, 255)"
+    },
+    BAL: {
+        primary: "rgb(223, 70, 1)",
+        secondary: "rgb(0, 0, 0)"
+    },
+    BOS: {
+        primary: "rgb(189, 48, 57)",
+        secondary: "rgb(12, 35, 64)"
+    },
+    TB: {
+        primary: "rgb(9, 44, 92)",
+        secondary: "rgb(245, 209, 48)"
+    },
+    TOR: {
+        primary: "rgb(19, 74, 142)",
+        secondary: "rgb(232, 41, 28)"
+    },
+    CLE: {
+        primary: "rgb(12, 35, 63)",
+        secondary: "rgb(229, 0, 34)"
+    },
+    KC: {
+        primary: "rgb(0, 70, 135)",
+        secondary: "rgb(189, 155, 96)"
+    },
+    DET: {
+        primary: "rgb(12, 35, 64)",
+        secondary: "rgb(250, 70, 22)"
+    },
+    MIN: {
+        primary: "rgb(211, 17, 69)",
+        secondary: "rgb(0, 43, 92)"
+    },
+    CWS: {
+        primary: "rgb(0, 0, 0)",
+        secondary: "rgb(196, 206, 212)"
+    },
+    TEX: {
+        primary: "rgb(0, 50, 120)",
+        secondary: "rgb(192, 17, 31)"
+    },
+    HOU: {
+        primary: "rgb(235, 110, 31)",
+        secondary: "rgb(0, 45, 98)"
+    },
+    LAA: {
+        primary: "rgb(186, 0, 33)",
+        secondary: "rgb(196, 206, 212)"
+    },
+    SEA: {
+        primary: "rgb(0, 92, 92)",
+        secondary: "rgb(12, 44, 86)"
+    },
+    ATH: {
+        primary: "rgb(0, 56, 49)",
+        secondary: "rgb(239, 178, 30)"
+    },
+    ATL: {
+        primary: "rgb(206, 17, 65)",
+        secondary: "rgb(19, 39, 79)"
+    },
+    PHI: {
+        primary: "rgb(232, 24, 40)",
+        secondary: "rgb(107, 172, 228)"
+    },
+    NYM: {
+        primary: "rgb(0, 45, 114)",
+        secondary: "rgb(252, 89, 16)"
+    },
+    WSH: {
+        primary: "rgb(171, 0, 3)",
+        secondary: "rgb(20, 34, 90)"
+    },
+    MIA: {
+        primary: "rgb(0, 163, 224)",
+        secondary: "rgb(239, 51, 64)"
+    },
+    MIL: {
+        primary: "rgb(255, 197, 47)",
+        secondary: "rgb(18, 40, 75)"
+    },
+    CHC: {
+        primary: "rgb(14, 51, 134)",
+        secondary: "rgb(204, 52, 51)"
+    },
+    CIN: {
+        primary: "rgb(198, 1, 31)",
+        secondary: "rgb(0, 0, 0)"
+    },
+    STL: {
+        primary: "rgb(196, 30, 58)",
+        secondary: "rgb(254, 219, 0)"
+    },
+    PIT: {
+        primary: "rgb(253, 184, 39)",
+        secondary: "rgb(0, 0, 0)"
+    },
+    LAD: {
+        primary: "rgb(0, 90, 156)",
+        secondary: "rgb(255, 255, 255)"
+    },
+    SD: {
+        primary: "rgb(47, 36, 29)",
+        secondary: "rgb(255, 196, 37)"
+    },
+    SF: {
+        primary: "rgb(253, 90, 30)",
+        secondary: "rgb(0, 0, 0)"
+    },
+    AZ: {
+        primary: "rgb(167, 25, 48)",
+        secondary: "rgb(227, 212, 173)"
+    },
+    COL: {
+        primary: "rgb(51, 0, 102)",
+        secondary: "rgb(196, 206, 212)"
+    }
+}
+
 
 class Consts {
     static teams = {
@@ -56,232 +182,39 @@ class Consts {
         ]
     }
 
-    static teamsDetails = {
-        'Texas Rangers': createTeam('TEX'),
-        'Houston Astros': createTeam('HOU'),
-        'Los Angeles Angels': createTeam('LAA'),
-        'Seattle Mariners': createTeam('SEA'),
-        // 'Oakland Athletics': createTeam('ATH'),
-        'Athletics': createTeam('ATH'),
-        'Cleveland Guardians': createTeam('CLE'),
-        'Kansas City Royals': createTeam('KC'),
-        'Detroit Tigers': createTeam('DET'),
-        'Minnesota Twins': createTeam('MIN'),
-        'Chicago White Sox': createTeam('CWS'),
-        'New York Yankees': createTeam('NYY'),
-        'Baltimore Orioles': createTeam('BAL'),
-        'Boston Red Sox': createTeam('BOS'),
-        'Tampa Bay Rays': createTeam('TB'),
-        'Toronto Blue Jays': createTeam('TOR'),
-        'Los Angeles Dodgers': createTeam('LAD'),
-        'San Diego Padres': createTeam('SD'),
-        'San Francisco Giants': createTeam('SF'),
-        'Arizona Diamondbacks': createTeam('AZ'),
-        'Colorado Rockies': createTeam('COL'),
-        'Milwaukee Brewers': createTeam('MIL'),
-        'Chicago Cubs': createTeam('CHC'),
-        'Cincinnati Reds': createTeam('CIN'),
-        'St. Louis Cardinals': createTeam('STL'),
-        'Pittsburgh Pirates': createTeam('PIT'),
-        'Atlanta Braves': createTeam('ATL'),
-        'Philadelphia Phillies': createTeam('PHI'),
-        'New York Mets': createTeam('NYM'),
-        'Washington Nationals': createTeam('WSH'),
-        'Miami Marlins': createTeam('MIA')
-    };
-
     static teamInfo = {
-        "NYY": {
-            "name": "New York Yankees",
-            "nickname": "yankees",
-            "primary": "rgb(19, 36, 72)",
-            "secondary": "rgb(255, 255, 255)"
-        },
-        "BAL": {
-            "name": "Baltimore Orioles",
-            "nickname": "orioles",
-            "primary": "rgb(223, 70, 1)",
-            "secondary": "rgb(0, 0, 0)"
-        },
-        "BOS": {
-            "name": "Boston Red Sox",
-            "nickname": "redsox",
-            "primary": "rgb(189, 48, 57)",
-            "secondary": "rgb(12, 35, 64)"
-        },
-        "TB": {
-            "name": "Tampa Bay Rays",
-            "nickname": "rays",
-            "primary": "rgb(9, 44, 92)",
-            "secondary": "rgb(245, 209, 48)"
-        },
-        "TOR": {
-            "name": "Toronto Blue Jays",
-            "nickname": "bluejays",
-            "primary": "rgb(19, 74, 142)",
-            "secondary": "rgb(232, 41, 28)"
-        },
-        "CLE": {
-            "name": "Cleveland Guardians",
-            "nickname": "guardians",
-            "primary": "rgb(12, 35, 63)",
-            "secondary": "rgb(229, 0, 34)"
-        },
-        "KC": {
-            "name": "Kansas City Royals",
-            "nickname": "royals",
-            "primary": "rgb(0, 70, 135)",
-            "secondary": "rgb(189, 155, 96)"
-        },
-        "DET": {
-            "name": "Detroit Tigers",
-            "nickname": "tigers",
-            "primary": "rgb(12, 35, 64)",
-            "secondary": "rgb(250, 70, 22)"
-        },
-        "MIN": {
-            "name": "Minnesota Twins",
-            "nickname": "twins",
-            "primary": "rgb(211, 17, 69)",
-            "secondary": "rgb(0, 43, 92)"
-        },
-        "CWS": {
-            "name": "Chicago White Sox",
-            "nickname": "whitesox",
-            "primary": "rgb(0, 0, 0)",
-            "secondary": "rgb(196, 206, 212)"
-        },
-        "TEX": {
-            "name": "Texas Rangers",
-            "nickname": "rangers",
-            "primary": "rgb(0, 50, 120)",
-            "secondary": "rgb(192, 17, 31)"
-        },
-        "HOU": {
-            "name": "Houston Astros",
-            "nickname": "astros",
-            "primary": "rgb(235, 110, 31)",
-            "secondary": "rgb(0, 45, 98)"
-        },
-        "LAA": {
-            "name": "Los Angeles Angels",
-            "nickname": "angels",
-            "primary": "rgb(186, 0, 33)",
-            "secondary": "rgb(196, 206, 212)"
-        },
-        "SEA": {
-            "name": "Seattle Mariners",
-            "nickname": "mariners",
-            "primary": "rgb(0, 92, 92)",
-            "secondary": "rgb(12, 44, 86)"
-        },
-        // "ATH": {
-        //     "name": "Oakland Athletics",
-        //     "nickname": "athletics",
-        //     "primary": "rgb(0, 56, 49)",
-        //     "secondary": "rgb(239, 178, 30)"
-        // },
-        "ATH": {
-            "name": "Athletics",
-            "nickname": "athletics",
-            "primary": "rgb(0, 56, 49)",
-            "secondary": "rgb(239, 178, 30)"
-        },
-        "ATL": {
-            "name": "Atlanta Braves",
-            "nickname": "braves",
-            "primary": "rgb(206, 17, 65)",
-            "secondary": "rgb(19, 39, 79)"
-        },
-        "PHI": {
-            "name": "Philadelphia Phillies",
-            "nickname": "phillies",
-            "primary": "rgb(232, 24, 40)",
-            "secondary": "rgb(107, 172, 228)"
-        },
-        "NYM": {
-            "name": "New York Mets",
-            "nickname": "mets",
-            "primary": "rgb(0, 45, 114)",
-            "secondary": "rgb(252, 89, 16)"
-        },
-        "WSH": {
-            "name": "Washington Nationals",
-            "nickname": "nationals",
-            "primary": "rgb(171, 0, 3)",
-            "secondary": "rgb(20, 34, 90)"
-        },
-        "MIA": {
-            "name": "Miami Marlins",
-            "nickname": "marlins",
-            "primary": "rgb(0, 163, 224)",
-            "secondary": "rgb(239, 51, 64)"
-        },
-        "MIL": {
-            "name": "Milwaukee Brewers",
-            "nickname": "brewers",
-            "primary": "rgb(255, 197, 47)",
-            "secondary": "rgb(18, 40, 75)"
-        },
-        "CHC": {
-            "name": "Chicago Cubs",
-            "nickname": "cubs",
-            "primary": "rgb(14, 51, 134)",
-            "secondary": "rgb(204, 52, 51)"
-        },
-        "CIN": {
-            "name": "Cincinnati Reds",
-            "nickname": "reds",
-            "primary": "rgb(198, 1, 31)",
-            "secondary": "rgb(0, 0, 0)"
-        },
-        "STL": {
-            "name": "St. Louis Cardinals",
-            "nickname": "cardinals",
-            "primary": "rgb(196, 30, 58)",
-            "secondary": "rgb(254, 219, 0)"
-        },
-        "PIT": {
-            "name": "Pittsburgh Pirates",
-            "nickname": "pirates",
-            "primary": "rgb(253, 184, 39)",
-            "secondary": "rgb(0, 0, 0)"
-        },
-        "LAD": {
-            "name": "Los Angeles Dodgers",
-            "nickname": "dodgers",
-            "primary": "rgb(0, 90, 156)",
-            "secondary": "rgb(255, 255, 255)"
-        },
-        "SD": {
-            "name": "San Diego Padres",
-            "nickname": "padres",
-            "primary": "rgb(47, 36, 29)",
-            "secondary": "rgb(255, 196, 37)"
-        },
-        "SF": {
-            "name": "San Francisco Giants",
-            "nickname": "giants",
-            "primary": "rgb(253, 90, 30)",
-            "secondary": "rgb(0, 0, 0)"
-        },
-        "AZ": {
-            "name": "Arizona Diamondbacks",
-            "nickname": "dbacks",
-            "primary": "rgb(167, 25, 48)",
-            "secondary": "rgb(227, 212, 173)"
-        },
-        "COL": {
-            "name": "Colorado Rockies",
-            "nickname": "rockies",
-            "primary": "rgb(51, 0, 102)",
-            "secondary": "rgb(196, 206, 212)"
-        }
+        'Texas Rangers': createTeam('TEX', 'rangers'),
+        'Houston Astros': createTeam('HOU', 'astros'),
+        'Los Angeles Angels': createTeam('LAA', 'angels'),
+        'Seattle Mariners': createTeam('SEA', 'mariners'),
+        // 'Oakland Athletics': createTeam('ATH'),
+        'Athletics': createTeam('ATH', 'athletics'),
+        'Cleveland Guardians': createTeam('CLE', 'guardians'),
+        'Kansas City Royals': createTeam('KC', 'royals'),
+        'Detroit Tigers': createTeam('DET', 'tigers'),
+        'Minnesota Twins': createTeam('MIN', 'twins'),
+        'Chicago White Sox': createTeam('CWS', 'whitesox'),
+        'New York Yankees': createTeam('NYY', 'yankees'),
+        'Baltimore Orioles': createTeam('BAL', 'orioles'),
+        'Boston Red Sox': createTeam('BOS', 'redsox'),
+        'Tampa Bay Rays': createTeam('TB', 'rays'),
+        'Toronto Blue Jays': createTeam('TOR', 'bluejays'),
+        'Los Angeles Dodgers': createTeam('LAD', 'dodgers'),
+        'San Diego Padres': createTeam('SD', 'padres'),
+        'San Francisco Giants': createTeam('SF', 'giants'),
+        'Arizona Diamondbacks': createTeam('AZ', 'dbacks'),
+        'Colorado Rockies': createTeam('COL', 'rockies'),
+        'Milwaukee Brewers': createTeam('MIL', 'brewers'),
+        'Chicago Cubs': createTeam('CHC', 'cubs'),
+        'Cincinnati Reds': createTeam('CIN', 'reds'),
+        'St. Louis Cardinals': createTeam('STL', 'cardinals'),
+        'Pittsburgh Pirates': createTeam('PIT', 'pirates'),
+        'Atlanta Braves': createTeam('ATL', 'braves'),
+        'Philadelphia Phillies': createTeam('PHI', 'phillies'),
+        'New York Mets': createTeam('NYM', 'mets'),
+        'Washington Nationals': createTeam('WSH', 'nationals'),
+        'Miami Marlins': createTeam('MIA', 'marlins')
     };
-
-    static teamNameToKey = Object.fromEntries(
-        Object.entries(this.teamInfo).map(([key, val]) => [val.name, key])
-    );
 
     static fieldBackground = svgs['fieldBackground'];
 

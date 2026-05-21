@@ -491,12 +491,12 @@ export default function Standings() {
                                                         labelStyle={{ color: theme.palette.custom.white, fontWeight: 'bold' }}
                                                         itemSorter={(item) => -item.value}
                                                     />
-                                                    {Object.keys(Consts.teamsDetails).map((teamName, i) => {
+                                                    {Object.keys(Consts.teamInfo).map((teamName, i) => {
                                                         return <Line
                                                             key={teamName}
                                                             type="monotone"
                                                             dataKey={teamName}
-                                                            stroke={Consts.teamInfo[Consts.teamNameToKey[teamName]].primary}
+                                                            stroke={Consts.teamInfo[teamName].colors.primary}
                                                             strokeWidth={3}
                                                             dot={false}
                                                             activeDot={{

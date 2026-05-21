@@ -199,7 +199,7 @@ export default function Rosters({ setSelectedPlayer }) {
                         var teamPadded = team.padEnd(3, '\u00A0');
                         return {
                             text: team,
-                            html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[Consts.teams[league][i][index]][0]}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
+                            html: `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamInfo[Consts.teams[league][i][index]][0]}" /><span style="font-family: monospace; font-size: 16px; font-weight: bold; line-height: 30px;">${teamPadded}</span>`,
                             value: Consts.teams[league][i][index]
                         };
                     });
@@ -239,7 +239,7 @@ export default function Rosters({ setSelectedPlayer }) {
                         for (let i = 0; i < box.length; i++) {
                             if (!box[i].innerHTML.includes('<img')) {
                                 var teamPadded = box[i].innerHTML.padEnd(4, '\u00A0');
-                                box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamsDetails[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
+                                box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamInfo[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
                             }
                         }
 
@@ -321,7 +321,7 @@ export default function Rosters({ setSelectedPlayer }) {
                                             setTimeout(function () {
                                                 $(document.querySelector('#roster-dt')).find('thead th:nth-child(1)').click();
                                                 $(table).find('tbody').show();
-                                                rosterTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamsDetails[selectedTeam][0]}" />`);
+                                                rosterTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamInfo[selectedTeam][0]}" />`);
                                                 rosterTeamLabel.html(selectedTeam);
                                             }, 100);
                                         })

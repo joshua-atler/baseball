@@ -24,7 +24,7 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
                 team: {
                     ...teamRec.team,
                     name: teamName,
-                    teamLogo: Consts.teamsDetails[teamName].logo,
+                    teamLogo: Consts.teamInfo[teamName].logo,
                 }
             };
         }));
@@ -130,7 +130,7 @@ export const transformStandings = async (standingsJson, standingsMode, groupings
 export const transformLineChartStandings = async (scheduleJson, standingsMode, groupingsMode) => {
 
     const runningScores = {};
-    Object.keys(Consts.teamsDetails).filter(t => t !== 'Oakland Athletics').forEach(team => {
+    Object.keys(Consts.teamInfo).filter(t => t !== 'Oakland Athletics').forEach(team => {
         runningScores[team] = 0;
     });
 
