@@ -107,7 +107,7 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
     }
 
     async function fetchTeamRecords() {
-        const standings = await fetchStandings(month, day, year);
+        const standings = await fetchStandings(month, day, year, 'regular season', 'division');
 
         if (standings.records.length === 0) {
             setTeamRecords(null);
