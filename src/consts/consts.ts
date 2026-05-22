@@ -254,9 +254,9 @@ class Consts {
     }
 
     static findTeamIndex(teamName) {
-        if (teamName == 'Athletics') {
-            teamName = 'Oakland Athletics';
-        }
+        // if (teamName == 'Athletics') {
+        //     teamName = 'Oakland Athletics';
+        // }
 
         for (const league in Consts.teams) {
             for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {

@@ -1,10 +1,9 @@
-
 import { Consts } from '../consts/consts';
 import { apiClient } from './apiClient';
 
 export const fetchStandings = (month: number, day: number, year: number, standingsMode: string, groupingsMode: string) => {
     switch (standingsMode) {
-        case 'regular season':
+    case 'regular season':
             const standingsTypes = {
                 'division': Consts.STANDING_TYPES.REGULAR_SEASON,
                 'league': Consts.STANDING_TYPES.BY_LEAGUE,
