@@ -50,7 +50,8 @@ export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
                     closeOnSelect: multiple ? false : true,
                     allowDeselect: true,
                     isMultiple: multiple,
-                    maxSelected: 5
+                    maxSelected: 5,
+                    contentLocation: document.body
                 },
                 events: {
                     beforeOpen: () => {

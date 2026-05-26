@@ -7,9 +7,17 @@ import Grid from '@mui/material/Grid2';
 
 import Rosters from './Rosters';
 import PlayerStats from './PlayerStats';
+import { useBasedash } from '../../context/BasedashContext';
 
 
-export default function Players({ selectedPlayer, setSelectedPlayer, setSelectedGame }) {
+
+export default function Players() {
+    const {
+        selectedPlayer,
+        setSelectedPlayer,
+        setSelectedGame
+    } = useBasedash();
+
     return (
         <>
             <Grid container spacing={2}>
@@ -17,7 +25,7 @@ export default function Players({ selectedPlayer, setSelectedPlayer, setSelected
                     <Rosters setSelectedPlayer={setSelectedPlayer} />
                 </Grid>
                 <Grid>
-                    <PlayerStats selectedPlayer={selectedPlayer} setSelectedGame={setSelectedGame} />
+                    {/* <PlayerStats selectedPlayer={selectedPlayer} setSelectedGame={setSelectedGame} /> */}
                 </Grid>
             </Grid>
         </>

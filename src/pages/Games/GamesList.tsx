@@ -162,7 +162,7 @@ export default function GamesList({}) {
                 </a></Typography>}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'stretch', mb: 2, gap: 0 }}>
-                <Box sx={{ mr: 3, width: 500 }}>
+                <Box sx={{ mr: 3, width: 600 }}>
                     <TeamSelect
                         currentValue={selectedTeams}
                         onTeamChange={handleTeamChange}

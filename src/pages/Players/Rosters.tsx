@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as React from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { Box, Typography } from '@mui/material';
@@ -14,49 +14,53 @@ import 'datatables.net-rowgroup';
 
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
+import { TeamSelect } from '../../components/TeamSelect.tsx';
 
 
 
 export default function Rosters({ setSelectedPlayer }) {
-
-    var positionTypes = {
-        'Pitcher': 'Pitchers',
-        'Two-Way Player': 'Two-Way Players',
-        'Catcher': 'Catchers',
-        'Infielder': 'Infielders',
-        'Outfielder': 'Outfielders',
-        'Hitter': 'Designated Hitter'
-    };
-
-    function formatDate(originalDate) {
-        const date = new Date(originalDate);
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const year = date.getUTCFullYear();
-        return `${month}/${day}/${year}`;
-    }
-
-    function findTeamIndex(teamName) {
-        if (teamName == 'Athletics') {
-            teamName = 'Oakland Athletics';
-        }
-
-        for (const league in Consts.teams) {
-            for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {
-                const division = Consts.teams[league][divisionIndex];
-                const teamIndex = division.indexOf(teamName);
-
-                if (teamIndex !== -1) {
-                    return [league, divisionIndex, teamIndex];
-                }
-            }
-        }
-
-        return null;
-    }
+    const [selectedTeam, setSelectedTeam] = useState<string>('');
+    const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
 
-    React.useEffect(() => {
+    // const positionTypes = {
+    //     'Pitcher': 'Pitchers',
+    //     'Two-Way Player': 'Two-Way Players',
+    //     'Catcher': 'Catchers',
+    //     'Infielder': 'Infielders',
+    //     'Outfielder': 'Outfielders',
+    //     'Hitter': 'Designated Hitter'
+    // };
+
+    // function formatDate(originalDate) {
+    //     const date = new Date(originalDate);
+    //     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    //     const day = String(date.getUTCDate()).padStart(2, '0');
+    //     const year = date.getUTCFullYear();
+    //     return `${month}/${day}/${year}`;
+    // }
+
+    // function findTeamIndex(teamName) {
+    //     if (teamName == 'Athletics') {
+    //         teamName = 'Oakland Athletics';
+    //     }
+
+    //     for (const league in Consts.teams) {
+    //         for (let divisionIndex = 0; divisionIndex < Consts.teams[league].length; divisionIndex++) {
+    //             const division = Consts.teams[league][divisionIndex];
+    //             const teamIndex = division.indexOf(teamName);
+
+    //             if (teamIndex !== -1) {
+    //                 return [league, divisionIndex, teamIndex];
+    //             }
+    //         }
+    //     }
+
+    //     return null;
+    // }
+
+
+    useEffect(() => {
         var selectedTeam = null;
         var selectedRoster = [];
         var allTeams = [];
@@ -349,23 +353,55 @@ export default function Rosters({ setSelectedPlayer }) {
         }, 50);
     }, []);
 
+    const handleTeamChange = useCallback((val) => {
+        if (val.length === 1) {
+            setSelectedTeam(val[0]);
+        } else {
+            setSelectedTeam(null);
+        }
+    }, []);
 
     return (
         <>
-            <Box sx={{ width: 1200 }}>
-                <Typography variant="h5" noWrap component="div">
-                    Active Rosters
-                </Typography>
-                <div style={{ height: '100px' }}>
-                    <span id="roster-team-logo"></span>
-                    <span id="roster-team-label"></span>
-                    <div id="roster-teams-select-container">
-                        <select id="roster-teams-select"></select>
-                    </div>
-                </div>
-                <div className="roster-team-color-banner" style={{ height: '30px' }}></div>
-                <div className="roster-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
-                <table id="roster-dt">
+            <Box sx={{ width: '100%', mb: 5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 2 }}>
+                    {selectedTeamLogo &&
+                        <img src={selectedTeamLogo} style={{ width: 80, height: 80 }} ></img>
+                    }
+                    <Typography variant='h6'>
+                        {selectedTeam}
+                    </Typography>
+                    <Box sx={{ ml: 'auto', width: '600px' }}>
+                        <TeamSelect
+                            currentValue={selectedTeam}
+                            onTeamChange={handleTeamChange}
+                            multiple={false} />
+                    </Box>
+                </Box>
+                <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
+                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
+            </Box>
+
+
+            {/* <div style={{ height: '100px' }}>
+                    {selectedTeamLogo &&
+                        <img src={selectedTeamLogo} style={{ width: 80, height: 80 }} />
+                    }
+                    <Typography variant='h6'>
+                        {selectedTeam}
+                    </Typography>
+                    <Box sx={{ ml: 'auto', width: '600px' }}>
+                        <TeamSelect
+                            currentValue={selectedTeam}
+                            onTeamChange={handleTeamChange}
+                            multiple={false} />
+                    </Box>
+                </div> */}
+            {/* <div className="roster-team-color-banner" style={{ height: '30px' }}></div>
+                <div className="roster-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div> */}
+            {/* <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
+                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box> */}
+            {/* <table id="roster-dt">
                     <thead>
                         <tr>
                             <th>Player</th>
@@ -380,8 +416,7 @@ export default function Rosters({ setSelectedPlayer }) {
                     </thead>
                     <tbody>
                     </tbody>
-                </table>
-            </Box>
+                </table> */}
         </>
     )
 }

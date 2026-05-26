@@ -82,7 +82,6 @@ const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
 }
 
 export function News() {
-    const [newsTeam, setNewsTeam] = useState<NewsTeam>({ logo: '', label: '' });
     const [selectedTeam, setSelectedTeam] = useState<string>('');
     const { isMobileDevice } = useBasedash();
     const { articles, isLoading, isError } = useNews(selectedTeam ? Consts.teamInfo[selectedTeam].nickname : '');
@@ -133,14 +132,14 @@ export function News() {
             ) : (
                 <>
                     <Box sx={{ width: '100%', mb: 5 }}>
-                        <Box sx={{ display: 'flex', height: 100, alignItems: 'center', gap: 4, mb: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 2 }}>
                             {newsTeamLogo &&
                                 <img src={newsTeamLogo} style={{ width: 80, height: 80 }} ></img>
                             }
                             <Typography variant='h6'>
                                 {selectedTeam}
                             </Typography>
-                            <Box sx={{ ml: 'auto', width: '600px' }} id="news-teams-select-container">
+                            <Box sx={{ ml: 'auto', width: '600px' }}>
                                 <TeamSelect
                                     currentValue={selectedTeam}
                                     onTeamChange={handleTeamChange}
