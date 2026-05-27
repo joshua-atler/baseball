@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { fetchTeams } from '../services/teamsService.js';
 import * as svgsConst from './svg/*.js';
 const svgsConst = import.meta.glob('./svg/*.js', { eager: true });
 
@@ -11,138 +12,162 @@ Object.keys(svgs).forEach(key => {
     svgs[key] = 'data:image/svg+xml;base64,' + btoa(svgs[key])
 });
 
-const createTeam = (abbr, nickname) => ({
-    logo: `/teamLogos/${abbr}.svg`,
-    abbr: abbr,
-    nickname: nickname,
-    colors: teamColors[abbr] || { primary: '#777777', secondary: '#555555' }
-});
-
-const teamColors = {
-    NYY: {
-        primary: "rgb(19, 36, 72)",
-        secondary: "rgb(255, 255, 255)"
-    },
-    BAL: {
-        primary: "rgb(223, 70, 1)",
-        secondary: "rgb(0, 0, 0)"
-    },
-    BOS: {
-        primary: "rgb(189, 48, 57)",
-        secondary: "rgb(12, 35, 64)"
-    },
-    TB: {
-        primary: "rgb(9, 44, 92)",
-        secondary: "rgb(245, 209, 48)"
-    },
-    TOR: {
-        primary: "rgb(19, 74, 142)",
-        secondary: "rgb(232, 41, 28)"
-    },
-    CLE: {
-        primary: "rgb(12, 35, 63)",
-        secondary: "rgb(229, 0, 34)"
-    },
-    KC: {
-        primary: "rgb(0, 70, 135)",
-        secondary: "rgb(189, 155, 96)"
-    },
-    DET: {
-        primary: "rgb(12, 35, 64)",
-        secondary: "rgb(250, 70, 22)"
-    },
-    MIN: {
-        primary: "rgb(211, 17, 69)",
-        secondary: "rgb(0, 43, 92)"
-    },
-    CWS: {
-        primary: "rgb(0, 0, 0)",
-        secondary: "rgb(196, 206, 212)"
-    },
-    TEX: {
-        primary: "rgb(0, 50, 120)",
-        secondary: "rgb(192, 17, 31)"
-    },
-    HOU: {
-        primary: "rgb(235, 110, 31)",
-        secondary: "rgb(0, 45, 98)"
-    },
-    LAA: {
-        primary: "rgb(186, 0, 33)",
-        secondary: "rgb(196, 206, 212)"
-    },
-    SEA: {
-        primary: "rgb(0, 92, 92)",
-        secondary: "rgb(12, 44, 86)"
-    },
-    ATH: {
-        primary: "rgb(0, 56, 49)",
-        secondary: "rgb(239, 178, 30)"
-    },
-    ATL: {
-        primary: "rgb(206, 17, 65)",
-        secondary: "rgb(19, 39, 79)"
-    },
-    PHI: {
-        primary: "rgb(232, 24, 40)",
-        secondary: "rgb(107, 172, 228)"
-    },
-    NYM: {
-        primary: "rgb(0, 45, 114)",
-        secondary: "rgb(252, 89, 16)"
-    },
-    WSH: {
-        primary: "rgb(171, 0, 3)",
-        secondary: "rgb(20, 34, 90)"
-    },
-    MIA: {
-        primary: "rgb(0, 163, 224)",
-        secondary: "rgb(239, 51, 64)"
-    },
-    MIL: {
-        primary: "rgb(255, 197, 47)",
-        secondary: "rgb(18, 40, 75)"
-    },
-    CHC: {
-        primary: "rgb(14, 51, 134)",
-        secondary: "rgb(204, 52, 51)"
-    },
-    CIN: {
-        primary: "rgb(198, 1, 31)",
-        secondary: "rgb(0, 0, 0)"
-    },
-    STL: {
-        primary: "rgb(196, 30, 58)",
-        secondary: "rgb(254, 219, 0)"
-    },
-    PIT: {
-        primary: "rgb(253, 184, 39)",
-        secondary: "rgb(0, 0, 0)"
-    },
-    LAD: {
-        primary: "rgb(0, 90, 156)",
-        secondary: "rgb(255, 255, 255)"
-    },
-    SD: {
-        primary: "rgb(47, 36, 29)",
-        secondary: "rgb(255, 196, 37)"
-    },
-    SF: {
-        primary: "rgb(253, 90, 30)",
-        secondary: "rgb(0, 0, 0)"
-    },
-    AZ: {
-        primary: "rgb(167, 25, 48)",
-        secondary: "rgb(227, 212, 173)"
-    },
-    COL: {
-        primary: "rgb(51, 0, 102)",
-        secondary: "rgb(196, 206, 212)"
-    }
-}
-
 
 class Consts {
+    static abbrsToID = {};
+
+    static async initializeTeamIDs() {
+        const teams = await fetchTeams();
+
+        teams.teams.forEach((team) => {
+            Consts.abbrsToID[team.abbreviation] = team.id;
+        });
+
+        Object.keys(Consts.teamInfo).forEach((teamName) => {
+        const teamObj = Consts.teamInfo[teamName];
+        const matchedId = Consts.abbrsToID[teamObj.abbr];
+
+        if (matchedId) {
+            Consts.teamInfo[teamName].id = matchedId;
+        }
+    });
+    };
+
+    static createTeam(abbr, nickname) {
+        return {
+            logo: `/teamLogos/${abbr}.svg`,
+            abbr: abbr,
+            nickname: nickname,
+            colors: Consts.teamColors[abbr] || { primary: '#777777', secondary: '#555555' },
+            id: null
+        };
+    };
+
+
+
+    static teamColors = {
+        NYY: {
+            primary: "rgb(19, 36, 72)",
+            secondary: "rgb(255, 255, 255)"
+        },
+        BAL: {
+            primary: "rgb(223, 70, 1)",
+            secondary: "rgb(0, 0, 0)"
+        },
+        BOS: {
+            primary: "rgb(189, 48, 57)",
+            secondary: "rgb(12, 35, 64)"
+        },
+        TB: {
+            primary: "rgb(9, 44, 92)",
+            secondary: "rgb(245, 209, 48)"
+        },
+        TOR: {
+            primary: "rgb(19, 74, 142)",
+            secondary: "rgb(232, 41, 28)"
+        },
+        CLE: {
+            primary: "rgb(12, 35, 63)",
+            secondary: "rgb(229, 0, 34)"
+        },
+        KC: {
+            primary: "rgb(0, 70, 135)",
+            secondary: "rgb(189, 155, 96)"
+        },
+        DET: {
+            primary: "rgb(12, 35, 64)",
+            secondary: "rgb(250, 70, 22)"
+        },
+        MIN: {
+            primary: "rgb(211, 17, 69)",
+            secondary: "rgb(0, 43, 92)"
+        },
+        CWS: {
+            primary: "rgb(0, 0, 0)",
+            secondary: "rgb(196, 206, 212)"
+        },
+        TEX: {
+            primary: "rgb(0, 50, 120)",
+            secondary: "rgb(192, 17, 31)"
+        },
+        HOU: {
+            primary: "rgb(235, 110, 31)",
+            secondary: "rgb(0, 45, 98)"
+        },
+        LAA: {
+            primary: "rgb(186, 0, 33)",
+            secondary: "rgb(196, 206, 212)"
+        },
+        SEA: {
+            primary: "rgb(0, 92, 92)",
+            secondary: "rgb(12, 44, 86)"
+        },
+        ATH: {
+            primary: "rgb(0, 56, 49)",
+            secondary: "rgb(239, 178, 30)"
+        },
+        ATL: {
+            primary: "rgb(206, 17, 65)",
+            secondary: "rgb(19, 39, 79)"
+        },
+        PHI: {
+            primary: "rgb(232, 24, 40)",
+            secondary: "rgb(107, 172, 228)"
+        },
+        NYM: {
+            primary: "rgb(0, 45, 114)",
+            secondary: "rgb(252, 89, 16)"
+        },
+        WSH: {
+            primary: "rgb(171, 0, 3)",
+            secondary: "rgb(20, 34, 90)"
+        },
+        MIA: {
+            primary: "rgb(0, 163, 224)",
+            secondary: "rgb(239, 51, 64)"
+        },
+        MIL: {
+            primary: "rgb(255, 197, 47)",
+            secondary: "rgb(18, 40, 75)"
+        },
+        CHC: {
+            primary: "rgb(14, 51, 134)",
+            secondary: "rgb(204, 52, 51)"
+        },
+        CIN: {
+            primary: "rgb(198, 1, 31)",
+            secondary: "rgb(0, 0, 0)"
+        },
+        STL: {
+            primary: "rgb(196, 30, 58)",
+            secondary: "rgb(254, 219, 0)"
+        },
+        PIT: {
+            primary: "rgb(253, 184, 39)",
+            secondary: "rgb(0, 0, 0)"
+        },
+        LAD: {
+            primary: "rgb(0, 90, 156)",
+            secondary: "rgb(255, 255, 255)"
+        },
+        SD: {
+            primary: "rgb(47, 36, 29)",
+            secondary: "rgb(255, 196, 37)"
+        },
+        SF: {
+            primary: "rgb(253, 90, 30)",
+            secondary: "rgb(0, 0, 0)"
+        },
+        AZ: {
+            primary: "rgb(167, 25, 48)",
+            secondary: "rgb(227, 212, 173)"
+        },
+        COL: {
+            primary: "rgb(51, 0, 102)",
+            secondary: "rgb(196, 206, 212)"
+        }
+    }
+
     static teams = {
         'AL': [
             ['New York Yankees', 'Baltimore Orioles', 'Boston Red Sox', 'Tampa Bay Rays', 'Toronto Blue Jays'],
@@ -183,37 +208,37 @@ class Consts {
     }
 
     static teamInfo = {
-        'Texas Rangers': createTeam('TEX', 'rangers'),
-        'Houston Astros': createTeam('HOU', 'astros'),
-        'Los Angeles Angels': createTeam('LAA', 'angels'),
-        'Seattle Mariners': createTeam('SEA', 'mariners'),
+        'Texas Rangers': Consts.createTeam('TEX', 'rangers'),
+        'Houston Astros': Consts.createTeam('HOU', 'astros'),
+        'Los Angeles Angels': Consts.createTeam('LAA', 'angels'),
+        'Seattle Mariners': Consts.createTeam('SEA', 'mariners'),
         // 'Oakland Athletics': createTeam('ATH'),
-        'Athletics': createTeam('ATH', 'athletics'),
-        'Cleveland Guardians': createTeam('CLE', 'guardians'),
-        'Kansas City Royals': createTeam('KC', 'royals'),
-        'Detroit Tigers': createTeam('DET', 'tigers'),
-        'Minnesota Twins': createTeam('MIN', 'twins'),
-        'Chicago White Sox': createTeam('CWS', 'whitesox'),
-        'New York Yankees': createTeam('NYY', 'yankees'),
-        'Baltimore Orioles': createTeam('BAL', 'orioles'),
-        'Boston Red Sox': createTeam('BOS', 'redsox'),
-        'Tampa Bay Rays': createTeam('TB', 'rays'),
-        'Toronto Blue Jays': createTeam('TOR', 'bluejays'),
-        'Los Angeles Dodgers': createTeam('LAD', 'dodgers'),
-        'San Diego Padres': createTeam('SD', 'padres'),
-        'San Francisco Giants': createTeam('SF', 'giants'),
-        'Arizona Diamondbacks': createTeam('AZ', 'dbacks'),
-        'Colorado Rockies': createTeam('COL', 'rockies'),
-        'Milwaukee Brewers': createTeam('MIL', 'brewers'),
-        'Chicago Cubs': createTeam('CHC', 'cubs'),
-        'Cincinnati Reds': createTeam('CIN', 'reds'),
-        'St. Louis Cardinals': createTeam('STL', 'cardinals'),
-        'Pittsburgh Pirates': createTeam('PIT', 'pirates'),
-        'Atlanta Braves': createTeam('ATL', 'braves'),
-        'Philadelphia Phillies': createTeam('PHI', 'phillies'),
-        'New York Mets': createTeam('NYM', 'mets'),
-        'Washington Nationals': createTeam('WSH', 'nationals'),
-        'Miami Marlins': createTeam('MIA', 'marlins')
+        'Athletics': Consts.createTeam('ATH', 'athletics'),
+        'Cleveland Guardians': Consts.createTeam('CLE', 'guardians'),
+        'Kansas City Royals': Consts.createTeam('KC', 'royals'),
+        'Detroit Tigers': Consts.createTeam('DET', 'tigers'),
+        'Minnesota Twins': Consts.createTeam('MIN', 'twins'),
+        'Chicago White Sox': Consts.createTeam('CWS', 'whitesox'),
+        'New York Yankees': Consts.createTeam('NYY', 'yankees'),
+        'Baltimore Orioles': Consts.createTeam('BAL', 'orioles'),
+        'Boston Red Sox': Consts.createTeam('BOS', 'redsox'),
+        'Tampa Bay Rays': Consts.createTeam('TB', 'rays'),
+        'Toronto Blue Jays': Consts.createTeam('TOR', 'bluejays'),
+        'Los Angeles Dodgers': Consts.createTeam('LAD', 'dodgers'),
+        'San Diego Padres': Consts.createTeam('SD', 'padres'),
+        'San Francisco Giants': Consts.createTeam('SF', 'giants'),
+        'Arizona Diamondbacks': Consts.createTeam('AZ', 'dbacks'),
+        'Colorado Rockies': Consts.createTeam('COL', 'rockies'),
+        'Milwaukee Brewers': Consts.createTeam('MIL', 'brewers'),
+        'Chicago Cubs': Consts.createTeam('CHC', 'cubs'),
+        'Cincinnati Reds': Consts.createTeam('CIN', 'reds'),
+        'St. Louis Cardinals': Consts.createTeam('STL', 'cardinals'),
+        'Pittsburgh Pirates': Consts.createTeam('PIT', 'pirates'),
+        'Atlanta Braves': Consts.createTeam('ATL', 'braves'),
+        'Philadelphia Phillies': Consts.createTeam('PHI', 'phillies'),
+        'New York Mets': Consts.createTeam('NYM', 'mets'),
+        'Washington Nationals': Consts.createTeam('WSH', 'nationals'),
+        'Miami Marlins': Consts.createTeam('MIA', 'marlins')
     };
 
     static fieldBackground = svgs['fieldBackground'];
@@ -228,18 +253,6 @@ class Consts {
         'CT': -1,
         'ET': 0
     };
-
-    // static pitchIcons = {
-    //     'steals': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="m242-200 200-280-200-280h98l200 280-200 280h-98Zm238 0 200-280-200-280h98l200 280-200 280h-98Z"/></svg >,
-    //     'error': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M479.79-288q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5ZM444-432h72v-240h-72v240Zm36.28 336Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg >,
-    //     'switch': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M288-168 96-360l192-192 51 51-105 105h294v72H234l105 105-51 51Zm384-240-51-51 105-105H432v-72h294L621-741l51-51 192 192-192 192Z"/></svg >,
-    //     'pause': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="m614-310 51-51-149-149v-210h-72v240l170 170ZM480-96q-79.38 0-149.19-30T208.5-208.5Q156-261 126-330.96t-30-149.5Q96-560 126-630q30-70 82.5-122t122.46-82q69.96-30 149.5-30t149.55 30.24q70 30.24 121.79 82.08 51.78 51.84 81.99 121.92Q864-559.68 864-480q0 79.38-30 149.19T752-208.5Q700-156 629.87-126T480-96Zm0-384Zm.48 312q129.47 0 220.5-91.5Q792-351 792-480.48q0-129.47-91.02-220.5Q609.95-792 480.48-792 351-792 259.5-700.98 168-609.95 168-480.48 168-351 259.5-259.5T480.48-168Z"/></svg >,
-    //     'status': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M336-336h72v-288h-72v288Zm144 0 216-144-216-144v288Zm.28 240Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg >,
-    //     'caught': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M480-96q-79 0-149-30t-122.5-82.5Q156-261 126-331T96-480q0-80 30-149.5t82.5-122Q261-804 331-834t149-30q80 0 149.5 30t122 82.5Q804-699 834-629.5T864-480q0 79-30 149t-82.5 122.5Q699-156 629.5-126T480-96Zm0-72q55 0 104-18t89-50L236-673q-32 40-50 89t-18 104q0 130 91 221t221 91Zm244-119q32-40 50-89t18-104q0-130-91-221t-221-91q-55 0-104 18t-89 50l437 437Z"/></svg >,
-    //     'remains': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M444-288h72v-240h-72v240Zm35.79-312q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5Zm.49 504Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg >,
-    //     'warning': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="m48-144 432-720 432 720H48Zm127-72h610L480-724 175-216Zm304.79-48q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5ZM444-384h72v-192h-72v192Zm36-86Z"/></svg >,
-    //     'timer': <svg xmlns="http://www.w3.org/2000/svg" height = "20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF" > <path d="M360-816v-72h240v72H360Zm84 432h72v-240h-72v240Zm36 288q-70 0-130.92-26.51-60.92-26.5-106.49-72.08-45.58-45.57-72.08-106.49Q144-362 144-432q0-70 26.51-130.92 26.5-60.92 72.08-106.49 45.57-45.58 106.49-72.08Q410-768 479.56-768q58.28 0 111.86 19.5T691-694l52-51 50 50-51 52q35 45 54.5 98.81T816-431.86q0 69.86-26.51 130.78-26.5 60.92-72.08 106.49-45.57 45.58-106.49 72.08Q550-96 480-96Zm0-72q110 0 187-77t77-187q0-110-77-187t-187-77q-110 0-187 77t-77 187q0 110 77 187t187 77Zm0-264Z"/></svg >
-    // }
 
     static pitchIcons = {
         'steals': 'm242-200 200-280-200-280h98l200 280-200 280h-98Zm238 0 200-280-200-280h98l200 280-200 280h-98Z',

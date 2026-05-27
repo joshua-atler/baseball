@@ -536,10 +536,17 @@ div.ss-values {
     font-size: 14px;
 }
 
-.roster-select {
+/* .ss-content { */
+    /* width: 600px !important; */
+    /* height: 800px !important; */
+    /* overflow-y: auto !important; */
+    /* z-index: 99999 !important; */
+/* } */
+
+/* .roster-select {
     display: table-cell !important;
     width: 100px !important;
-}
+} */
 
 #live-switch-container {
     width: 100px;

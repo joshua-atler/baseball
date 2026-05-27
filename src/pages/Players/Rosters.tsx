@@ -9,19 +9,38 @@ import $ from 'jquery';
 import SlimSelect from 'slim-select';
 import 'datatables.net-dt';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-select-dt';
-import 'datatables.net-rowgroup';
+// import 'datatables.net-select-dt';
+// import 'datatables.net-rowgroup';
+
+import { fetchRoster } from '../../services/rosterService.ts';
+
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
 
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 
 
+DataTable.use(DT);
+
 
 export default function Rosters({ setSelectedPlayer }) {
     const [selectedTeam, setSelectedTeam] = useState<string>('');
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
+    const [roster, setRoster] = useState(null);
+
+    const columns = [
+        { data: 'date', title: 'Date' },
+        { data: 'time', title: 'Time' },
+        { data: 'away', title: 'Away' },
+        { data: 'awayScore', title: '' },
+        { data: 'home', title: 'Home' },
+        { data: 'homeScore', title: '' },
+        { data: 'inning', title: 'Inning' },
+        { data: 'status', title: 'Status' },
+    ];
 
     // const positionTypes = {
     //     'Pitcher': 'Pitchers',
@@ -58,6 +77,28 @@ export default function Rosters({ setSelectedPlayer }) {
 
     //     return null;
     // }
+
+    useEffect(() => {
+        const getRoster = async () => {
+            if (!selectedTeam) {
+                setRoster(null);
+                console.log('set roster to null');
+                return;
+            };
+
+            try {
+                const rawRoster = await fetchRoster(Consts.teamInfo[selectedTeam].id);
+                console.log(rawRoster);
+                const formattedRoster = transformRoster(rawRoster);
+                setRoster(formattedRoster);
+            } catch (error) {
+                setRoster(null);
+                console.error("Team stats fetch failed: ", error);
+            }
+        };
+
+        getRoster();
+    }, [selectedTeam]);
 
 
     useEffect(() => {
@@ -222,134 +263,134 @@ export default function Rosters({ setSelectedPlayer }) {
             });
             selectData.unshift({ placeholder: true, text: 'Select a team' });
 
-            var teamsDropdown = new SlimSelect({
-                select: teamsSelect,
-                data: selectData,
-                settings: {
-                    showSearch: false,
-                    placeholderText: 'Select a team',
-                    closeOnSelect: true,
-                    allowDeselect: true
-                },
-                events: {
-                    beforeChange: (newVal, oldVal) => {
-                        return true
-                    },
-                    afterChange: (newVal, oldVal) => {
-                        selectedTeam = teamsDropdown.getSelected()[0];
+            // var teamsDropdown = new SlimSelect({
+            //     select: teamsSelect,
+            //     data: selectData,
+            //     settings: {
+            //         showSearch: false,
+            //         placeholderText: 'Select a team',
+            //         closeOnSelect: true,
+            //         allowDeselect: true
+            //     },
+            //     events: {
+            //         beforeChange: (newVal, oldVal) => {
+            //             return true
+            //         },
+            //         afterChange: (newVal, oldVal) => {
+            //             selectedTeam = teamsDropdown.getSelected()[0];
 
-                        var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
+            //             var box = document.querySelectorAll('.ss-values .ss-value .ss-value-text');
 
-                        for (let i = 0; i < box.length; i++) {
-                            if (!box[i].innerHTML.includes('<img')) {
-                                var teamPadded = box[i].innerHTML.padEnd(4, '\u00A0');
-                                box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamInfo[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
-                            }
-                        }
+            //             for (let i = 0; i < box.length; i++) {
+            //                 if (!box[i].innerHTML.includes('<img')) {
+            //                     var teamPadded = box[i].innerHTML.padEnd(4, '\u00A0');
+            //                     box[i].innerHTML = `<img width="30" height="30" style="vertical-align: middle; margin-right: 10px;" src="${Consts.teamInfo[selectOptions.flat().filter((option) => option.text == box[i].innerHTML)[0].value][0]}" />`;
+            //                 }
+            //             }
 
-                        dt.clear();
-                        $(table).find('tbody').hide();
+            //             dt.clear();
+            //             $(table).find('tbody').hide();
 
-                        rosterTeamLogo.html('');
-                        rosterTeamLabel.html('');
+            //             rosterTeamLogo.html('');
+            //             rosterTeamLabel.html('');
 
-                        if (newVal.length > 0 && !newVal[0]['placeholder']) {
-                            var teamIndex = findTeamIndex(selectedTeam);
-                            teamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
-                            teamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
+            //             if (newVal.length > 0 && !newVal[0]['placeholder']) {
+            //                 var teamIndex = findTeamIndex(selectedTeam);
+            //                 teamColorBanners.eq(0).css('background-color', Consts.teamColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
+            //                 teamColorBanners.eq(1).css('background-color', Consts.teamSecondColors[teamIndex[0]][teamIndex[1]][teamIndex[2]]);
 
-                            if (selectedTeam == 'Oakland Athletics') {
-                                selectedTeam = 'Athletics';
-                            }
+            //                 if (selectedTeam == 'Oakland Athletics') {
+            //                     selectedTeam = 'Athletics';
+            //                 }
 
-                            var teamID = allTeams.find(t => t.name === selectedTeam).id;
+            //                 var teamID = allTeams.find(t => t.name === selectedTeam).id;
 
-                            // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
-                            fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
-                                .then(response => {
-                                    return response.json();
-                                })
-                                .then(rosterResponse => {
+            //                 // fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active&season=2024&date=9/30/2024`)
+            //                 fetch(`https://statsapi.mlb.com/api/v1/teams/${teamID}/roster?rosterType=active`)
+            //                     .then(response => {
+            //                         return response.json();
+            //                     })
+            //                     .then(rosterResponse => {
 
-                                    selectedRoster = rosterResponse['roster'];
+            //                         selectedRoster = rosterResponse['roster'];
 
-                                    dt.draw(false);
+            //                         dt.draw(false);
 
-                                    var allPlayerIDs = selectedRoster.map(player => player.person.id);
-                                    var allPlayerInfo = [];
+            //                         var allPlayerIDs = selectedRoster.map(player => player.person.id);
+            //                         var allPlayerInfo = [];
 
-                                    fetch(`https://statsapi.mlb.com/api/v1/people?personIds=${allPlayerIDs.join(',')}`)
-                                        .then(response => {
-                                            return response.json();
-                                        })
-                                        .then(allPlayerResponse => {
-                                            allPlayerInfo = allPlayerResponse['people'];
+            //                         fetch(`https://statsapi.mlb.com/api/v1/people?personIds=${allPlayerIDs.join(',')}`)
+            //                             .then(response => {
+            //                                 return response.json();
+            //                             })
+            //                             .then(allPlayerResponse => {
+            //                                 allPlayerInfo = allPlayerResponse['people'];
 
-                                            for (let i = 0; i < allPlayerInfo.length; i++) {
-                                                var currentPlayer = allPlayerInfo[i];
+            //                                 for (let i = 0; i < allPlayerInfo.length; i++) {
+            //                                     var currentPlayer = allPlayerInfo[i];
 
-                                                var photo = `<img class="roster-player-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${currentPlayer['id']}/headshot/silo/current">`;
-                                                var playerName = currentPlayer['fullName'];
-                                                var playerLastName = currentPlayer['lastName'];
-                                                var jerseyNumber = '---';
-                                                if ('primaryNumber' in currentPlayer) {
-                                                    jerseyNumber = `#${currentPlayer['primaryNumber']}`;
-                                                }
-                                                var position = currentPlayer['primaryPosition']['abbreviation'];
-                                                var batThrow = `${currentPlayer['batSide']['code']}/${currentPlayer['pitchHand']['code']}`;
-                                                var weight = currentPlayer['weight'];
-                                                var height = currentPlayer['height'];
-                                                var birthday = formatDate(currentPlayer['birthDate']);
-                                                var debut = '---';
-                                                if ('mlbDebutDate' in currentPlayer) {
-                                                    debut = formatDate(currentPlayer['mlbDebutDate']);
-                                                }
-                                                var positionType = positionTypes[currentPlayer['primaryPosition']['type']];
+            //                                     var photo = `<img class="roster-player-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${currentPlayer['id']}/headshot/silo/current">`;
+            //                                     var playerName = currentPlayer['fullName'];
+            //                                     var playerLastName = currentPlayer['lastName'];
+            //                                     var jerseyNumber = '---';
+            //                                     if ('primaryNumber' in currentPlayer) {
+            //                                         jerseyNumber = `#${currentPlayer['primaryNumber']}`;
+            //                                     }
+            //                                     var position = currentPlayer['primaryPosition']['abbreviation'];
+            //                                     var batThrow = `${currentPlayer['batSide']['code']}/${currentPlayer['pitchHand']['code']}`;
+            //                                     var weight = currentPlayer['weight'];
+            //                                     var height = currentPlayer['height'];
+            //                                     var birthday = formatDate(currentPlayer['birthDate']);
+            //                                     var debut = '---';
+            //                                     if ('mlbDebutDate' in currentPlayer) {
+            //                                         debut = formatDate(currentPlayer['mlbDebutDate']);
+            //                                     }
+            //                                     var positionType = positionTypes[currentPlayer['primaryPosition']['type']];
 
-                                                dt.row.add(Array(8).fill('-'));
-                                                dt.row(i).data([
-                                                    `${photo}<span class="roster-name" data-sort="${playerLastName}">${playerName}</span><span class="roster-jersey">${jerseyNumber}</span>`,
-                                                    position,
-                                                    batThrow,
-                                                    weight,
-                                                    height,
-                                                    birthday,
-                                                    debut,
-                                                    positionType
-                                                ]);
-                                            }
+            //                                     dt.row.add(Array(8).fill('-'));
+            //                                     dt.row(i).data([
+            //                                         `${photo}<span class="roster-name" data-sort="${playerLastName}">${playerName}</span><span class="roster-jersey">${jerseyNumber}</span>`,
+            //                                         position,
+            //                                         batThrow,
+            //                                         weight,
+            //                                         height,
+            //                                         birthday,
+            //                                         debut,
+            //                                         positionType
+            //                                     ]);
+            //                                 }
 
-                                            dt.draw(true);
-                                            $(document.querySelector('#roster-dt')).find('thead th:nth-child(1)').click();
+            //                                 dt.draw(true);
+            //                                 $(document.querySelector('#roster-dt')).find('thead th:nth-child(1)').click();
 
-                                            setTimeout(function () {
-                                                $(document.querySelector('#roster-dt')).find('thead th:nth-child(1)').click();
-                                                $(table).find('tbody').show();
-                                                rosterTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamInfo[selectedTeam][0]}" />`);
-                                                rosterTeamLabel.html(selectedTeam);
-                                            }, 100);
-                                        })
-                                        .catch(error => { });
-                                })
-                                .catch(error => { });
+            //                                 setTimeout(function () {
+            //                                     $(document.querySelector('#roster-dt')).find('thead th:nth-child(1)').click();
+            //                                     $(table).find('tbody').show();
+            //                                     rosterTeamLogo.html(`<img width="80" height="80" style="vertical-align: middle;" src="${Consts.teamInfo[selectedTeam][0]}" />`);
+            //                                     rosterTeamLabel.html(selectedTeam);
+            //                                 }, 100);
+            //                             })
+            //                             .catch(error => { });
+            //                     })
+            //                     .catch(error => { });
 
 
-                        } else {
-                            teamColorBanners.css('background-color', 'transparent');
-                            dt.draw(true);
-                        }
+            //             } else {
+            //                 teamColorBanners.css('background-color', 'transparent');
+            //                 dt.draw(true);
+            //             }
 
-                        // dt.draw(true);
-                        // $(htmlNode.querySelector('#roster-dt')).find('thead th:nth-child(2)').click();
-                        // roster.find('thead th:nth-child(2)').click();
+            //             // dt.draw(true);
+            //             // $(htmlNode.querySelector('#roster-dt')).find('thead th:nth-child(2)').click();
+            //             // roster.find('thead th:nth-child(2)').click();
 
-                        // dt.draw(true);
+            //             // dt.draw(true);
 
-                        return true;
-                    }
-                }
-            });
-            document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
+            //             return true;
+            //         }
+            //     }
+            // });
+            // document.querySelectorAll('.ss-content').forEach(el => el.classList.add('roster-select'));
         }, 50);
     }, []);
 
@@ -382,41 +423,19 @@ export default function Rosters({ setSelectedPlayer }) {
                 <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
             </Box>
 
-
-            {/* <div style={{ height: '100px' }}>
-                    {selectedTeamLogo &&
-                        <img src={selectedTeamLogo} style={{ width: 80, height: 80 }} />
-                    }
-                    <Typography variant='h6'>
-                        {selectedTeam}
-                    </Typography>
-                    <Box sx={{ ml: 'auto', width: '600px' }}>
-                        <TeamSelect
-                            currentValue={selectedTeam}
-                            onTeamChange={handleTeamChange}
-                            multiple={false} />
-                    </Box>
-                </div> */}
-            {/* <div className="roster-team-color-banner" style={{ height: '30px' }}></div>
-                <div className="roster-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div> */}
-            {/* <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
-                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box> */}
-            {/* <table id="roster-dt">
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Position</th>
-                            <th>Bat/Throw</th>
-                            <th>Weight</th>
-                            <th>Height</th>
-                            <th>Birthdate</th>
-                            <th>MLB Debut</th>
-                            <th>Type</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table> */}
+            <DataTable
+                // data={tableData?.teamRecords}
+                data={[]}
+                columns={columns}
+                options={{
+                    searching: false,
+                    paging: false,
+                    info: false,
+                    ordering: false,
+                    dom: "t",
+                    destroy: true,
+                }}
+            />
         </>
     )
 }
