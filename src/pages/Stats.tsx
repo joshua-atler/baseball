@@ -43,6 +43,23 @@ export default function Stats({
     const [isLoading, setIsLoading] = useState(true);
 
     const firstYear = 2010;
+    const options = {
+        paging: true,
+        searching: false,
+        select: {
+            info: false
+        },
+        pageLength: 30,
+        dom: "t",
+        columnDefs: [],
+        ordering: true,
+        buttons: [],
+        scrollCollapse: true,
+        language: {
+            emptyTable: "No games for selected filters",
+            zeroRecords: "No games for selected filters"
+        }
+    };
 
     const hittingColumns = [
         {
@@ -233,23 +250,7 @@ export default function Stats({
                                     data={hittingTableData}
                                     columns={hittingColumns}
                                     autoWidth={false}
-                                    options={{
-                                        paging: true,
-                                        searching: false,
-                                        select: {
-                                            info: false
-                                        },
-                                        pageLength: 20,
-                                        dom: "t",
-                                        columnDefs: [],
-                                        ordering: true,
-                                        buttons: [],
-                                        scrollCollapse: true,
-                                        language: {
-                                            emptyTable: "No games for selected filters",
-                                            zeroRecords: "No games for selected filters"
-                                        }
-                                    }}
+                                    options={options}
                                 />
                             </>}
                             {statsMode === 'pitching' && <>
@@ -258,23 +259,7 @@ export default function Stats({
                                     data={pitchingTableData}
                                     columns={pitchingColumns}
                                     autoWidth={false}
-                                    options={{
-                                        paging: true,
-                                        searching: false,
-                                        select: {
-                                            info: false
-                                        },
-                                        pageLength: 20,
-                                        dom: "t",
-                                        columnDefs: [],
-                                        ordering: true,
-                                        buttons: [],
-                                        scrollCollapse: true,
-                                        language: {
-                                            emptyTable: "No games for selected filters",
-                                            zeroRecords: "No games for selected filters"
-                                        }
-                                    }}
+                                    options={options}
                                 />
                             </>}
                             {statsMode === 'fielding' && <>
@@ -283,23 +268,7 @@ export default function Stats({
                                     data={fieldingTableData}
                                     columns={fieldingColumns}
                                     autoWidth={false}
-                                    options={{
-                                        paging: true,
-                                        searching: false,
-                                        select: {
-                                            info: false
-                                        },
-                                        pageLength: 20,
-                                        dom: "t",
-                                        columnDefs: [],
-                                        ordering: true,
-                                        buttons: [],
-                                        scrollCollapse: true,
-                                        language: {
-                                            emptyTable: "No games for selected filters",
-                                            zeroRecords: "No games for selected filters"
-                                        }
-                                    }}
+                                    options={options}
                                 />
                             </>}
                         </Box>

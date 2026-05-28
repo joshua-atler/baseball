@@ -8,9 +8,10 @@ import { Box, Typography } from '@mui/material';
 import $ from 'jquery';
 import SlimSelect from 'slim-select';
 import 'datatables.net-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-rowgroup';
 // import 'datatables.net-select-dt';
-// import 'datatables.net-rowgroup';
 
 import { fetchRoster } from '../../services/rosterService.ts';
 
@@ -20,6 +21,7 @@ import DT from 'datatables.net-dt';
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
+import { transformRoster } from '../../utils/rosterTransformer.ts';
 
 
 DataTable.use(DT);
@@ -32,14 +34,37 @@ export default function Rosters({ setSelectedPlayer }) {
     const [roster, setRoster] = useState(null);
 
     const columns = [
-        { data: 'date', title: 'Date' },
-        { data: 'time', title: 'Time' },
-        { data: 'away', title: 'Away' },
-        { data: 'awayScore', title: '' },
-        { data: 'home', title: 'Home' },
-        { data: 'homeScore', title: '' },
-        { data: 'inning', title: 'Inning' },
-        { data: 'status', title: 'Status' },
+        // { data: 'date', title: 'Date' },
+        // { data: 'time', title: 'Time' },
+        // { data: 'away', title: 'Away' },
+        // { data: 'awayScore', title: '' },
+        // { data: 'home', title: 'Home' },
+        // { data: 'homeScore', title: '' },
+        // { data: 'inning', title: 'Inning' },
+        // { data: 'status', title: 'Status' },
+        { data: 'id', title: '', visible: false },
+        {
+            data: 'name', title: 'Name', width: '20%',
+            render: function (data, type, row) {
+                return `<img class="roster-player-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.id}/headshot/silo/current"> ${data}`;
+            }
+        },
+        { data: 'position', title: 'Position', width: '10%' },
+        { data: 'jerseyNumber', title: '#', className: 'dt-right' },
+        { data: 'batThrow', title: 'Bat/Throw', width: '10%', className: 'dt-center' },
+        { data: 'weight', title: 'Weight', className: 'dt-right' },
+        { data: 'height', title: 'Height', className: 'dt-right' },
+        { data: 'age', title: 'Age', className: 'dt-right' },
+        { data: 'mlbDebut', title: 'MLB Debut', width: '15%', className: 'dt-center' },
+        { data: 'type', title: 'Type', visible: false }
+        // <th>Player</th>
+        // <th>Position</th>
+        // <th>Bat/Throw</th>
+        // <th>Weight</th>
+        // <th>Height</th>
+        // <th>Birthdate</th>
+        // <th>MLB Debut</th>
+        // <th>Type</th>
     ];
 
     // const positionTypes = {
@@ -88,8 +113,7 @@ export default function Rosters({ setSelectedPlayer }) {
 
             try {
                 const rawRoster = await fetchRoster(Consts.teamInfo[selectedTeam].id);
-                console.log(rawRoster);
-                const formattedRoster = transformRoster(rawRoster);
+                const formattedRoster = await Promise.all(transformRoster(rawRoster));
                 setRoster(formattedRoster);
             } catch (error) {
                 setRoster(null);
@@ -99,7 +123,6 @@ export default function Rosters({ setSelectedPlayer }) {
 
         getRoster();
     }, [selectedTeam]);
-
 
     useEffect(() => {
         var selectedTeam = null;
@@ -423,19 +446,29 @@ export default function Rosters({ setSelectedPlayer }) {
                 <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
             </Box>
 
-            <DataTable
-                // data={tableData?.teamRecords}
-                data={[]}
-                columns={columns}
-                options={{
-                    searching: false,
-                    paging: false,
-                    info: false,
-                    ordering: false,
-                    dom: "t",
-                    destroy: true,
-                }}
-            />
+            {roster &&
+                <DataTable
+                    // data={tableData?.teamRecords}
+                    data={roster}
+                    columns={columns}
+                    options={{
+                        select: {
+                            info: false
+                        },
+                        searching: false,
+                        paging: false,
+                        info: false,
+                        ordering: true,
+                        dom: "t",
+                        destroy: true,
+                        rowGroup: {
+                            dataSrc: 'type',
+                        },
+                        order: [[9, 'asc']],
+                        orderFixed: [[9, 'asc']],
+                    }}
+                />
+            }
         </>
     )
 }
