@@ -29,7 +29,7 @@ import { transformRoster } from '../../utils/rosterTransformer.ts';
 DataTable.use(DT);
 
 
-export default function Rosters() {
+export default function Rosters({ setTeamViewTab }) {
     const {
         selectedPlayer,
         setSelectedPlayer,
@@ -40,6 +40,15 @@ export default function Rosters() {
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
     const [roster, setRoster] = useState(null);
+
+    const handleSelect = (e, dt, type, indexes) => {
+        setSelectedPlayer(roster[indexes].id);
+        setTeamViewTab('Player');
+    };
+
+    const handleDeselect = (e, dt, type, indexes) => {
+        setSelectedPlayer(null);
+    };
 
     const columns = [
         { data: 'id', title: '', visible: false },
@@ -134,6 +143,8 @@ export default function Rosters() {
                         order: [[9, 'asc']],
                         orderFixed: [[9, 'asc']],
                     }}
+                    onSelect={handleSelect}
+                    onDeselect={handleDeselect}
                 />
             }
         </>

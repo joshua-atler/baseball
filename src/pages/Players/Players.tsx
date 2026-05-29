@@ -46,7 +46,11 @@ export default function Players() {
                 <Tab label='Player' value={'Player'} />
             </Tabs>
             {teamViewTab === 'Roster' &&
-                <Rosters />
+                <Rosters setTeamViewTab={setTeamViewTab} />
+            }
+            {teamViewTab === 'Player' &&
+                <Typography>{selectedPlayer}</Typography>
+                // PlayerStats (reorganize)
             }
         </>
     )
