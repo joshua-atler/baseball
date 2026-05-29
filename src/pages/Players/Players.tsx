@@ -16,10 +16,10 @@ export default function Players() {
     const {
         selectedPlayer,
         setSelectedPlayer,
-        setSelectedGame
+        selectedTeam,
+        setSelectedTeam
     } = useBasedash();
 
-    const [selectedTeam, setSelectedTeam] = useState<string>('');
     const handleTeamChange = useCallback((val) => {
         if (val.length === 1) {
             setSelectedTeam(val[0]);
@@ -28,21 +28,26 @@ export default function Players() {
         }
     }, []);
 
+    const [teamViewTab, setTeamViewTab] = useState('Roster');
+
+    const handleTeamViewChange = (event, newValue) => {
+        setTeamViewTab(newValue);
+    };
+
     return (
         <>
             {/* <TeamSelect
                 currentValue={selectedTeam}
                 onTeamChange={handleTeamChange}
                 multiple={false} /> */}
-            <Rosters setSelectedPlayer={setSelectedPlayer} />
-            {/* <Grid container spacing={2}>
-                <Grid xs={12}>
-                    <Rosters setSelectedPlayer={setSelectedPlayer} />
-                </Grid>
-                <Grid xs={12}>
-                    <PlayerStats selectedPlayer={selectedPlayer} setSelectedGame={setSelectedGame} />
-                </Grid>
-            </Grid> */}
+            {/* <Rosters setSelectedPlayer={setSelectedPlayer} /> */}
+            <Tabs value={teamViewTab} onChange={handleTeamViewChange} sx={{ mb: 5 }}>
+                <Tab label='Roster' value={'Roster'} />
+                <Tab label='Player' value={'Player'} />
+            </Tabs>
+            {teamViewTab === 'Roster' &&
+                <Rosters />
+            }
         </>
     )
 }

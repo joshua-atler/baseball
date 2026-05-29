@@ -3,13 +3,15 @@ import { fetchPlayer } from "../services/playerService";
 
 
 export const transformRoster = (rawRoster) => {
-    // console.log('transformRoster');
-    // console.log(rawRoster);
+
+    const POSITION_ORDER = {
+        'Pitcher': 1,
+        'Catcher': 2,
+        'Infielder': 3,
+        'Outfielder': 4
+    };
 
     const roster = rawRoster.roster.map(async (player) => {
-
-        // console.log('player');
-        // console.log(player);
 
         const rawPlayerInfo = await fetchPlayer(player.person.id);
         const playerInfo = rawPlayerInfo.people[0];
@@ -24,10 +26,12 @@ export const transformRoster = (rawRoster) => {
             height: playerInfo.height,
             age: playerInfo.currentAge,
             mlbDebut: playerInfo.mlbDebutDate,
-            type: playerInfo.primaryPosition.type
+            type: {
+                display: playerInfo.primaryPosition.type,
+                sort: POSITION_ORDER[playerInfo.primaryPosition.type] || 5
+            }
         }
     });
-
 
     return roster;
 }

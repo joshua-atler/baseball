@@ -9,6 +9,7 @@ export const BasedashProvider = ({ children }) => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [selectedGameMetadata, setSelectedGameMetadata] = useState(null);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [selectedTeam, setSelectedTeam] = useState(null);
     const [timeZone, setTimeZone] = useState<TimeZone>('ET');
 
     const isMobileDevice = () => {
@@ -24,10 +25,16 @@ export const BasedashProvider = ({ children }) => {
         setSelectedGameMetadata,
         selectedPlayer,
         setSelectedPlayer,
+        selectedTeam,
+        setSelectedTeam,
         timeZone,
         setTimeZone,
         isMobileDevice
-    }), [selectedGame, selectedPlayer, timeZone]);
+    }), [selectedGame,
+        selectedGameMetadata,
+        selectedPlayer,
+        selectedTeam,
+        timeZone]);
 
     return (
         <BasedashContext.Provider value={{ ...state }}>

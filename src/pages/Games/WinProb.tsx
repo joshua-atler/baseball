@@ -60,8 +60,6 @@ export default function WinProb({ }) {
                 const awayTeam = gameContent.gameData.teams.away.name;
                 const homeTeam = gameContent.gameData.teams.home.name;
 
-                console.log(Consts.teamInfo[awayTeam]);
-
                 const shadedRegions = {};
 
                 let prevInning = { half: 'top', num: 1 };
