@@ -36,11 +36,6 @@ export default function Players() {
 
     return (
         <>
-            {/* <TeamSelect
-                currentValue={selectedTeam}
-                onTeamChange={handleTeamChange}
-                multiple={false} /> */}
-            {/* <Rosters setSelectedPlayer={setSelectedPlayer} /> */}
             <Tabs value={teamViewTab} onChange={handleTeamViewChange} sx={{ mb: 5 }}>
                 <Tab label='Roster' value={'Roster'} />
                 <Tab label='Player' value={'Player'} />
@@ -49,8 +44,9 @@ export default function Players() {
                 <Rosters setTeamViewTab={setTeamViewTab} />
             }
             {teamViewTab === 'Player' &&
-                <Typography>{selectedPlayer}</Typography>
-                // PlayerStats (reorganize)
+                <>
+                    <PlayerStats />
+                </>
             }
         </>
     )

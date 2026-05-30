@@ -81,7 +81,6 @@ export default function Rosters({ setTeamViewTab }) {
         const getRoster = async () => {
             if (!selectedTeam) {
                 setRoster(null);
-                console.log('set roster to null');
                 return;
             };
 
