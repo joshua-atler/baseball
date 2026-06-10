@@ -154,7 +154,8 @@ export default function PlayerStats({ }) {
     const theme = useTheme();
     const {
         selectedPlayer,
-        setSelectedPlayer
+        setSelectedPlayer,
+        selectedTeam
     } = useBasedash();
 
 
@@ -195,12 +196,20 @@ export default function PlayerStats({ }) {
 
     const svgDownArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="down"><path d="M480-360 280-560h400L480-360Z"/></svg>';
 
+
     const [playerInfo, setPlayerInfo] = useState(null);
+    const playerURL = playerInfo === null ? '' : `https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`;
+    const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
+    const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
     const bioRows = (playerInfo === null) ? [] : [
         { label: 'Age', value: playerInfo.currentAge },
         { label: 'Position', value: playerInfo.primaryPosition.name },
-        { label: 'Birthplace', value: `${playerInfo.birthCity}, ${playerInfo.birthCountry}` }
+        { label: 'Birthplace', value: `${playerInfo.birthCity}, ${playerInfo.birthCountry}` },
+        { label: 'Height', value: playerInfo.height },
+        { label: 'Weight', value: playerInfo.weight },
+        { label: 'MLB Debut', value: playerInfo.mlbDebutDate },
+        { label: 'Bat/Throw', value: `${playerInfo.batSide.code}/${playerInfo.pitchHand.code}` }
     ];
 
     // function formatDate(originalDate) {
@@ -621,12 +630,6 @@ export default function PlayerStats({ }) {
     // console.log('playerInfo');
     // console.log(playerInfo);
 
-    console.log('selectedPlayer');
-    console.log(selectedPlayer);
-
-    console.log('playerInfo');
-    console.log(playerInfo);
-
 
     useEffect(() => {
 
@@ -677,7 +680,6 @@ export default function PlayerStats({ }) {
 
 
         const getPlayer = async () => {
-            console.log('GET PLAYER');
             if (selectedPlayer === null) {
                 setPlayerInfo(null);
                 return;
@@ -685,8 +687,6 @@ export default function PlayerStats({ }) {
 
             const rawPlayerInfo = await fetchPlayer(selectedPlayer);
             const playerInfo = rawPlayerInfo.people[0];
-            console.log('playerInfo');
-            console.log(playerInfo);
             setPlayerInfo(playerInfo);
         }
 
@@ -2726,43 +2726,100 @@ export default function PlayerStats({ }) {
         //     }
     }, [selectedPlayer]);
 
+    console.log('--------------------');
+    console.log(playerInfo);
+    console.log(selectedPlayer);
+    console.log(selectedTeam);
+    // roster isn't changing?
+
+    // selectedPlayer is wrong somehow
+
     return (
         <>
             {/* <StatsModal open={modalOpen} handleClose={handleModalClose} modalData={modalData} /> */}
             {playerInfo && <Box sx={{ width: 1200, bgcolor: theme.palette.custom.darkGray, padding: 4 }}>
-                <Typography variant="h5" noWrap component="div">
-                    Player Stats
-                </Typography>
-                {/* <Box sx={{ height: '150px' }}> */}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Typography variant="h4">
+                        {playerInfo.fullName}
+                    </Typography>
+                    <Typography variant="h4">
+                        #{playerInfo.primaryNumber}
+                    </Typography>
+                    <img src={selectedTeamLogo} style={{ width: 40, height: 40 }} />
+                </Box>
                 <Box sx={{ display: 'flex' }}>
-                    <Stack direction="column">
-                        <Box>
+                    <Stack direction='column'>
+                        <Box sx={{ display: 'flex' }}>
                             <img src={`https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${selectedPlayer}/headshot/silo/current`} />
+                            <Box>
+                                <Table sx={{ border: 'none !important', maxWidth: 350, '& td': { border: 'none', py: 0.5 } }} size="small">
+                                    <TableBody sx={{ border: 'none' }}>
+                                        {bioRows.map((row) => (
+                                            <TableRow key={row.label}>
+                                                <TableCell sx={{ width: '120px', fontWeight: 'bold', pl: 0 }} align="left">
+                                                    {row.label}
+                                                </TableCell>
+                                                <TableCell align="left">
+                                                    {row.value || 'N/A'}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Box>
                         </Box>
-                        <Box>
-                            <span>{playerInfo.fullName} playerNumber &bull; <a href={`https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`} target="_blank">
-                                <HiExternalLink size={20} style={{ verticalAlign: 'middle' }} />
-                            </a>
-                            </span>
+                        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Chip
+                                component="a"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={playerURL}
+                                label="mlb.com"
+                                color="info"
+                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                                sx={{
+                                    flexDirection: 'row-reverse',
+                                    '& .MuiChip-icon': {
+                                        margin: 0,
+                                        marginLeft: '4px',
+                                        marginRight: '10px',
+                                        fontSize: '1.2rem',
+                                    },
+                                    '& .MuiChip-label': {
+                                        paddingRight: '0px',
+                                    }
+                                }}
+                                clickable
+                            >
+                            </Chip>
+                            <Chip
+                                component="a"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={storyURL}
+                                label="Story"
+                                color="info"
+                                icon={<HiExternalLink style={{ verticalAlign: 'middle' }} />}
+                                sx={{
+                                    flexDirection: 'row-reverse',
+                                    '& .MuiChip-icon': {
+                                        margin: 0,
+                                        marginLeft: '4px',
+                                        marginRight: '10px',
+                                        fontSize: '1.2rem',
+                                    },
+                                    '& .MuiChip-label': {
+                                        paddingRight: '0px',
+                                    }
+                                }}
+                                clickable
+                            >
+                            </Chip>
                         </Box>
                     </Stack>
-                    <Box>
-                        <Table sx={{ border: 'none !important', maxWidth: 350, '& td': { border: 'none', py: 0.5 } }} size="small">
-                            <TableBody sx={{border: 'none'}}>
-                                {bioRows.map((row) => (
-                                    <TableRow key={row.label}>
-                                        <TableCell sx={{ width: '120px', fontWeight: 'bold', pl: 0 }} align="left">
-                                            {row.label}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.value || 'N/A'}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Box>
                 </Box>
+                <Box sx={{ mt: 2, height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
+                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
                 {/* <Box sx={{ position: 'absolute', left: '2000px' }}> */}
 
                 {/* <div id="all-years-switch-container">

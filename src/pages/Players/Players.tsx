@@ -31,6 +31,7 @@ export default function Players() {
     const [teamViewTab, setTeamViewTab] = useState('Roster');
 
     const handleTeamViewChange = (event, newValue) => {
+        setSelectedPlayer(null);
         setTeamViewTab(newValue);
     };
 

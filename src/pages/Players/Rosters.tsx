@@ -42,8 +42,12 @@ export default function Rosters({ setTeamViewTab }) {
     const [roster, setRoster] = useState(null);
 
     const handleSelect = (e, dt, type, indexes) => {
-        setSelectedPlayer(roster[indexes].id);
-        setTeamViewTab('Player');
+        const rowData = dt.row(indexes).data();
+
+        if (rowData && rowData.id) {
+            setSelectedPlayer(rowData.id);
+            setTeamViewTab('Player');
+        }
     };
 
     const handleDeselect = (e, dt, type, indexes) => {
