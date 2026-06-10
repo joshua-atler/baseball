@@ -25,7 +25,7 @@ import DT from 'datatables.net-dt';
 
 import { Consts } from '../consts/consts.ts';
 import { fetchTeamStats } from '../services/statsService.ts';
-import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../services/statsTransformers.ts';
+import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../utils/statsTransformers.ts';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 
 
