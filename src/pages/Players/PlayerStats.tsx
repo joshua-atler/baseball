@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
 import { HiExternalLink } from 'react-icons/hi';
@@ -30,6 +30,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+DataTable.use(DT);
 
 import { useBasedash } from '../../context/BasedashContext';
 
@@ -45,7 +48,7 @@ import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards } from '../../utils/playerTransformers.ts';
+import { transformAwards, transformPitcherStats } from '../../utils/playerTransformers.ts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -185,6 +188,32 @@ export default function PlayerStats({ }) {
         selectedTeam
     } = useBasedash();
 
+    const pitcherStatsColumns = [
+        // { data: 'id', title: '', visible: false },
+        { data: 'year', title: 'Year', className: 'dt-right'},
+        {
+            data: 'team', title: 'Team', render: (data) => {
+                if (data.length > 0) {
+                    const logoURL = Consts.teamInfo[data].logo;
+                    return `<img src=${logoURL} style="width: 40px; height: 40px" />`
+                } else {
+                    return '--------';
+                }
+            }
+        },
+        { data: 'stats.wins', title: 'W' },
+        { data: 'stats.losses', title: 'L' },
+        { data: 'stats.era', title: 'ERA' },
+        { data: 'stats.gamesPlayed', title: 'G' },
+        { data: 'stats.gamesStarted', title: 'GS' },
+        { data: 'stats.saves', title: 'S' },
+        { data: 'stats.inningsPitched', title: 'IP' },
+        { data: 'stats.strikeOuts', title: 'K' },
+        { data: 'stats.whip', title: 'WHIP', },
+    ];
+
+    /////////////////
+
 
     const navigate = useNavigate();
     const awardsContainerRef = useRef(null);
@@ -199,7 +228,6 @@ export default function PlayerStats({ }) {
     const [seasonHitting, setSeasonHitting] = useState({});
     const [careerHitting, setCareerHitting] = useState({});
 
-    const [allYearsChecked, setAllYearsChecked] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalData, setModalData] = useState({});
 
@@ -230,6 +258,9 @@ export default function PlayerStats({ }) {
     const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
     const [awards, setAwards] = useState([]);
+    const [pitcherStats, setPitcherStats] = useState(null);
+    const firstYear = 2010;
+    const [allYearsChecked, setAllYearsChecked] = useState(false);
 
     const bioRows = (playerInfo === null) ? [] : [
         { label: 'Age', value: playerInfo.currentAge },
@@ -240,6 +271,16 @@ export default function PlayerStats({ }) {
         { label: 'MLB Debut', value: playerInfo.mlbDebutDate },
         { label: 'Bat/Throw', value: `${playerInfo.batSide.code}/${playerInfo.pitchHand.code}` }
     ];
+
+    const displayedPitcherStats = useMemo(() => {
+        if (pitcherStats === null) return null;
+
+        if (allYearsChecked) {
+            return pitcherStats;
+        } else {
+            return pitcherStats.filter(row => row.year === Temporal.Now.plainDateISO().year.toString());
+        }
+    }, [pitcherStats, allYearsChecked]);
 
     // function formatDate(originalDate) {
     //     const date = new Date(originalDate);
@@ -328,10 +369,9 @@ export default function PlayerStats({ }) {
     //     });
     // }
 
-    // function allYearsToggle(event) {
-    //     setAllYearsChecked(event.target.checked);
-    //     openCloseAllYears(event.target.checked);
-    // }
+    function allYearsToggle(event) {
+        setAllYearsChecked(event.target.checked);
+    }
 
     // function openCloseAllYears(allYears) {
     //     if (allYears) {
@@ -712,12 +752,27 @@ export default function PlayerStats({ }) {
             if (selectedPlayer === null) {
                 setPlayerInfo(null);
                 setAwards([]);
+                setPitcherStats(null);
                 return;
             }
 
             const rawPlayerInfo = await fetchPlayer(selectedPlayer);
             const playerInfo = rawPlayerInfo.people[0];
             setPlayerInfo(playerInfo);
+
+            var statsURLs = [];
+
+            const seasonPitchingStats = Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
+                const year = Temporal.Now.plainDateISO().year - i;
+                return fetchPlayer(selectedPlayer, ['pitching'], ['season', 'seasonAdvanced'], year);
+            });
+
+            const careerPitchingStats = fetchPlayer(selectedPlayer, ['pitching'], ['career', 'careerAdvanced']);
+
+            const rawPitcherStats = await Promise.all([...seasonPitchingStats, careerPitchingStats]);
+
+            const pitcherStats = transformPitcherStats(rawPitcherStats);
+            setPitcherStats(pitcherStats);
 
             const rawAwards = await fetchAwards(selectedPlayer);
             if (rawAwards.people[0].awards) {
@@ -802,11 +857,6 @@ export default function PlayerStats({ }) {
         // const xButton = $(document.querySelector('#x-button'));
         // const gameLogSummary = $(document.querySelector('#game-log-summary'));
         // const gameLogDetails = $(document.querySelector('#game-log-details'));
-
-        // const playerAwards = $(document.querySelector('#player-awards-div'));
-        // if (awardsContainerRef.current && !awardsRef.current) {
-        //     awardsRef.current = ReactDOM.createRoot(awardsContainerRef.current);
-        // }
 
         // const startYear = 2015;
 
@@ -2706,73 +2756,19 @@ export default function PlayerStats({ }) {
         //         detailsButton.prop('disabled', true);
         //         xButton.prop('disabled', true);
         //     });
-
-
-        //     function updatePlayerAwards(playerID) {
-
-        //         var link = `https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=awards`;
-        //         fetch(link)
-        //             .then(response => {
-        //                 if (!response.ok) {
-        //                     throw new Error('Network response was not ok');
-        //                 }
-        //                 return response.json();
-        //             })
-        //             .then(awards => {
-        //                 if ('awards' in awards['people'][0]) {
-        //                     awards = awards['people'][0]['awards'];
-
-        //                     awards = awards.reduce((acc, { name, team, date }) => {
-        //                         if (!acc[name]) {
-        //                             acc[name] = { name, teams: [], dates: [] };
-        //                         }
-        //                         acc[name].teams.push(team.teamName);
-        //                         acc[name].dates.push(date);
-        //                         return acc;
-        //                     }, {});
-        //                     awards = Object.values(awards);
-
-        //                     awardsRef.current.render(
-        //                         <ThemeProvider theme={createTheme({
-        //                             palette: {
-        //                                 mode: 'dark',
-        //                             },
-        //                         })}>
-        //                             <Accordion sx={{ width: 1200 }} id="awards-accordion">
-        //                                 <AccordionSummary
-        //                                     expandIcon={<ExpandMoreIcon />}
-        //                                 >
-        //                                     <h2>Awards ({awards.length})</h2>
-        //                                 </AccordionSummary>
-        //                                 <AccordionDetails>
-        //                                     <Box display="flex" flexWrap="wrap" gap={2}>
-        //                                         {awards.map((award, index) => (
-        //                                             <AwardCard
-        //                                                 key={index}
-        //                                                 award={award.name}
-        //                                                 teams={award.teams}
-        //                                                 dates={award.dates}
-        //                                             />
-        //                                         ))}
-        //                                     </Box>
-        //                                 </AccordionDetails>
-        //                             </Accordion>
-        //                         </ThemeProvider>
-        //                     );
-        //                 }
-        //             })
-        //     }
     }, [selectedPlayer]);
 
-    console.log('--------------------');
-    console.log(playerInfo);
-    console.log(selectedPlayer);
-    console.log(selectedTeam);
+    // console.log('--------------------');
+    // console.log(playerInfo);
+    // console.log(selectedPlayer);
+    // console.log(selectedTeam);
+
+    // console.log(allYearsChecked);
 
     return (
         <>
             {/* <StatsModal open={modalOpen} handleClose={handleModalClose} modalData={modalData} /> */}
-            {playerInfo && <Box sx={{ width: 1200, bgcolor: theme.palette.custom.darkGray, padding: 4 }}>
+            {playerInfo && <Box sx={{ bgcolor: theme.palette.custom.darkGray, padding: 4 }}>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Typography variant="h4">
                         {playerInfo.fullName}
@@ -2856,15 +2852,52 @@ export default function PlayerStats({ }) {
                 <Box sx={{ mt: 2, height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
                 <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
                 {/* <Box sx={{ position: 'absolute', left: '2000px' }}> */}
+                <Box>
+                    <FormControlLabel control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label='All years' />
+                </Box>
                 {playerInfo.primaryPosition.name === 'Pitcher' ? <>
-                    <Typography variant="h6">pitcher stats</Typography>
+                    <Typography variant="h6">Pitcher stats</Typography>
+                    {pitcherStats &&
+                        <DataTable
+                            data={displayedPitcherStats}
+                            columns={pitcherStatsColumns}
+                            options={{
+                                select: {
+                                    info: false
+                                },
+                                paging: false,
+                                info: false,
+                                ordering: false,
+                                dom: "t",
+                                destroy: true,
+                            }}
+                        // onSelect={handleSelect}
+                        // onDeselect={handleDeselect}
+                        />
+                    }
+                    {/* <table id="pitching-stats">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Team</th>
+                                <th><span className="tooltip" data-tooltip="Wins">W</span></th>
+                                <th><span className="tooltip" data-tooltip="Losses">L</span></th>
+                                <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
+                                <th><span className="tooltip" data-tooltip="Games">G</span></th>
+                                <th><span className="tooltip" data-tooltip="Games started">GS</span></th>
+                                <th><span className="tooltip" data-tooltip="Saves">S</span></th>
+                                <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
+                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+                                <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table> */}
                 </> : <>
                     <Typography variant="h6">hitter stats</Typography>
                 </>
                 }
-                {/* <div id="all-years-switch-container">
-                    <FormControlLabel id="all-years-switch" control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label="All Years" />
-                </div> */}
                 {/* <div id="pitching-stats-container">
                     <table id="pitching-stats">
                         <thead>
@@ -2988,7 +3021,9 @@ export default function PlayerStats({ }) {
                         </Box>
                     </div>
                 </div> */}
-                <Awards awards={awards} theme={theme} />
+                {awards &&
+                    <Awards awards={awards} theme={theme} />
+                }
                 {/* <div id="missing-stats-container">
                     <Typography variant="h5" noWrap component="div" sx={{ mt: 5 }}>
                         No stats

@@ -564,7 +564,7 @@ div.ss-values {
 
 table#boxscore th,
 table#pitchers th,
-table#pitching-stats th,
+/* table#pitching-stats th, */
 table#pitching-game-log th,
 table#hitting-stats th,
 table#hitting-game-log th {
@@ -947,40 +947,40 @@ div#roster-dt_wrapper div.dt-search {
     clear: left;
 }
 
-table#pitching-stats {
+/* table#pitching-stats {
     width: 100% !important;
     table-layout: fixed;
-}
+} */
 
-table#pitching-stats colgroup col:nth-child(1) {
+/* table#pitching-stats colgroup col:nth-child(1) {
     width: 150px !important;
     max-width: 150px !important;
-}
+} */
 
-table#pitching-stats colgroup col {
+/* table#pitching-stats colgroup col {
     width: 80px !important;
     max-width: 80px !important;
     min-width: 80px !important;
-}
+} */
 
-table#pitching-stats th:nth-child(1),
+/* table#pitching-stats th:nth-child(1),
 table#pitching-stats td:nth-child(1) {
     width: 150px !important;
     max-width: 150px !important;
     text-align: left;
-}
+} */
 
-table#pitching-stats th,
+/* table#pitching-stats th,
 table#pitching-stats td {
     width: 80px !important;
     max-width: 80px !important;
     min-width: 80px !important;
     text-align: left;
-}
+} */
 
-table#pitching-stats colgroup col:nth-child(2) {
+/* table#pitching-stats colgroup col:nth-child(2) {
     border-right: 5px solid #e1e8ed;
-}
+} */
 
 table#hitting-stats {
     width: 100% !important;
@@ -1135,11 +1135,6 @@ table#hitting-stats colgroup col:nth-child(2) {
 }
 
 /* ********** */
-
-#all-years-switch-container {
-    margin-bottom: 20px;
-    clear: both;
-}
 
 #active-status-time-plot canvas {
     width: 800px !important;
