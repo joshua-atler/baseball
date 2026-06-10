@@ -44,26 +44,53 @@ import '../../styles/style.css';
 import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
-import { fetchPlayer } from '../../services/playerService.ts';
+import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
+import { transformAwards } from '../../utils/playerTransformers.ts';
 
 
-// function AwardCard({ award, teams, dates }) {
-//     return (
-//         <Card>
-//             <CardContent>
-//                 <Typography gutterBottom variant="h6" component="div">
-//                     {award}
-//                 </Typography>
-//                 {teams.map((team, index) => (
-//                     <Box key={index} display="flex" gap={2} justifyContent="space-between">
-//                         <Typography variant="body1">{team}</Typography>
-//                         <Typography variant="body1">{dates[index]}</Typography>
-//                     </Box>
-//                 ))}
-//             </CardContent>
-//         </Card>
-//     );
-// }
+function AwardCard({ award, teams, dates }) {
+    return (
+        <Card>
+            <CardContent>
+                <Typography gutterBottom variant="h6" component="div">
+                    {award}
+                </Typography>
+                {teams.map((team, index) => (
+                    <Box key={index} display="flex" gap={2} justifyContent="space-between">
+                        <Typography variant="body1">{team}</Typography>
+                        <Typography variant="body1">{dates[index]}</Typography>
+                    </Box>
+                ))}
+            </CardContent>
+        </Card>
+    );
+}
+
+function Awards({ awards, theme }) {
+    return (
+        <Accordion sx={{
+            bgcolor: theme.palette.custom.lightGray
+        }}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+            >
+                <h2>Awards ({awards.length})</h2>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Box display='flex' flexWrap='wrap' gap={2}>
+                    {awards.map((award, index) => (
+                        <AwardCard
+                            key={index}
+                            award={award.name}
+                            teams={award.teams}
+                            dates={award.dates}
+                        />
+                    ))}
+                </Box>
+            </AccordionDetails>
+        </Accordion>
+    );
+}
 
 // const style = {
 //     position: 'absolute',
@@ -197,10 +224,12 @@ export default function PlayerStats({ }) {
     const svgDownArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="down"><path d="M480-360 280-560h400L480-360Z"/></svg>';
 
 
+    ///////////////////////////////////////////////////////////
     const [playerInfo, setPlayerInfo] = useState(null);
     const playerURL = playerInfo === null ? '' : `https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`;
     const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
+    const [awards, setAwards] = useState([]);
 
     const bioRows = (playerInfo === null) ? [] : [
         { label: 'Age', value: playerInfo.currentAge },
@@ -682,12 +711,21 @@ export default function PlayerStats({ }) {
         const getPlayer = async () => {
             if (selectedPlayer === null) {
                 setPlayerInfo(null);
+                setAwards([]);
                 return;
             }
 
             const rawPlayerInfo = await fetchPlayer(selectedPlayer);
             const playerInfo = rawPlayerInfo.people[0];
             setPlayerInfo(playerInfo);
+
+            const rawAwards = await fetchAwards(selectedPlayer);
+            if (rawAwards.people[0].awards) {
+                const awards = transformAwards(rawAwards);
+                setAwards(awards);
+            } else {
+                setAwards(null);
+            }
         }
 
         getPlayer();
@@ -2730,9 +2768,6 @@ export default function PlayerStats({ }) {
     console.log(playerInfo);
     console.log(selectedPlayer);
     console.log(selectedTeam);
-    // roster isn't changing?
-
-    // selectedPlayer is wrong somehow
 
     return (
         <>
@@ -2821,12 +2856,15 @@ export default function PlayerStats({ }) {
                 <Box sx={{ mt: 2, height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
                 <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
                 {/* <Box sx={{ position: 'absolute', left: '2000px' }}> */}
-
+                {playerInfo.primaryPosition.name === 'Pitcher' ? <>
+                    <Typography variant="h6">pitcher stats</Typography>
+                </> : <>
+                    <Typography variant="h6">hitter stats</Typography>
+                </>
+                }
                 {/* <div id="all-years-switch-container">
                     <FormControlLabel id="all-years-switch" control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label="All Years" />
                 </div> */}
-                {/* <div className="player-team-color-banner" style={{ height: '30px' }}></div>
-                <div className="player-team-color-banner" style={{ height: '20px' }}></div> */}
                 {/* <div id="pitching-stats-container">
                     <table id="pitching-stats">
                         <thead>
@@ -2950,6 +2988,7 @@ export default function PlayerStats({ }) {
                         </Box>
                     </div>
                 </div> */}
+                <Awards awards={awards} theme={theme} />
                 {/* <div id="missing-stats-container">
                     <Typography variant="h5" noWrap component="div" sx={{ mt: 5 }}>
                         No stats

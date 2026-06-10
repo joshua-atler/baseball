@@ -1211,14 +1211,6 @@ table#playerStatsGameLog td:nth-child(2) {
     height: 34px;
 }
 
-#player-awards-div {
-    width: 1200px;
-}
-
-#awards-accordion {
-    background-color: #2c323a;
-}
-
 /* table.pitches {
     width: 100% !important;
     table-layout: fixed;
