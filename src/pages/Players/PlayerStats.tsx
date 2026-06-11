@@ -253,6 +253,21 @@ export default function PlayerStats({ }) {
 
 
     ///////////////////////////////////////////////////////////
+    const fixName = (name) => {
+        let cleanName = name.toLowerCase();
+        cleanName = cleanName.replace(/ /g, "-");
+        cleanName = cleanName.replace(/'/g, "-");
+        let match = cleanName.match(/\./g);
+        if (match && match.length == 2) {
+            cleanName = cleanName.replace(/\./, '-');
+        }
+        cleanName = cleanName.replace(/\./g, "");
+        cleanName = cleanName.normalize("NFD");
+        cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
+
+        return cleanName;
+    }
+
     const [playerInfo, setPlayerInfo] = useState(null);
     const playerURL = playerInfo === null ? '' : `https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`;
     const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
@@ -276,15 +291,9 @@ export default function PlayerStats({ }) {
     const displayedPitcherStats = useMemo(() => {
         if (pitcherStats === null) return null;
 
-
-        console.log('pitcherStats');
-        console.log(pitcherStats);
-
         const multiTeamYears = new Set(
-            pitcherStats.filter(row => (row.team === '' && row.year !== 'career')).map(row => row.year)
+            pitcherStats.filter(row => (row.team === '' && row.year !== 'Career')).map(row => row.year)
         );
-        console.log('multiTeamYears');
-        console.log(multiTeamYears);
 
         const filteredYears = pitcherStats.filter(row => {
             if (!multiTeamYears.has(row.year)) {
@@ -305,51 +314,26 @@ export default function PlayerStats({ }) {
             return filteredYears.filter(row => row.year === Temporal.Now.plainDateISO().year.toString());
         }
 
-
-        // // for years with only 1 and career, leave those the same
-        // // for years with multiple
-        // // find years with multiple
-
-
-        // if (groupTeamsChecked) {
-
-
-        // } else {
-
-        // }
-
     }, [pitcherStats, allYearsChecked, groupTeamsChecked]);
 
-    // function formatDate(originalDate) {
-    //     const date = new Date(originalDate);
-    //     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    //     const day = String(date.getUTCDate()).padStart(2, '0');
-    //     const year = date.getUTCFullYear();
-    //     return `${month}/${day}/${year}`;
-    // }
-
-    function fixName(name) {
-        let cleanName = name.toLowerCase();
-        cleanName = cleanName.replace(/ /g, "-");
-        cleanName = cleanName.replace(/'/g, "-");
-        let match = cleanName.match(/\./g);
-        if (match && match.length == 2) {
-            cleanName = cleanName.replace(/\./, '-');
-        }
-        cleanName = cleanName.replace(/\./g, "");
-        cleanName = cleanName.normalize("NFD");
-        cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
-
-        return cleanName;
-    }
-
-    function allYearsToggle(event) {
+    const allYearsToggle = (event) => {
         setAllYearsChecked(event.target.checked);
     }
 
-    function groupTeamsToggle(event) {
+    const groupTeamsToggle = (event) => {
         setGroupTeamsChecked(event.target.checked);
     }
+
+    const handlePitcherRowSelect = (e, dt, type, indexes) => {
+        console.log('select');
+        console.log(displayedPitcherStats[indexes]);
+
+        // https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})
+    };
+
+    const handlePitcherRowDeselect = (e, dt, type, indexes) => {
+        console.log('deselect');
+    };
 
     // function pitchColors(pitchType) {
     //     var pitchColorsTable = {
@@ -2904,7 +2888,7 @@ export default function PlayerStats({ }) {
                         '& .dataTable tbody tr:hover': {
                             backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
                         },
-                        '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected': {
+                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {                        
                             backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
                             boxShadow: 'none !important'
                         },
@@ -2922,8 +2906,8 @@ export default function PlayerStats({ }) {
                                 dom: "t",
                                 destroy: true,
                             }}
-                        // onSelect={handleSelect}
-                        // onDeselect={handleDeselect}
+                            onSelect={handlePitcherRowSelect}
+                            onDeselect={handlePitcherRowDeselect}
                         />
 
                     </Box>
@@ -3067,11 +3051,6 @@ export default function PlayerStats({ }) {
                         <button type="button" id="details-button" className="small-margin" disabled>Details</button>
                         <h2>Game stats<span id="game-log-summary"></span></h2>
                         <p id="game-log-details"></p>
-                    </div>
-                    <div id="player-awards-div">
-                        <Box display="flex" flexWrap="wrap" gap={2} id="player-awards" ref={awardsContainerRef}>
-                            <br /><br /><br /><br />
-                        </Box>
                     </div>
                 </div> */}
                 {awards &&
