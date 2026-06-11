@@ -56,8 +56,8 @@ export default function Stats({
         buttons: [],
         scrollCollapse: true,
         language: {
-            emptyTable: "No games for selected filters",
-            zeroRecords: "No games for selected filters"
+            emptyTable: "No content",
+            zeroRecords: "No content"
         }
     };
 
@@ -232,17 +232,15 @@ export default function Stats({
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
                 {isLoading ?
                     <LoadingCircle size={60} /> : <>
-
-
-
                         <Box sx={{
                             width: 1200,
                             '& .dataTable tbody tr:hover': {
                                 backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
                             },
-                            '& .dataTable tbody tr.selected': {
+                            '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected': {
                                 backgroundColor: (theme) => `${theme.palette.custom.darkGray} !important`,
-                            }
+                                boxShadow: 'none !important'
+                            },
                         }}>
                             {statsMode === 'hitting' && <>
                                 <DataTable

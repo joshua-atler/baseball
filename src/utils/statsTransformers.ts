@@ -2,6 +2,10 @@ import { Consts } from "../consts/consts";
 
 
 export const transformHittingStats = (rawHittingStats) => {
+    if (rawHittingStats.stats.length === 0) {
+        return [];
+    }
+
     const hittingKeys = new Set([
         'runs',
         'hits',
@@ -28,6 +32,10 @@ export const transformHittingStats = (rawHittingStats) => {
 }
 
 export const transformPitchingStats = (rawPitchingStats) => {
+    if (rawPitchingStats.stats.length === 0) {
+        return [];
+    }
+
     const pitchingKeys = new Set([
         'era',
         'inningsPitched',
@@ -54,6 +62,10 @@ export const transformPitchingStats = (rawPitchingStats) => {
 }
 
 export const transformFieldingStats = (rawFieldingStats) => {
+    if (rawFieldingStats.stats.length === 0) {
+        return [];
+    }
+
     const fieldingKeys = new Set([
         'fielding',
         'chances',
