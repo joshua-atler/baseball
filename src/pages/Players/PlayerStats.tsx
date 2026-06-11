@@ -190,14 +190,14 @@ export default function PlayerStats({ }) {
 
     const pitcherStatsColumns = [
         // { data: 'id', title: '', visible: false },
-        { data: 'year', title: 'Year', className: 'dt-right'},
+        { data: 'year', title: 'Year', className: 'dt-right' },
         {
             data: 'team', title: 'Team', render: (data) => {
                 if (data.length > 0) {
                     const logoURL = Consts.teamInfo[data].logo;
                     return `<img src=${logoURL} style="width: 40px; height: 40px" />`
                 } else {
-                    return '--------';
+                    return '';
                 }
             }
         },
@@ -260,7 +260,8 @@ export default function PlayerStats({ }) {
     const [awards, setAwards] = useState([]);
     const [pitcherStats, setPitcherStats] = useState(null);
     const firstYear = 2010;
-    const [allYearsChecked, setAllYearsChecked] = useState(false);
+    const [allYearsChecked, setAllYearsChecked] = useState(true);
+    const [groupTeamsChecked, setGroupTeamsChecked] = useState(false);
 
     const bioRows = (playerInfo === null) ? [] : [
         { label: 'Age', value: playerInfo.currentAge },
@@ -275,12 +276,49 @@ export default function PlayerStats({ }) {
     const displayedPitcherStats = useMemo(() => {
         if (pitcherStats === null) return null;
 
+
+        console.log('pitcherStats');
+        console.log(pitcherStats);
+
+        const multiTeamYears = new Set(
+            pitcherStats.filter(row => (row.team === '' && row.year !== 'career')).map(row => row.year)
+        );
+        console.log('multiTeamYears');
+        console.log(multiTeamYears);
+
+        const filteredYears = pitcherStats.filter(row => {
+            if (!multiTeamYears.has(row.year)) {
+                return true;
+            } else {
+                if (groupTeamsChecked) {
+                    return row.team === '';
+                } else {
+                    return row.team !== '';
+                }
+            }
+        });
+
+
         if (allYearsChecked) {
-            return pitcherStats;
+            return filteredYears;
         } else {
-            return pitcherStats.filter(row => row.year === Temporal.Now.plainDateISO().year.toString());
+            return filteredYears.filter(row => row.year === Temporal.Now.plainDateISO().year.toString());
         }
-    }, [pitcherStats, allYearsChecked]);
+
+
+        // // for years with only 1 and career, leave those the same
+        // // for years with multiple
+        // // find years with multiple
+
+
+        // if (groupTeamsChecked) {
+
+
+        // } else {
+
+        // }
+
+    }, [pitcherStats, allYearsChecked, groupTeamsChecked]);
 
     // function formatDate(originalDate) {
     //     const date = new Date(originalDate);
@@ -303,6 +341,14 @@ export default function PlayerStats({ }) {
         cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
 
         return cleanName;
+    }
+
+    function allYearsToggle(event) {
+        setAllYearsChecked(event.target.checked);
+    }
+
+    function groupTeamsToggle(event) {
+        setGroupTeamsChecked(event.target.checked);
     }
 
     // function pitchColors(pitchType) {
@@ -368,10 +414,6 @@ export default function PlayerStats({ }) {
     //         img.onerror = () => reject(new Error('Error loading SVG image'));
     //     });
     // }
-
-    function allYearsToggle(event) {
-        setAllYearsChecked(event.target.checked);
-    }
 
     // function openCloseAllYears(allYears) {
     //     if (allYears) {
@@ -2851,9 +2893,9 @@ export default function PlayerStats({ }) {
                 </Box>
                 <Box sx={{ mt: 2, height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
                 <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
-                {/* <Box sx={{ position: 'absolute', left: '2000px' }}> */}
                 <Box>
                     <FormControlLabel control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label='All years' />
+                    <FormControlLabel control={<Switch onChange={groupTeamsToggle} checked={groupTeamsChecked} />} label='Group teams' />
                 </Box>
                 {playerInfo.primaryPosition.name === 'Pitcher' ? <>
                     <Typography variant="h6">Pitcher stats</Typography>
