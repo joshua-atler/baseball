@@ -2897,9 +2897,18 @@ export default function PlayerStats({ }) {
                     <FormControlLabel control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label='All years' />
                     <FormControlLabel control={<Switch onChange={groupTeamsToggle} checked={groupTeamsChecked} />} label='Group teams' />
                 </Box>
-                {playerInfo.primaryPosition.name === 'Pitcher' ? <>
+                {['Pitcher', 'Two-Way Player'].includes(playerInfo.primaryPosition.name) ? <>
                     <Typography variant="h6">Pitcher stats</Typography>
-                    {pitcherStats &&
+                    {pitcherStats && <Box sx={{
+                        width: 1200,
+                        '& .dataTable tbody tr:hover': {
+                            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
+                        },
+                        '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected': {
+                            backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
+                            boxShadow: 'none !important'
+                        },
+                    }}>
                         <DataTable
                             data={displayedPitcherStats}
                             columns={pitcherStatsColumns}
@@ -2916,6 +2925,8 @@ export default function PlayerStats({ }) {
                         // onSelect={handleSelect}
                         // onDeselect={handleDeselect}
                         />
+
+                    </Box>
                     }
                     {/* <table id="pitching-stats">
                         <thead>

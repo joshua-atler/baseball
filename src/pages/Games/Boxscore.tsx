@@ -272,8 +272,6 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                         >
                         </Chip>
                     )}
-                    {/* <div style={{ minWidth: '120px', display: 'inline-block' }}>
-                    </div> */}
                     {selectedGameMetadata?.seriesStatus && (
                         <Chip
                             target="_blank"
@@ -283,8 +281,6 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                         >
                         </Chip>
                     )}
-                    {/* <div style={{ minWidth: '120px', display: 'inline-block' }}>
-                    </div> */}
                     <Stack direction="row" spacing={1}>
                         {[...new Set(selectedGameMetadata?.broadcasts)].map((b) => {
                             return <Chip

@@ -51,7 +51,7 @@ export const Games = () => {
 
     return (
         <>
-            <Grid container spacing={2} id="games-grid">
+            <Grid container spacing={2} id="games-grid" sx={{ fontSize: 14}}>
                 <Grid>
                     <GamesList/>
                 </Grid>

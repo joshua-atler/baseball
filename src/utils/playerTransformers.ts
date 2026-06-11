@@ -26,7 +26,7 @@ export const transformPitcherStats = (rawPitcherStats: []) => {
 
             return regularStats.splits.map((split) => {
                 return {
-                    year: split.season ?? 'career',
+                    year: split.season ?? 'Career',
                     team: split.team ? split.team.name: '',
                     stats: split.stat
                 }
