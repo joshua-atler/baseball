@@ -36,3 +36,17 @@ export const transformPitcherStats = (rawPitcherStats: []) => {
 
     return pitcherStats;
 }
+
+export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal) => {
+    console.log('transformPitcherPitchArsenal');
+    console.log(rawPitcherPitchArsenal);
+
+    const pitcherPitchArsenal = rawPitcherPitchArsenal.splits.map(s => {
+        return {
+            pitchType: s.stat.type.description,
+            count: s.stat.count
+        };
+    });
+
+    return pitcherPitchArsenal;
+}

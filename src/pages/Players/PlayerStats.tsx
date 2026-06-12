@@ -40,7 +40,6 @@ import $ from 'jquery';
 import 'datatables.net-dt';
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 import Chart from 'chart.js/auto';
-import SlimSelect from 'slim-select';
 
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
@@ -48,7 +47,8 @@ import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { transformAwards, transformPitcherPitchArsenal, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { PieChart, Pie, Cell } from 'recharts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -94,6 +94,19 @@ function Awards({ awards, theme }) {
         </Accordion>
     );
 }
+
+const PITCH_COLORS = {
+    'Fastfall': 'rgba(55, 160, 235, 0.8)',
+    'Four-seam FB': 'rgba(55, 160, 235, 0.8)',
+    'Cutter': 'rgba(255, 100, 130, 0.8)',
+    'Splitter': 'rgba(75, 200, 200, 0.8)',
+    'Sinker': 'rgba(255, 160, 60, 0.8)',
+    'Sweeper': 'rgba(50, 100, 150, 0.8)',
+    'Slider': 'rgba(100, 200, 50, 0.8)',
+    'Curveball': 'rgba(255, 200, 85, 0.8)',
+    'Knuckle Curve': 'rgba(85, 255, 200, 0.8)',
+    'Changeup': 'rgba(100, 50, 255, 0.8)',
+};
 
 // const style = {
 //     position: 'absolute',
@@ -274,6 +287,15 @@ export default function PlayerStats({ }) {
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
     const [awards, setAwards] = useState([]);
     const [pitcherStats, setPitcherStats] = useState(null);
+    const [pitcherYearDetails, setPitcherYearDetails] = useState({
+        isLoading: false,
+        year: null,
+        pitchArsenal: null,
+        gameLog: null,
+        playLog: null,
+        pitchLog: null,
+        error: false
+    });
     const firstYear = 2010;
     const [allYearsChecked, setAllYearsChecked] = useState(true);
     const [groupTeamsChecked, setGroupTeamsChecked] = useState(false);
@@ -325,14 +347,63 @@ export default function PlayerStats({ }) {
     }
 
     const handlePitcherRowSelect = (e, dt, type, indexes) => {
-        console.log('select');
-        console.log(displayedPitcherStats[indexes]);
+
+        const getPitcherYearDetails = async () => {
+
+            const selectedYear = displayedPitcherStats[indexes].year;
+
+            setPitcherYearDetails(prev => ({ ...prev, isLoading: true, error: null }));
+
+            try {
+                const rawPitcherYearDetails = await fetchPlayer(selectedPlayer, ['pitching'], ['pitchArsenal', 'gameLog', 'playLog', 'pitchLog'], selectedYear);
+
+                console.log('rawPitcherYearDetails');
+                console.log(rawPitcherYearDetails.people[0].stats);
+
+                const rawPitcherPitchArsenal = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchArsenal')[0];
+                console.log('pitcherPitchArsenal');
+                const pitcherPitchArsenal = transformPitcherPitchArsenal(rawPitcherPitchArsenal);
+                console.log(rawPitcherPitchArsenal);
+
+                setPitcherYearDetails({
+                    isLoading: false,
+                    year: selectedYear,
+                    pitchArsenal: pitcherPitchArsenal,
+                    // pitchArsenal: [
+                    //     { pitchType: 'FA', count: 12 },
+                    //     { pitchType: 'FC', count: 14 },
+                    //     { pitchType: 'FS', count: 16 },
+                    //     { pitchType: 'ST', count: 30 },
+                    //     { pitchType: 'CU', count: 4 }
+                    // ],
+                    gameLog: null,
+                    playLog: null,
+                    pitchLog: null,
+                    error: false
+                });
+            } catch (err) {
+                setPitcherYearDetails(prev => ({ ...prev, isLoading: false, error: err.message }));
+            }
+        }
+
+        getPitcherYearDetails();
 
         // https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})
     };
 
+    console.log('pitcherYearDetails');
+    console.log(pitcherYearDetails);
+
     const handlePitcherRowDeselect = (e, dt, type, indexes) => {
-        console.log('deselect');
+        setPitcherYearDetails({
+            isLoading: false,
+            year: null,
+            pitchArsenal: null,
+            gameLog: null,
+            playLog: null,
+            pitchLog: null,
+            error: false
+        });
     };
 
     // function pitchColors(pitchType) {
@@ -2888,7 +2959,7 @@ export default function PlayerStats({ }) {
                         '& .dataTable tbody tr:hover': {
                             backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
                         },
-                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {                        
+                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
                             backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
                             boxShadow: 'none !important'
                         },
@@ -2909,8 +2980,33 @@ export default function PlayerStats({ }) {
                             onSelect={handlePitcherRowSelect}
                             onDeselect={handlePitcherRowDeselect}
                         />
-
                     </Box>
+                    }
+                    {pitcherYearDetails.year &&
+                    <Typography variant="h4">{pitcherYearDetails.year}</Typography>
+                    }
+                    {pitcherYearDetails.pitchArsenal &&
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant='h5'>Pitch Arsenal</Typography>
+                            <Box sx={{ width: '400px', height: '400px' }}>
+                                <PieChart responsive style={{ width: '400px', height: '400px' }}>
+                                    <Pie
+                                        data={pitcherYearDetails.pitchArsenal}
+                                        dataKey='count'
+                                        nameKey='pitchType'
+                                        cx='50%'
+                                        cy='50%'
+                                        outerRadius={80}
+                                        label={({ payload }) => payload.pitchType}
+                                    >
+                                        {pitcherYearDetails.pitchArsenal.map((pitch, index) => {
+                                            return <Cell key={`cell-${index}`} fill={(PITCH_COLORS[pitch.pitchType] !== undefined) ? PITCH_COLORS[pitch.pitchType] : 'rgba(150, 150, 150, 0.8)'} />
+                                        })}
+                                    </Pie>
+                                    {/* add tooltip for pitch count */}
+                                </PieChart>
+                            </Box>
+                        </Box>
                     }
                     {/* <table id="pitching-stats">
                         <thead>
