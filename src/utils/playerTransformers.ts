@@ -38,8 +38,6 @@ export const transformPitcherStats = (rawPitcherStats: []) => {
 }
 
 export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal) => {
-    console.log('transformPitcherPitchArsenal');
-    console.log(rawPitcherPitchArsenal);
 
     const pitcherPitchArsenal = rawPitcherPitchArsenal.splits.map(s => {
         return {
@@ -49,4 +47,16 @@ export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal) => {
     });
 
     return pitcherPitchArsenal;
+}
+
+export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
+
+    const pitcherPitchSpeeds = rawPitcherPitchArsenal.splits.map(s => {
+        return {
+            pitchType: s.stat.type.description,
+            speed: Math.round(s.stat.averageSpeed * 100) / 100
+        };
+    }).sort((a, b) => b.speed - a.speed);
+
+    return pitcherPitchSpeeds;
 }

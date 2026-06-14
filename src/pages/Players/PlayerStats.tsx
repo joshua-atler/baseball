@@ -47,8 +47,8 @@ import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherPitchArsenal, transformPitcherStats } from '../../utils/playerTransformers.ts';
-import { PieChart, Pie, Cell } from 'recharts';
+import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -290,6 +290,7 @@ export default function PlayerStats({ }) {
     const [pitcherYearDetails, setPitcherYearDetails] = useState({
         isLoading: false,
         year: null,
+        pitchSpeeds: null,
         pitchArsenal: null,
         gameLog: null,
         playLog: null,
@@ -299,6 +300,8 @@ export default function PlayerStats({ }) {
     const firstYear = 2010;
     const [allYearsChecked, setAllYearsChecked] = useState(true);
     const [groupTeamsChecked, setGroupTeamsChecked] = useState(false);
+
+    const totalPitches = pitcherYearDetails?.pitchArsenal?.map(pitch => pitch.count).reduce((acc, curr) => acc + curr, 0);
 
     const bioRows = (playerInfo === null) ? [] : [
         { label: 'Age', value: playerInfo.currentAge },
@@ -351,31 +354,20 @@ export default function PlayerStats({ }) {
         const getPitcherYearDetails = async () => {
 
             const selectedYear = displayedPitcherStats[indexes].year;
-
             setPitcherYearDetails(prev => ({ ...prev, isLoading: true, error: null }));
 
             try {
-                const rawPitcherYearDetails = await fetchPlayer(selectedPlayer, ['pitching'], ['pitchArsenal', 'gameLog', 'playLog', 'pitchLog'], selectedYear);
-
-                console.log('rawPitcherYearDetails');
-                console.log(rawPitcherYearDetails.people[0].stats);
+                const rawPitcherYearDetails = await fetchPlayer(selectedPlayer, ['pitching'], ['pitchArsenal', 'gameLog', 'playLog', 'pitchLog', 'career'], selectedYear);
 
                 const rawPitcherPitchArsenal = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchArsenal')[0];
-                console.log('pitcherPitchArsenal');
                 const pitcherPitchArsenal = transformPitcherPitchArsenal(rawPitcherPitchArsenal);
-                console.log(rawPitcherPitchArsenal);
+                const pitcherPitchSpeeds = transformPitcherPitchSpeeds(rawPitcherPitchArsenal);
 
                 setPitcherYearDetails({
                     isLoading: false,
                     year: selectedYear,
                     pitchArsenal: pitcherPitchArsenal,
-                    // pitchArsenal: [
-                    //     { pitchType: 'FA', count: 12 },
-                    //     { pitchType: 'FC', count: 14 },
-                    //     { pitchType: 'FS', count: 16 },
-                    //     { pitchType: 'ST', count: 30 },
-                    //     { pitchType: 'CU', count: 4 }
-                    // ],
+                    pitchSpeeds: pitcherPitchSpeeds,
                     gameLog: null,
                     playLog: null,
                     pitchLog: null,
@@ -399,6 +391,7 @@ export default function PlayerStats({ }) {
             isLoading: false,
             year: null,
             pitchArsenal: null,
+            pitchSpeeds: null,
             gameLog: null,
             playLog: null,
             pitchLog: null,
@@ -2983,31 +2976,96 @@ export default function PlayerStats({ }) {
                     </Box>
                     }
                     {pitcherYearDetails.year &&
-                    <Typography variant="h4">{pitcherYearDetails.year}</Typography>
+                        <Typography variant='h4'>{pitcherYearDetails.year}</Typography>
                     }
-                    {pitcherYearDetails.pitchArsenal &&
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <Typography variant='h5'>Pitch Arsenal</Typography>
-                            <Box sx={{ width: '400px', height: '400px' }}>
-                                <PieChart responsive style={{ width: '400px', height: '400px' }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+                        {pitcherYearDetails.pitchArsenal &&
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography variant='h5'>Pitch Arsenal (Total: {totalPitches})</Typography>
+                                <PieChart responsive style={{ width: '600px', height: '600px' }}>
                                     <Pie
                                         data={pitcherYearDetails.pitchArsenal}
                                         dataKey='count'
                                         nameKey='pitchType'
                                         cx='50%'
                                         cy='50%'
-                                        outerRadius={80}
-                                        label={({ payload }) => payload.pitchType}
+                                        outerRadius={200}
+                                        label={({ x, y, name, textAnchor, dominantBaseline }) => (
+                                            <text
+                                                x={x}
+                                                y={y}
+                                                fill='#ffffff'
+                                                fontSize='20px'
+                                                textAnchor={textAnchor}
+                                                dominantBaseline={dominantBaseline}
+                                            >
+                                                {name}
+                                            </text>
+                                        )}
+                                        labelLine={false}
                                     >
                                         {pitcherYearDetails.pitchArsenal.map((pitch, index) => {
                                             return <Cell key={`cell-${index}`} fill={(PITCH_COLORS[pitch.pitchType] !== undefined) ? PITCH_COLORS[pitch.pitchType] : 'rgba(150, 150, 150, 0.8)'} />
                                         })}
                                     </Pie>
-                                    {/* add tooltip for pitch count */}
+                                    <Tooltip />
+                                    <Legend iconSize={30} iconType='circle' wrapperStyle={{ fontSize: '20px' }} />
                                 </PieChart>
                             </Box>
-                        </Box>
-                    }
+                        }
+                        {pitcherYearDetails.pitchSpeeds &&
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <Typography variant='h5'>Pitch Speeds</Typography>
+                                <BarChart
+                                    responsive
+                                    style={{ width: '600px', height: '600px' }}
+                                    data={pitcherYearDetails.pitchSpeeds}
+                                >
+                                    <CartesianGrid stroke='#ffffff' />
+                                    <XAxis dataKey='pitchType' stroke='#ffffff' fontSize={20} />
+                                    <YAxis stroke='#ffffff' domain={[60, 'auto']} fontSize={20} />
+                                    <Tooltip
+                                        formatter={(value) => [`${value} MPH average`]}
+                                        contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
+                                        itemStyle={{ color: '#fffff' }}
+                                    />
+                                    <Bar dataKey='speed' radius={[10, 10, 0, 0]}>
+                                        {pitcherYearDetails.pitchSpeeds.map((pitch, index) => {
+                                            return <Cell key={`cell-${index}`} fill={(PITCH_COLORS[pitch.pitchType] !== undefined) ? PITCH_COLORS[pitch.pitchType] : 'rgba(150, 150, 150, 0.8)'} />
+                                        })}
+                                    </Bar>
+                                </BarChart>
+                                {/* <PieChart responsive style={{ width: '600px', height: '600px' }}>
+                                <Pie
+                                    data={pitcherYearDetails.pitchArsenal}
+                                    dataKey='count'
+                                    nameKey='pitchType'
+                                    cx='50%'
+                                    cy='50%'
+                                    outerRadius={200}
+                                    label={({ x, y, name, textAnchor, dominantBaseline }) => (
+                                        <text
+                                            x={x}
+                                            y={y}
+                                            fill="#ffffff"
+                                            fontSize="20px"
+                                            textAnchor={textAnchor}
+                                            dominantBaseline={dominantBaseline}
+                                        >
+                                            {name}
+                                        </text>
+                                    )}
+                                    labelLine={false}
+                                >
+                                    {pitcherYearDetails.pitchArsenal.map((pitch, index) => {
+                                        return <Cell key={`cell-${index}`} fill={(PITCH_COLORS[pitch.pitchType] !== undefined) ? PITCH_COLORS[pitch.pitchType] : 'rgba(150, 150, 150, 0.8)'} />
+                                    })}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart> */}
+                            </Box>
+                        }
+                    </Box>
                     {/* <table id="pitching-stats">
                         <thead>
                             <tr>
