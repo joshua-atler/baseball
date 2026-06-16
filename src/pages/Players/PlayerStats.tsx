@@ -47,8 +47,9 @@ import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
-import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis, ScatterChart, Scatter } from 'recharts';
+import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -359,9 +360,45 @@ export default function PlayerStats({ }) {
             try {
                 const rawPitcherYearDetails = await fetchPlayer(selectedPlayer, ['pitching'], ['pitchArsenal', 'gameLog', 'playLog', 'pitchLog', 'career'], selectedYear);
 
+                console.log('rawPitcherYearDetails');
+                console.log(rawPitcherYearDetails);
+
                 const rawPitcherPitchArsenal = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchArsenal')[0];
                 const pitcherPitchArsenal = transformPitcherPitchArsenal(rawPitcherPitchArsenal);
                 const pitcherPitchSpeeds = transformPitcherPitchSpeeds(rawPitcherPitchArsenal);
+
+                const rawPitcherPitchLog = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchLog')[0].splits;
+                // const pitchLog = transformPitcherPitchLog(rawPitcherPitchLog);
+
+
+                const pitchLog = [
+                    {
+                        "pitchCode": "FF",
+                        "velocity": 96.4,
+                        "gamePk": 745231,
+                        "playId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+                    },
+                    {
+                        "pitchCode": "SL",
+                        "velocity": 84.2,
+                        "gamePk": 745231,
+                        "playId": "b2c3d4e5-f67a-8b9c-0d1e-2f3a4b5c6d7e"
+                    },
+                    {
+                        "pitchCode": "FF",
+                        "velocity": 97.1,
+                        "gamePk": 745231,
+                        "playId": "c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
+                    },
+                    {
+                        "pitchCode": "CU",
+                        "velocity": 76.8,
+                        "gamePk": 745288,
+                        "playId": "d4e5f67a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"
+                    }
+                ];
+
+
 
                 setPitcherYearDetails({
                     isLoading: false,
@@ -370,10 +407,11 @@ export default function PlayerStats({ }) {
                     pitchSpeeds: pitcherPitchSpeeds,
                     gameLog: null,
                     playLog: null,
-                    pitchLog: null,
+                    pitchLog: pitchLog,
                     error: false
                 });
             } catch (err) {
+                console.error(err.message);
                 setPitcherYearDetails(prev => ({ ...prev, isLoading: false, error: err.message }));
             }
         }
@@ -398,6 +436,25 @@ export default function PlayerStats({ }) {
             error: false
         });
     };
+
+    const data01 = [
+        { x: 100, y: 200, z: 200 },
+        { x: 120, y: 100, z: 260 },
+        { x: 170, y: 300, z: 400 },
+        { x: 140, y: 250, z: 280 },
+        { x: 150, y: 400, z: 500 },
+        { x: 110, y: 280, z: 200 },
+    ];
+
+    const data02 = [
+        { x: 200, y: 260, z: 240 },
+        { x: 240, y: 290, z: 220 },
+        { x: 190, y: 290, z: 250 },
+        { x: 198, y: 250, z: 210 },
+        { x: 180, y: 280, z: 260 },
+        { x: 210, y: 220, z: 230 },
+    ];
+
 
     // function pitchColors(pitchType) {
     //     var pitchColorsTable = {
@@ -2975,6 +3032,9 @@ export default function PlayerStats({ }) {
                         />
                     </Box>
                     }
+                    {pitcherYearDetails.isLoading && <>
+                        <LoadingCircle size={60} />
+                    </>}
                     {pitcherYearDetails.year &&
                         <Typography variant='h4'>{pitcherYearDetails.year}</Typography>
                     }
@@ -3035,36 +3095,53 @@ export default function PlayerStats({ }) {
                                         })}
                                     </Bar>
                                 </BarChart>
-                                {/* <PieChart responsive style={{ width: '600px', height: '600px' }}>
-                                <Pie
-                                    data={pitcherYearDetails.pitchArsenal}
-                                    dataKey='count'
-                                    nameKey='pitchType'
-                                    cx='50%'
-                                    cy='50%'
-                                    outerRadius={200}
-                                    label={({ x, y, name, textAnchor, dominantBaseline }) => (
-                                        <text
-                                            x={x}
-                                            y={y}
-                                            fill="#ffffff"
-                                            fontSize="20px"
-                                            textAnchor={textAnchor}
-                                            dominantBaseline={dominantBaseline}
-                                        >
-                                            {name}
-                                        </text>
-                                    )}
-                                    labelLine={false}
-                                >
-                                    {pitcherYearDetails.pitchArsenal.map((pitch, index) => {
-                                        return <Cell key={`cell-${index}`} fill={(PITCH_COLORS[pitch.pitchType] !== undefined) ? PITCH_COLORS[pitch.pitchType] : 'rgba(150, 150, 150, 0.8)'} />
-                                    })}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart> */}
                             </Box>
                         }
+                    </Box>
+                    <Box>
+                        <Typography>aaaaa bbbbb</Typography>
+                        <ScatterChart
+                            responsive
+                        >
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                            <XAxis
+                                type="category"
+                                dataKey="axisLine"
+                                stroke="#888888"
+                                tick={false}
+                                tickLine={false}
+                            />
+                            <YAxis
+                                type="number"
+                                dataKey="velocity"
+                                name="Velocity"
+                                unit=" MPH"
+                                domain={['dataMin - 3', 'dataMax + 3']}
+                                stroke="#888888"
+                                fontSize={12}
+                                tickLine={false}
+                            />
+                            <Tooltip
+                                cursor={{ strokeDasharray: '3 3' }}
+                                contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
+                            <Scatter
+                                name="Velocity Spread"
+                                data={pitcherYearDetails.pitchLog?.map(pitch => ({
+                                    ...pitch,
+                                    axisLine: "Velocity"
+                                }))}
+                            >
+                                {pitcherYearDetails.pitchLog?.map((entry, index) => (
+                                    <Cell
+                                        key={`pitch-${index}`}
+                                        fill={PITCH_COLORS[entry.pitchCode] || '#7F7F7F'}
+                                        opacity={0.5}
+                                    />
+                                ))}
+                            </Scatter>
+                        </ScatterChart>
                     </Box>
                     {/* <table id="pitching-stats">
                         <thead>

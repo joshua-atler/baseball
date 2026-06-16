@@ -60,3 +60,14 @@ export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
 
     return pitcherPitchSpeeds;
 }
+
+export const transformPitcherPitchLog = (rawPitcherPitchLog) => {
+
+    console.log('rawPitcherPitchLog');
+    console.log(rawPitcherPitchLog);
+
+    const pitcherPitchLog = rawPitcherPitchLog.splits;
+    console.log(pitcherPitchLog);
+
+    return rawPitcherPitchLog;
+}
