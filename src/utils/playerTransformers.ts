@@ -1,3 +1,4 @@
+import { fetchGame } from "../services/gamesService";
 
 
 export const transformAwards = (awards: object) => {
@@ -27,7 +28,7 @@ export const transformPitcherStats = (rawPitcherStats: []) => {
             return regularStats.splits.map((split) => {
                 return {
                     year: split.season ?? 'Career',
-                    team: split.team ? split.team.name: '',
+                    team: split.team ? split.team.name : '',
                     stats: split.stat
                 }
             })
@@ -61,13 +62,37 @@ export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
     return pitcherPitchSpeeds;
 }
 
-export const transformPitcherPitchLog = (rawPitcherPitchLog) => {
-
+export const transformPitcherPitchLog = async (rawPitcherGameLog) => {
+    console.log('transformPitcherPitchLog');
     console.log('rawPitcherPitchLog');
-    console.log(rawPitcherPitchLog);
+    console.log(rawPitcherGameLog);
 
-    const pitcherPitchLog = rawPitcherPitchLog.splits;
-    console.log(pitcherPitchLog);
+    rawPitcherGameLog.forEach(game => {
+        // console.log('gameLog');
+        console.log(game);
+        // const link = game.game.link;
+        // console.log(link);
+    });
 
-    return rawPitcherPitchLog;
+    const seasonGames = await Promise.all(rawPitcherGameLog.map(async (game) => {
+        // 1. Explicitly pause this block's execution thread until the network data is in hand
+        const gameContent = await fetchGame(game.game.gamePk);
+
+        // 2. Safely construct and hand back a cleanly resolved object literal
+        return {
+            gameContent: gameContent
+        };
+    }));
+
+    // liveData -> allPlays -> playEvents -> isPitch: true -> pitchData
+    // { gamePk: allPitches}
+
+// }
+
+    console.log(seasonGames);
+
+    // const pitcherPitchLog = rawPitcherPitchLog.splits;
+    // console.log(pitcherPitchLog);
+    return [];
+    // return rawPitcherPitchLog;
 }

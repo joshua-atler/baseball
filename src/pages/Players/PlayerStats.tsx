@@ -97,7 +97,7 @@ function Awards({ awards, theme }) {
 }
 
 const PITCH_COLORS = {
-    'Fastfall': 'rgba(55, 160, 235, 0.8)',
+    'Fastball': 'rgba(55, 160, 235, 0.8)',
     'Four-seam FB': 'rgba(55, 160, 235, 0.8)',
     'Cutter': 'rgba(255, 100, 130, 0.8)',
     'Splitter': 'rgba(75, 200, 200, 0.8)',
@@ -107,6 +107,36 @@ const PITCH_COLORS = {
     'Curveball': 'rgba(255, 200, 85, 0.8)',
     'Knuckle Curve': 'rgba(85, 255, 200, 0.8)',
     'Changeup': 'rgba(100, 50, 255, 0.8)',
+};
+
+const PitchTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+        const pitch = payload[0].payload;
+
+        return (
+            <div style={{
+                backgroundColor: '#222',
+                border: '1px solid #444',
+                padding: '10px',
+                borderRadius: '6px',
+                boxShadow: '0px 4px 10px rgba(0,0,0,0.5)'
+            }}>
+                <p style={{ margin: 0, color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>
+                    {pitch.pitchType}
+                </p>
+                <p style={{ margin: '4px 0 0 0', color: '#aaa', fontSize: '12px' }}>
+                    Velocity: <span style={{ color: '#fff', fontWeight: '600' }}>{pitch.velocity} MPH</span>
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
+
+const handleScatterClick = (data, index) => {
+  console.log("Clicked data:", data);
+  console.log("Index:", index);
+  window.location.href = `https://baseballsavant.mlb.com/sporty-videos?playId=${data.playId}`;
 };
 
 // const style = {
@@ -367,38 +397,41 @@ export default function PlayerStats({ }) {
                 const pitcherPitchArsenal = transformPitcherPitchArsenal(rawPitcherPitchArsenal);
                 const pitcherPitchSpeeds = transformPitcherPitchSpeeds(rawPitcherPitchArsenal);
 
-                const rawPitcherPitchLog = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchLog')[0].splits;
-                // const pitchLog = transformPitcherPitchLog(rawPitcherPitchLog);
+                const rawPitcherGameLog = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'gameLog')[0].splits;
+
+                console.log('-----');
+                console.log('stats');
+                console.log(rawPitcherYearDetails.people[0].stats);
+
+                const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog);
 
 
-                const pitchLog = [
-                    {
-                        "pitchCode": "FF",
-                        "velocity": 96.4,
-                        "gamePk": 745231,
-                        "playId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-                    },
-                    {
-                        "pitchCode": "SL",
-                        "velocity": 84.2,
-                        "gamePk": 745231,
-                        "playId": "b2c3d4e5-f67a-8b9c-0d1e-2f3a4b5c6d7e"
-                    },
-                    {
-                        "pitchCode": "FF",
-                        "velocity": 97.1,
-                        "gamePk": 745231,
-                        "playId": "c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
-                    },
-                    {
-                        "pitchCode": "CU",
-                        "velocity": 76.8,
-                        "gamePk": 745288,
-                        "playId": "d4e5f67a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"
-                    }
-                ];
-
-
+                // const pitchLog = [
+                //     {
+                //         "pitchType": "Fastball",
+                //         "velocity": 96.4,
+                //         "gamePk": 745231,
+                //         "playId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+                //     },
+                //     {
+                //         "pitchType": "Fastball",
+                //         "velocity": 84.2,
+                //         "gamePk": 745231,
+                //         "playId": "b2c3d4e5-f67a-8b9c-0d1e-2f3a4b5c6d7e"
+                //     },
+                //     {
+                //         "pitchType": "Curveball",
+                //         "velocity": 97.1,
+                //         "gamePk": 745231,
+                //         "playId": "c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
+                //     },
+                //     {
+                //         "pitchType": "Cutter",
+                //         "velocity": 76.8,
+                //         "gamePk": 745288,
+                //         "playId": "d4e5f67a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"
+                //     }
+                // ];
 
                 setPitcherYearDetails({
                     isLoading: false,
@@ -423,6 +456,8 @@ export default function PlayerStats({ }) {
 
     console.log('pitcherYearDetails');
     console.log(pitcherYearDetails);
+
+    console.log(PITCH_COLORS);
 
     const handlePitcherRowDeselect = (e, dt, type, indexes) => {
         setPitcherYearDetails({
@@ -3099,44 +3134,54 @@ export default function PlayerStats({ }) {
                         }
                     </Box>
                     <Box>
-                        <Typography>aaaaa bbbbb</Typography>
                         <ScatterChart
                             responsive
+                            style={{ width: '1200px', height: '600px' }}
                         >
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                            <XAxis
-                                type="category"
-                                dataKey="axisLine"
-                                stroke="#888888"
+                            <YAxis
+                                type="number"
+                                dataKey="yAxisTrack"
+                                stroke="#ffffff"
                                 tick={false}
                                 tickLine={false}
+                                name=""
+                                show={false}
                             />
-                            <YAxis
+                            <XAxis
                                 type="number"
                                 dataKey="velocity"
                                 name="Velocity"
-                                unit=" MPH"
-                                domain={['dataMin - 3', 'dataMax + 3']}
-                                stroke="#888888"
+                                unit="MPH"
+                                stroke="#ffffff"
+                                domain={[60, 'dataMax + 5']}
                                 fontSize={12}
                                 tickLine={false}
                             />
                             <Tooltip
-                                cursor={{ strokeDasharray: '3 3' }}
+                                cursor={{ strokeDasharray: '5 5' }}
                                 contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
                                 itemStyle={{ color: '#fff' }}
+                                content={<PitchTooltip />}
                             />
                             <Scatter
-                                name="Velocity Spread"
+                                // name="Velocity Spread"
                                 data={pitcherYearDetails.pitchLog?.map(pitch => ({
                                     ...pitch,
-                                    axisLine: "Velocity"
+                                    axisLine: "Velocity",
+                                    yAxisTrack: Math.random()
                                 }))}
+                            // data={[
+                            //     { velocity: 95, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Fastball' },
+                            //     { velocity: 84, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Curveball' },
+                            //     { velocity: 92, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Splitter' }
+                            // ]}
+                            onClick={handleScatterClick}
                             >
                                 {pitcherYearDetails.pitchLog?.map((entry, index) => (
                                     <Cell
                                         key={`pitch-${index}`}
-                                        fill={PITCH_COLORS[entry.pitchCode] || '#7F7F7F'}
+                                        fill={PITCH_COLORS[entry.pitchType] || '#555555'}
                                         opacity={0.5}
                                     />
                                 ))}
