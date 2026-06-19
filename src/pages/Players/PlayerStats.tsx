@@ -403,7 +403,7 @@ export default function PlayerStats({ }) {
                 console.log('stats');
                 console.log(rawPitcherYearDetails.people[0].stats);
 
-                const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog);
+                const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog, selectedPlayer);
 
 
                 // const pitchLog = [

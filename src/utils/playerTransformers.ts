@@ -62,23 +62,14 @@ export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
     return pitcherPitchSpeeds;
 }
 
-export const transformPitcherPitchLog = async (rawPitcherGameLog) => {
+export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer) => {
     console.log('transformPitcherPitchLog');
     console.log('rawPitcherPitchLog');
     console.log(rawPitcherGameLog);
 
-    rawPitcherGameLog.forEach(game => {
-        // console.log('gameLog');
-        console.log(game);
-        // const link = game.game.link;
-        // console.log(link);
-    });
-
     const seasonGames = await Promise.all(rawPitcherGameLog.map(async (game) => {
-        // 1. Explicitly pause this block's execution thread until the network data is in hand
         const gameContent = await fetchGame(game.game.gamePk);
 
-        // 2. Safely construct and hand back a cleanly resolved object literal
         return {
             gameContent: gameContent
         };
@@ -87,9 +78,51 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog) => {
     // liveData -> allPlays -> playEvents -> isPitch: true -> pitchData
     // { gamePk: allPitches}
 
-// }
+    // console.log('seasonGames');
+    // console.log(seasonGames);
 
-    console.log(seasonGames);
+    const pitchLog = seasonGames.map(game => {
+
+        // console.log(game.liveData.allPlays);
+        console.log('g');
+        // console.log(game);
+        console.log(game.gameContent.liveData.plays.allPlays.length);
+        console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).length);
+        console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer));
+
+        const playsForGame = game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).map(play => {
+            return {
+                inning: play.about.inning,
+                pitches: play.playEvents.filter(playEvent => playEvent.isPitch)
+            }
+        });
+
+        console.log('playsForGame');
+        console.log(playsForGame);
+
+        const pitchesByInning: { [inning: number]: any[] } = {};
+        playsForGame.forEach((play) => {
+            const inningNum = play.inning;
+
+            if (!pitchesByInning[inningNum]) {
+                pitchesByInning[inningNum] = [];
+            }
+
+            if (play.pitches?.length) {
+                pitchesByInning[inningNum].push(...play.pitches);
+            }
+        });
+        console.log('pitchesByInning');
+        console.log(pitchesByInning);
+
+
+
+        return {
+            g: game
+        }
+    });
+
+
 
     // const pitcherPitchLog = rawPitcherPitchLog.splits;
     // console.log(pitcherPitchLog);
