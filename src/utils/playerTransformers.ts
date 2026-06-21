@@ -63,9 +63,9 @@ export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
 }
 
 export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer) => {
-    console.log('transformPitcherPitchLog');
-    console.log('rawPitcherPitchLog');
-    console.log(rawPitcherGameLog);
+    // console.log('transformPitcherPitchLog');
+    // console.log('rawPitcherPitchLog');
+    // console.log(rawPitcherGameLog);
 
     const seasonGames = await Promise.all(rawPitcherGameLog.map(async (game) => {
         const gameContent = await fetchGame(game.game.gamePk);
@@ -81,14 +81,13 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
     // console.log('seasonGames');
     // console.log(seasonGames);
 
-    const pitchLog = seasonGames.map(game => {
+    const pitchLog = Object.fromEntries(seasonGames.map(game => {
 
         // console.log(game.liveData.allPlays);
-        console.log('g');
         // console.log(game);
-        console.log(game.gameContent.liveData.plays.allPlays.length);
-        console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).length);
-        console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer));
+        // console.log(game.gameContent.liveData.plays.allPlays.length);
+        // console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).length);
+        // console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer));
 
         const playsForGame = game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).map(play => {
             return {
@@ -97,8 +96,8 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
             }
         });
 
-        console.log('playsForGame');
-        console.log(playsForGame);
+        // console.log('playsForGame');
+        // console.log(playsForGame);
 
         const pitchesByInning: { [inning: number]: any[] } = {};
         playsForGame.forEach((play) => {
@@ -112,20 +111,14 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
                 pitchesByInning[inningNum].push(...play.pitches);
             }
         });
-        console.log('pitchesByInning');
-        console.log(pitchesByInning);
+        // console.log('pitchesByInning');
+        // console.log(pitchesByInning);
 
+        // console.log('game');
+        // console.log(game);
 
+        return [game.gameContent.gamePk, pitchesByInning];
+    }));
 
-        return {
-            g: game
-        }
-    });
-
-
-
-    // const pitcherPitchLog = rawPitcherPitchLog.splits;
-    // console.log(pitcherPitchLog);
-    return [];
-    // return rawPitcherPitchLog;
+    return pitchLog;
 }

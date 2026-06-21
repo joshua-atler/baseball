@@ -97,16 +97,17 @@ function Awards({ awards, theme }) {
 }
 
 const PITCH_COLORS = {
-    'Fastball': 'rgba(55, 160, 235, 0.8)',
-    'Four-seam FB': 'rgba(55, 160, 235, 0.8)',
-    'Cutter': 'rgba(255, 100, 130, 0.8)',
-    'Splitter': 'rgba(75, 200, 200, 0.8)',
-    'Sinker': 'rgba(255, 160, 60, 0.8)',
-    'Sweeper': 'rgba(50, 100, 150, 0.8)',
-    'Slider': 'rgba(100, 200, 50, 0.8)',
-    'Curveball': 'rgba(255, 200, 85, 0.8)',
-    'Knuckle Curve': 'rgba(85, 255, 200, 0.8)',
-    'Changeup': 'rgba(100, 50, 255, 0.8)',
+    'Fastball': 'rgb(55, 160, 235)',
+    'Four-seam FB': 'rgb(55, 160, 235)',
+    'Four-Seam Fastball': 'rgb(55, 160, 235)',
+    'Cutter': 'rgb(255, 100, 130)',
+    'Splitter': 'rgb(75, 200, 200)',
+    'Sinker': 'rgb(255, 160, 60)',
+    'Sweeper': 'rgb(50, 100, 150)',
+    'Slider': 'rgb(100, 200, 50)',
+    'Curveball': 'rgb(255, 200, 85)',
+    'Knuckle Curve': 'rgb(85, 255, 200)',
+    'Changeup': 'rgb(100, 50, 255)',
 };
 
 const PitchTooltip = ({ active, payload }) => {
@@ -122,10 +123,11 @@ const PitchTooltip = ({ active, payload }) => {
                 boxShadow: '0px 4px 10px rgba(0,0,0,0.5)'
             }}>
                 <p style={{ margin: 0, color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>
-                    {pitch.pitchType}
+                    {/* {pitch.pitchType} */}
+                    {pitch.details.type.description}
                 </p>
                 <p style={{ margin: '4px 0 0 0', color: '#aaa', fontSize: '12px' }}>
-                    Velocity: <span style={{ color: '#fff', fontWeight: '600' }}>{pitch.velocity} MPH</span>
+                    Velocity: <span style={{ color: '#fff', fontWeight: '600' }}>{pitch.pitchData.startSpeed} MPH</span>
                 </p>
             </div>
         );
@@ -134,9 +136,7 @@ const PitchTooltip = ({ active, payload }) => {
 };
 
 const handleScatterClick = (data, index) => {
-  console.log("Clicked data:", data);
-  console.log("Index:", index);
-  window.location.href = `https://baseballsavant.mlb.com/sporty-videos?playId=${data.playId}`;
+    window.location.href = `https://baseballsavant.mlb.com/sporty-videos?playId=${data.playId}`;
 };
 
 // const style = {
@@ -328,6 +328,15 @@ export default function PlayerStats({ }) {
         pitchLog: null,
         error: false
     });
+    const allSeasonPitches = useMemo(() => {
+        const pitchLog = pitcherYearDetails?.pitchLog;
+        if (!pitchLog) return null;
+
+        return Object.values(pitchLog).flatMap(game =>
+            Object.values(game).flat()
+        );
+    }, [pitcherYearDetails]);
+
     const firstYear = 2010;
     const [allYearsChecked, setAllYearsChecked] = useState(true);
     const [groupTeamsChecked, setGroupTeamsChecked] = useState(false);
@@ -390,18 +399,11 @@ export default function PlayerStats({ }) {
             try {
                 const rawPitcherYearDetails = await fetchPlayer(selectedPlayer, ['pitching'], ['pitchArsenal', 'gameLog', 'playLog', 'pitchLog', 'career'], selectedYear);
 
-                console.log('rawPitcherYearDetails');
-                console.log(rawPitcherYearDetails);
-
                 const rawPitcherPitchArsenal = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'pitchArsenal')[0];
                 const pitcherPitchArsenal = transformPitcherPitchArsenal(rawPitcherPitchArsenal);
                 const pitcherPitchSpeeds = transformPitcherPitchSpeeds(rawPitcherPitchArsenal);
 
                 const rawPitcherGameLog = rawPitcherYearDetails.people[0].stats.filter(s => s.type.displayName === 'gameLog')[0].splits;
-
-                console.log('-----');
-                console.log('stats');
-                console.log(rawPitcherYearDetails.people[0].stats);
 
                 const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog, selectedPlayer);
 
@@ -454,10 +456,10 @@ export default function PlayerStats({ }) {
         // https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})
     };
 
-    console.log('pitcherYearDetails');
-    console.log(pitcherYearDetails);
+    // console.log('pitcherYearDetails');
+    // console.log(pitcherYearDetails);
 
-    console.log(PITCH_COLORS);
+    // console.log(PITCH_COLORS);
 
     const handlePitcherRowDeselect = (e, dt, type, indexes) => {
         setPitcherYearDetails({
@@ -472,23 +474,23 @@ export default function PlayerStats({ }) {
         });
     };
 
-    const data01 = [
-        { x: 100, y: 200, z: 200 },
-        { x: 120, y: 100, z: 260 },
-        { x: 170, y: 300, z: 400 },
-        { x: 140, y: 250, z: 280 },
-        { x: 150, y: 400, z: 500 },
-        { x: 110, y: 280, z: 200 },
-    ];
+    // const data01 = [
+    //     { x: 100, y: 200, z: 200 },
+    //     { x: 120, y: 100, z: 260 },
+    //     { x: 170, y: 300, z: 400 },
+    //     { x: 140, y: 250, z: 280 },
+    //     { x: 150, y: 400, z: 500 },
+    //     { x: 110, y: 280, z: 200 },
+    // ];
 
-    const data02 = [
-        { x: 200, y: 260, z: 240 },
-        { x: 240, y: 290, z: 220 },
-        { x: 190, y: 290, z: 250 },
-        { x: 198, y: 250, z: 210 },
-        { x: 180, y: 280, z: 260 },
-        { x: 210, y: 220, z: 230 },
-    ];
+    // const data02 = [
+    //     { x: 200, y: 260, z: 240 },
+    //     { x: 240, y: 290, z: 220 },
+    //     { x: 190, y: 290, z: 250 },
+    //     { x: 198, y: 250, z: 210 },
+    //     { x: 180, y: 280, z: 260 },
+    //     { x: 210, y: 220, z: 230 },
+    // ];
 
 
     // function pitchColors(pitchType) {
@@ -3133,61 +3135,61 @@ export default function PlayerStats({ }) {
                             </Box>
                         }
                     </Box>
-                    <Box>
-                        <ScatterChart
-                            responsive
-                            style={{ width: '1200px', height: '600px' }}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-                            <YAxis
-                                type="number"
-                                dataKey="yAxisTrack"
-                                stroke="#ffffff"
-                                tick={false}
-                                tickLine={false}
-                                name=""
-                                show={false}
-                            />
-                            <XAxis
-                                type="number"
-                                dataKey="velocity"
-                                name="Velocity"
-                                unit="MPH"
-                                stroke="#ffffff"
-                                domain={[60, 'dataMax + 5']}
-                                fontSize={12}
-                                tickLine={false}
-                            />
-                            <Tooltip
-                                cursor={{ strokeDasharray: '5 5' }}
-                                contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
-                                itemStyle={{ color: '#fff' }}
-                                content={<PitchTooltip />}
-                            />
-                            <Scatter
-                                // name="Velocity Spread"
-                                data={pitcherYearDetails.pitchLog?.map(pitch => ({
-                                    ...pitch,
-                                    axisLine: "Velocity",
-                                    yAxisTrack: Math.random()
-                                }))}
-                            // data={[
-                            //     { velocity: 95, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Fastball' },
-                            //     { velocity: 84, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Curveball' },
-                            //     { velocity: 92, yAxisTrack: Math.random(), axisLine: "Velocity", pitchType: 'Splitter' }
-                            // ]}
-                            onClick={handleScatterClick}
+                    {allSeasonPitches &&
+                        <Box>
+                            <Typography variant='h5'>All Pitches</Typography>
+                            <ScatterChart
+                                responsive
+                                style={{ width: '1200px', height: '600px' }}
                             >
-                                {pitcherYearDetails.pitchLog?.map((entry, index) => (
-                                    <Cell
-                                        key={`pitch-${index}`}
-                                        fill={PITCH_COLORS[entry.pitchType] || '#555555'}
-                                        opacity={0.5}
-                                    />
-                                ))}
-                            </Scatter>
-                        </ScatterChart>
-                    </Box>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                                <YAxis
+                                    type="number"
+                                    dataKey="yAxisTrack"
+                                    stroke="#ffffff"
+                                    domain={[-0.05, 1.05]}
+                                    tick={false}
+                                    tickLine={false}
+                                    name=""
+                                    show={false}
+                                />
+                                <XAxis
+                                    type="number"
+                                    dataKey="pitchData.startSpeed"
+                                    name="Velocity"
+                                    unit="MPH"
+                                    stroke="#ffffff"
+                                    domain={['dataMin - 2', 'dataMax + 2']}
+                                    fontSize={12}
+                                    tickLine={false}
+                                />
+                                <Tooltip
+                                    cursor={{ strokeDasharray: '5 5' }}
+                                    shared={false}
+                                    contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
+                                    itemStyle={{ color: '#fff' }}
+                                    content={<PitchTooltip />}
+                                />
+                                <Scatter
+                                    data={allSeasonPitches.map(pitch => ({
+                                        ...pitch,
+                                        axisLine: "Velocity",
+                                        yAxisTrack: Math.random()
+                                    }))}
+                                    isAnimationActive={false}
+                                    activeDot={{ r: 6, strokeWidth: 0 }}
+                                    onClick={handleScatterClick}
+                                >
+                                    {allSeasonPitches.map((entry, index) => (
+                                        <Cell
+                                            key={`pitch-${index}`}
+                                            fill={PITCH_COLORS[entry.details?.type?.description] || '#555555'}
+                                            opacity={0.5}
+                                        />
+                                    ))}
+                                </Scatter>
+                            </ScatterChart>
+                        </Box>}
                     {/* <table id="pitching-stats">
                         <thead>
                             <tr>
