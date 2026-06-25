@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
-import { HiExternalLink } from 'react-icons/hi';
+import { renderToString } from 'react-dom/server';
+import { HiCheck, HiX, HiExternalLink } from 'react-icons/hi';
 
 import {
     Box,
@@ -47,7 +48,7 @@ import '../../styles/dtStyle.css';
 import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats, transformPitcherGameLog } from '../../utils/playerTransformers.ts';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis, ScatterChart, Scatter } from 'recharts';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 
@@ -136,7 +137,7 @@ const PitchTooltip = ({ active, payload }) => {
 };
 
 const handleScatterClick = (data, index) => {
-    window.location.href = `https://baseballsavant.mlb.com/sporty-videos?playId=${data.playId}`;
+    window.open(`https://baseballsavant.mlb.com/sporty-videos?playId=${data.playId}`, '_blank', 'noopener,noreferrer');
 };
 
 // const style = {
@@ -254,6 +255,77 @@ export default function PlayerStats({ }) {
         { data: 'stats.inningsPitched', title: 'IP' },
         { data: 'stats.strikeOuts', title: 'K' },
         { data: 'stats.whip', title: 'WHIP', },
+    ];
+
+    const pitcherGameLogColumns = [
+        { data: 'id', title: '', visible: false },
+        { data: 'date', title: 'Date', className: 'dt-right' },
+        {
+            data: 'matchup', title: 'Matchup', render: (data) => {
+                const awayLogoURL = Consts.teamInfo[data[0]].logo;
+                const homeLogoURL = Consts.teamInfo[data[1]].logo;
+                return `<span style="display: inline-flex; align-items: center"><img src=${awayLogoURL} style="width: 40px; height: 40px" />
+                <span style="margin: 0 10px; font-weight: 500;">@</span>
+                <img src=${homeLogoURL} style="width: 40px; height: 40px" /></span>`;
+
+                // if (data?.length > 0) {
+                //     const logoURL = Consts.teamInfo[data].logo;
+                //     return `<img src=${logoURL} style="width: 40px; height: 40px" />`
+                // } else {
+                //     return '';
+                // }
+            }
+        },
+        {
+            data: 'isWin', title: 'Win/Loss', render: (data) => {
+                const badgeStyle = `
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    font-size: 0.9rem;
+                    font-weight: bold;
+                    vertical-align: middle;
+                `;
+                if (data) {
+                    return `
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background-color: #e8f5e9; border: 1px solid #a5d6a7; vertical-align: middle;">
+                        ${renderToString(<HiCheck style={{ color: '#2e7d32', fontSize: '1.1rem' }} />)}
+                        </span>
+                    `
+                } else {
+                    return `
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background-color: #ffebee; border: 1px solid #ef9a9a; vertical-align: middle;">
+                        ${renderToString(<HiX style={{ color: '#c62828', fontSize: '1.1rem' }} />)}
+                    </span>
+                    `
+                };
+            }
+        },
+        { data: 'pitches', title: 'Pitches' },
+        { data: 'inningsPitched', title: 'IP' },
+        { data: 'earnedRuns', title: 'ER' },
+        { data: 'earnedRunAverage', title: 'ERA' },
+        { data: 'hits', title: 'H' },
+        { data: 'runs', title: 'R' },
+        { data: 'strikeouts', title: 'K' },
+        { data: 'walks', title: 'BB' },
+        { data: 'whip', title: 'WHIP' },
+
+
+        // <th>Date</th>
+        // <th>Matchup</th>
+        // <th>Pitches</th>
+        // <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
+        // <th><span className="tooltip" data-tooltip="Earned runs">ER</span></th>
+        // <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
+        // <th><span className="tooltip" data-tooltip="Hits">H</span></th>
+        // <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
+        // <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
+        // <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
+        // <th>link</th>
     ];
 
     /////////////////
@@ -407,7 +479,7 @@ export default function PlayerStats({ }) {
 
                 const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog, selectedPlayer);
 
-
+                const gameLog = transformPitcherGameLog(rawPitcherGameLog);
                 // const pitchLog = [
                 //     {
                 //         "pitchType": "Fastball",
@@ -440,7 +512,7 @@ export default function PlayerStats({ }) {
                     year: selectedYear,
                     pitchArsenal: pitcherPitchArsenal,
                     pitchSpeeds: pitcherPitchSpeeds,
-                    gameLog: null,
+                    gameLog: gameLog,
                     playLog: null,
                     pitchLog: pitchLog,
                     error: false
@@ -473,6 +545,14 @@ export default function PlayerStats({ }) {
             error: false
         });
     };
+
+    const handlePitcherGameRowSelect = (e, dt, type, indexes) => {
+        console.log('handlePitcherGameRow select');
+    }
+
+    const handlePitcherGameRowDeselect = (e, dt, type, indexes) => {
+        console.log('handlePitcherGameRow deselect');
+    }
 
     // const data01 = [
     //     { x: 100, y: 200, z: 200 },
@@ -3190,6 +3270,35 @@ export default function PlayerStats({ }) {
                                 </Scatter>
                             </ScatterChart>
                         </Box>}
+                    {pitcherYearDetails.gameLog && <Box sx={{
+                        width: 1200,
+                        '& .dataTable tbody tr:hover': {
+                            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
+                        },
+                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
+                            backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
+                            boxShadow: 'none !important'
+                        },
+                    }}>
+                        <Typography variant='h5'>Game Log</Typography>
+                        <DataTable
+                            data={pitcherYearDetails.gameLog}
+                            columns={pitcherGameLogColumns}
+                            options={{
+                                select: {
+                                    info: false
+                                },
+                                paging: false,
+                                info: false,
+                                ordering: false,
+                                dom: "t",
+                                destroy: true,
+                            }}
+                            onSelect={handlePitcherGameRowSelect}
+                            onDeselect={handlePitcherGameRowDeselect}
+                        />
+                    </Box>
+                    }
                     {/* <table id="pitching-stats">
                         <thead>
                             <tr>

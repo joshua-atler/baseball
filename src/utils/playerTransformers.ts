@@ -1,4 +1,5 @@
 import { fetchGame } from "../services/gamesService";
+import { shortYearFormatter } from "./dateFormatters";
 
 
 export const transformAwards = (awards: object) => {
@@ -121,4 +122,28 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
     }));
 
     return pitchLog;
+}
+
+export const transformPitcherGameLog = (rawPitcherGameLog) => {
+
+    const gameLog = rawPitcherGameLog.toReversed().map(game => {
+
+        return {
+            id: game.game.gamePk,
+            date: shortYearFormatter.format(new Date(game.date)),
+            matchup: game.isHome ? [game.opponent.name, game.team.name] : [game.team.name, game.opponent.name],
+            isWin: game.isWin,
+            pitches: game.stat.numberOfPitches,
+            inningsPitched: game.stat.inningsPitched,
+            earnedRuns: game.stat.earnedRuns,
+            earnedRunAverage: game.stat.era,
+            hits: game.stat.hits,
+            runs: game.stat.runs,
+            strikeouts: game.stat.strikeOuts,
+            walks: game.stat.baseOnBalls,
+            whip: game.stat.whip
+        }
+    })
+
+    return gameLog;
 }
