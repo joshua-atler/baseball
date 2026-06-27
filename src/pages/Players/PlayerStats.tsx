@@ -3230,7 +3230,7 @@ export default function PlayerStats({ }) {
                                     data={pitcherYearDetails.pitchSpeeds}
                                 >
                                     <CartesianGrid stroke='#ffffff' />
-                                    <XAxis dataKey='pitchType' stroke='#ffffff' fontSize={20} />
+                                    <XAxis dataKey='pitchType' stroke='#ffffff' fontSize={14} />
                                     <YAxis stroke='#ffffff' domain={[60, 'auto']} fontSize={20} />
                                     <Tooltip
                                         formatter={(value) => [`${value} MPH average`]}
