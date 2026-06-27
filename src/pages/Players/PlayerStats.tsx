@@ -230,7 +230,9 @@ export default function PlayerStats({ }) {
     const {
         selectedPlayer,
         setSelectedPlayer,
-        selectedTeam
+        selectedTeam,
+        setSelectedGame,
+        setSelectedGameMetadata
     } = useBasedash();
 
     const pitcherStatsColumns = [
@@ -258,7 +260,7 @@ export default function PlayerStats({ }) {
     ];
 
     const pitcherGameLogColumns = [
-        { data: 'id', title: '', visible: false },
+        { data: 'gamePk', title: '', visible: false },
         { data: 'date', title: 'Date', className: 'dt-right' },
         {
             data: 'matchup', title: 'Matchup', render: (data) => {
@@ -313,22 +315,32 @@ export default function PlayerStats({ }) {
         { data: 'strikeouts', title: 'K' },
         { data: 'walks', title: 'BB' },
         { data: 'whip', title: 'WHIP' },
-
-
-        // <th>Date</th>
-        // <th>Matchup</th>
-        // <th>Pitches</th>
-        // <th><span className="tooltip" data-tooltip="Innings pitched">IP</span></th>
-        // <th><span className="tooltip" data-tooltip="Earned runs">ER</span></th>
-        // <th><span className="tooltip" data-tooltip="Earned run average">ERA</span></th>
-        // <th><span className="tooltip" data-tooltip="Hits">H</span></th>
-        // <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
-        // <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
-        // <th><span className="tooltip" data-tooltip="Walks and hits per inning pitched">WHIP</span></th>
-        // <th>link</th>
+        {
+            title: 'Actions',
+            data: null,
+            className: 'dt-center',
+            render: (data, type, row) => {
+                return `
+                <button
+                    onclick="event.stopPropagation(); handleViewGameClick(${row.gamePk})"
+                    style="padding: 5px 10px; background-color: ${theme.palette.custom.highlightGreen}; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                    View Game
+                    ${renderToString(<HiExternalLink style={{ verticalAlign: 'middle' }} size={20} />)}
+                </button>
+            `;
+            }
+        }
     ];
 
     /////////////////
+
+    //     setSelectedGame(pitcherYearDetails.gameLog[indexes].gamePk);
+    // setSelectedGameMetadata({
+    //     tickets: pitcherYearDetails.gameLog[indexes].gameMetadata.tickets,
+    //     broadcasts: pitcherYearDetails.gameLog[indexes].gameMetadata.brodcasts,
+    //     seriesStatus: pitcherYearDetails.gameLog[indexes].gameMetadata.seriesStatus
+    // })
+    // navigate('/games');
 
 
     const navigate = useNavigate();
@@ -479,7 +491,7 @@ export default function PlayerStats({ }) {
 
                 const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog, selectedPlayer);
 
-                const gameLog = transformPitcherGameLog(rawPitcherGameLog);
+                const gameLog = await transformPitcherGameLog(rawPitcherGameLog);
                 // const pitchLog = [
                 //     {
                 //         "pitchType": "Fastball",
@@ -963,6 +975,25 @@ export default function PlayerStats({ }) {
     // console.log('playerInfo');
     // console.log(playerInfo);
 
+    useEffect(() => {
+        window.handleViewGameClick = (gamePk) => {
+            const matchedRow = pitcherYearDetails.gameLog.find(row => row.gamePk === gamePk);
+
+            if (matchedRow) {
+                setSelectedGame(gamePk);
+                setSelectedGameMetadata({
+                    tickets: matchedRow.gameMetadata?.tickets || null,
+                    broadcasts: matchedRow.gameMetadata?.broadcasts || null,
+                    seriesStatus: matchedRow.gameMetadata?.seriesStatus || null
+                });
+                navigate('/games');
+            }
+        };
+
+        return () => {
+            delete window.handleViewGameClick;
+        };
+    }, [pitcherYearDetails.gameLog, navigate]);
 
     useEffect(() => {
 

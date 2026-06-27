@@ -1,5 +1,5 @@
-import { fetchGame } from "../services/gamesService";
-import { shortYearFormatter } from "./dateFormatters";
+import { fetchGame, fetchSchedule } from "../services/gamesService";
+import { formatter, scheduleFormmater } from "./dateFormatters";
 
 
 export const transformAwards = (awards: object) => {
@@ -124,13 +124,22 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
     return pitchLog;
 }
 
-export const transformPitcherGameLog = (rawPitcherGameLog) => {
+export const transformPitcherGameLog = async (rawPitcherGameLog) => {
 
-    const gameLog = rawPitcherGameLog.toReversed().map(game => {
+    const gameLog = await Promise.all(rawPitcherGameLog.toReversed().map(async game => {
+
+        const gameDate = scheduleFormmater.format(new Date(game.date));
+        const gameSchedule = await fetchSchedule(gameDate, gameDate);
+        const currGame = gameSchedule.dates[0].games.filter(scheduledGame => scheduledGame.gamePk === game.game.gamePk)[0];
 
         return {
-            id: game.game.gamePk,
-            date: shortYearFormatter.format(new Date(game.date)),
+            gamePk: game.game.gamePk,
+            gameMetadata: {
+                tickets: currGame.tickets?.[0]?.ticketLinks?.home,
+                broadcasts: currGame.broadcasts.filter(b => b.type === 'TV').map(b => b.name),
+                seriesStatus: currGame.seriesStatus
+            },
+            date: formatter.format(new Date(game.date)),
             matchup: game.isHome ? [game.opponent.name, game.team.name] : [game.team.name, game.opponent.name],
             isWin: game.isWin,
             pitches: game.stat.numberOfPitches,
@@ -143,7 +152,7 @@ export const transformPitcherGameLog = (rawPitcherGameLog) => {
             walks: game.stat.baseOnBalls,
             whip: game.stat.whip
         }
-    })
+    }));
 
     return gameLog;
 }
