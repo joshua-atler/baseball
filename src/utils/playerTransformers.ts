@@ -112,11 +112,6 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
                 pitchesByInning[inningNum].push(...play.pitches);
             }
         });
-        // console.log('pitchesByInning');
-        // console.log(pitchesByInning);
-
-        // console.log('game');
-        // console.log(game);
 
         return [game.gameContent.gamePk, pitchesByInning];
     }));
