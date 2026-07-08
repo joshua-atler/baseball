@@ -134,7 +134,7 @@ export const transformPitcherGameLog = async (rawPitcherGameLog) => {
                 broadcasts: currGame.broadcasts.filter(b => b.type === 'TV').map(b => b.name),
                 seriesStatus: currGame.seriesStatus
             },
-            date: formatter.format(new Date(game.date)),
+            date: scheduleFormmater.format(new Date(game.date)),
             matchup: game.isHome ? [game.opponent.name, game.team.name] : [game.team.name, game.opponent.name],
             isWin: game.isWin,
             pitches: game.stat.numberOfPitches,
