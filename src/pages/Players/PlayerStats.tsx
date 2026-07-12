@@ -51,6 +51,7 @@ import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
 import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats, transformPitcherGameLog } from '../../utils/playerTransformers.ts';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis, ScatterChart, Scatter } from 'recharts';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { fetchGame } from '../../services/gamesService.ts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -342,7 +343,6 @@ export default function PlayerStats({ }) {
     // })
     // navigate('/games');
 
-
     const navigate = useNavigate();
     const awardsContainerRef = useRef(null);
     const awardsRef = useRef(null);
@@ -420,6 +420,12 @@ export default function PlayerStats({ }) {
             Object.values(game).flat()
         );
     }, [pitcherYearDetails]);
+    const [seasonInningsPitched, setSeasonInningsPitched] = useState([]);
+    const maxInningsValue = Math.max(...seasonInningsPitched.map(x => x.inningsPitched), 5);
+    const seasonsPitchedYAxisTicks = Array.from(
+        { length: Math.ceil(maxInningsValue) + 1 },
+        (_, i) => i * 1
+    );
 
     const [selectedPitcherGamePitches, setSelectedPitcherGamePitches] = useState(null);
     const [selectedPitcherGamePitchesVelocity, setSelectedPitcherGamePitchesVelocity] = useState(null);
@@ -476,6 +482,44 @@ export default function PlayerStats({ }) {
         setGroupTeamsChecked(event.target.checked);
     }
 
+    useEffect(() => {
+        async function loadInningsPitched() {
+            const gamePromises = pitcherYearDetails.gameLog.map(async (gameInfo) => {
+                const gameData = await fetchGame(gameInfo.gamePk);
+                return gameData;
+            })
+            const allGames = await Promise.all(gamePromises);
+
+            const masterOutsByInning = {};
+
+            const gamesInningsPitched = allGames.map(game => {
+                const pitcherOuts = game.liveData.plays.allPlays.filter(play => play.result.isOut && play.matchup.pitcher.id === playerInfo.id);
+                pitcherOuts.forEach((play) => {
+                    const inningNum = play.about.inning;
+
+                    if (!masterOutsByInning[inningNum]) {
+                        masterOutsByInning[inningNum] = 0;
+                    }
+
+                    masterOutsByInning[inningNum] += 1;
+                });
+            });
+            setSeasonInningsPitched(Object.entries(masterOutsByInning).map(inning => {
+                return {
+                    inningNum: inning[0],
+                    inningsPitched: Number(inning[1] / 3).toFixed(2)
+                }
+            }));
+        }
+
+        if (pitcherYearDetails.gameLog) {
+            loadInningsPitched();
+        } else {
+            setSeasonInningsPitched([]);
+        }
+
+    }, [pitcherYearDetails.gameLog]);
+
     const handlePitcherRowSelect = (e, dt, type, indexes) => {
 
         const getPitcherYearDetails = async () => {
@@ -495,32 +539,6 @@ export default function PlayerStats({ }) {
                 const pitchLog = await transformPitcherPitchLog(rawPitcherGameLog, selectedPlayer);
 
                 const gameLog = await transformPitcherGameLog(rawPitcherGameLog);
-                // const pitchLog = [
-                //     {
-                //         "pitchType": "Fastball",
-                //         "velocity": 96.4,
-                //         "gamePk": 745231,
-                //         "playId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-                //     },
-                //     {
-                //         "pitchType": "Fastball",
-                //         "velocity": 84.2,
-                //         "gamePk": 745231,
-                //         "playId": "b2c3d4e5-f67a-8b9c-0d1e-2f3a4b5c6d7e"
-                //     },
-                //     {
-                //         "pitchType": "Curveball",
-                //         "velocity": 97.1,
-                //         "gamePk": 745231,
-                //         "playId": "c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f"
-                //     },
-                //     {
-                //         "pitchType": "Cutter",
-                //         "velocity": 76.8,
-                //         "gamePk": 745288,
-                //         "playId": "d4e5f67a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"
-                //     }
-                // ];
 
                 setPitcherYearDetails({
                     isLoading: false,
@@ -539,14 +557,7 @@ export default function PlayerStats({ }) {
         }
 
         getPitcherYearDetails();
-
-        // https://statsapi.mlb.com/api/v1/people/${playerID}?&hydrate=stats(group=[pitching],type=[pitchArsenal,gameLog,metricAverage],metrics=[releaseSpeed],limit=10000,season=${year})
     };
-
-    // console.log('pitcherYearDetails');
-    // console.log(pitcherYearDetails);
-
-    // console.log(PITCH_COLORS);
 
     const handlePitcherRowDeselect = (e, dt, type, indexes) => {
         setPitcherYearDetails({
@@ -577,24 +588,6 @@ export default function PlayerStats({ }) {
         setSelectedPitcherGamePitches(null);
         setSelectedPitcherGamePitchesVelocity(null);
     };
-
-    // const data01 = [
-    //     { x: 100, y: 200, z: 200 },
-    //     { x: 120, y: 100, z: 260 },
-    //     { x: 170, y: 300, z: 400 },
-    //     { x: 140, y: 250, z: 280 },
-    //     { x: 150, y: 400, z: 500 },
-    //     { x: 110, y: 280, z: 200 },
-    // ];
-
-    // const data02 = [
-    //     { x: 200, y: 260, z: 240 },
-    //     { x: 240, y: 290, z: 220 },
-    //     { x: 190, y: 290, z: 250 },
-    //     { x: 198, y: 250, z: 210 },
-    //     { x: 180, y: 280, z: 260 },
-    //     { x: 210, y: 220, z: 230 },
-    // ];
 
 
     // function pitchColors(pitchType) {
@@ -3313,6 +3306,36 @@ export default function PlayerStats({ }) {
                                 </Scatter>
                             </ScatterChart>
                         </Box>}
+                    {seasonInningsPitched.length > 0 &&
+                        <Box>
+                            <Typography variant='h5'>Innings Pitched</Typography>
+                            <BarChart
+                                responsive
+                                style={{ width: '600px', height: '600px' }}
+                                data={seasonInningsPitched}
+                                margin={{ top: 20, right: 0, left: 20, bottom: 45 }}
+                            >
+                                <CartesianGrid stroke='#ffffff' />
+                                <XAxis dataKey='inningNum' stroke='#ffffff' fontSize={20} label={{
+                                    value: 'Inning Number',
+                                    position: 'insideBottom',
+                                    offset: -20,
+                                    fill: '#ffffff',
+                                    fontSize: 20
+                                }} />
+                                <YAxis stroke='#ffffff' fontSize={20} ticks={seasonsPitchedYAxisTicks} label={{
+                                    value: 'Innings',
+                                    angle: -90,
+                                    position: 'insideLeft',
+                                    offset: 0,
+                                    fill: '#ffffff',
+                                    fontSize: 20
+                                }} />
+                                <Bar dataKey='inningsPitched' radius={[10, 10, 0, 0]} fill={theme.palette.custom.highlightGreen}>
+                                </Bar>
+                            </BarChart>
+                        </Box>
+                    }
                     {pitcherYearDetails.gameLog && <Box sx={{
                         width: 1200,
                         '& .dataTable tbody tr:hover': {
