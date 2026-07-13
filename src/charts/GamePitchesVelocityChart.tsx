@@ -1,0 +1,69 @@
+import { ResponsiveContainer, ScatterChart, Scatter, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { handleScatterClick } from './chartUtils';
+import { Consts } from '../consts/consts';
+import PitchTooltip from './PitchTooltip';
+
+
+export default function GamePitchesVelocityChart({ selectedPitcherGamePitchesVelocity }) {
+
+    return <>
+        <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                <XAxis
+                    type="number"
+                    dataKey="pitchTime"
+                    stroke="#ffffff"
+                    domain={[
+                        (dataMin) => dataMin - (5 * 60 * 1000),
+                        (dataMax) => dataMax + (5 * 60 * 1000)
+                    ]}
+                    fontSize={12}
+                    tickLine={false}
+                    tickFormatter={(ms) => {
+                        return new Date(ms).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+                    }}
+                />
+                <YAxis
+                    type="number"
+                    dataKey="velocity"
+                    unit="MPH"
+                    stroke="#ffffff"
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                    // tick={false}
+                    fontSize={12}
+                    tickLine={false}
+                // show={false}
+                />
+                <Tooltip
+                    cursor={{ strokeDasharray: '5 5' }}
+                    shared={false}
+                    contentStyle={{ backgroundColor: '#222', borderColor: '#444', borderRadius: '4px' }}
+                    itemStyle={{ color: '#fff' }}
+                    content={<PitchTooltip />}
+                />
+                <Scatter
+                    data={selectedPitcherGamePitchesVelocity.map(pitch => ({
+                        ...pitch
+                    }))}
+                    isAnimationActive={false}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
+                    onClick={handleScatterClick}
+                >
+                    {selectedPitcherGamePitchesVelocity.map((entry, index) => (
+                        <Cell
+                            key={`pitch-${index}`}
+                            fill={Consts.PITCH_COLORS[entry.details?.type?.description] || '#555555'}
+                            opacity={0.5}
+                        />
+                    ))}
+                </Scatter>
+            </ScatterChart>
+        </ResponsiveContainer>
+    </>
+}
+

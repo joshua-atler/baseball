@@ -24,13 +24,13 @@ class Consts {
         });
 
         Object.keys(Consts.teamInfo).forEach((teamName) => {
-        const teamObj = Consts.teamInfo[teamName];
-        const matchedId = Consts.abbrsToID[teamObj.abbr];
+            const teamObj = Consts.teamInfo[teamName];
+            const matchedId = Consts.abbrsToID[teamObj.abbr];
 
-        if (matchedId) {
-            Consts.teamInfo[teamName].id = matchedId;
-        }
-    });
+            if (matchedId) {
+                Consts.teamInfo[teamName].id = matchedId;
+            }
+        });
     };
 
     static createTeam(abbr, nickname) {
@@ -297,6 +297,20 @@ class Consts {
         BY_LEAGUE: 'byLeague',
         BY_ORGANIZATION: 'byOrganization',
     });
+
+    static PITCH_COLORS = {
+        'Fastball': 'rgb(55, 160, 235)',
+        'Four-seam FB': 'rgb(55, 160, 235)',
+        'Four-Seam Fastball': 'rgb(55, 160, 235)',
+        'Cutter': 'rgb(255, 100, 130)',
+        'Splitter': 'rgb(75, 200, 200)',
+        'Sinker': 'rgb(255, 160, 60)',
+        'Sweeper': 'rgb(50, 100, 150)',
+        'Slider': 'rgb(100, 200, 50)',
+        'Curveball': 'rgb(255, 200, 85)',
+        'Knuckle Curve': 'rgb(85, 255, 200)',
+        'Changeup': 'rgb(100, 50, 255)',
+    }
 }
 
 export { Consts };
