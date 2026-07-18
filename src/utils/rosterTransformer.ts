@@ -33,5 +33,5 @@ export const transformRoster = (rawRoster) => {
         }
     });
 
-    return roster;
+    return Promise.all(roster);
 }

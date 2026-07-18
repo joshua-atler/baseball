@@ -1,31 +1,25 @@
-// @ts-nocheck
 
-import { useEffect, useState, useCallback } from 'react';
-import ReactDOM from 'react-dom/client';
 
-import { Box, Typography } from '@mui/material';
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
 
-import $ from 'jquery';
-import SlimSelect from 'slim-select';
+import { useEffect, useState } from 'react';
+
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-rowgroup';
 import 'datatables.net-select-dt';
 
-import { fetchRoster } from '../../services/rosterService.ts';
+import { Box, ToggleButtonGroup, ToggleButton, SelectChangeEvent } from '@mui/material';
 
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
+import { fetchAllPlayers } from '../../services/rosterService.ts';
+
 
 import { useBasedash } from '../../context/BasedashContext';
-
-import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
-import { TeamSelect } from '../../components/TeamSelect.tsx';
-import { transformRoster } from '../../utils/rosterTransformer.ts';
-
+import { transformPlayerData } from '../../utils/allPlayersTransformer.ts';
 
 DataTable.use(DT);
+
 
 
 export default function Rosters({ setTeamViewTab }) {
@@ -36,15 +30,21 @@ export default function Rosters({ setTeamViewTab }) {
         setSelectedTeam
     } = useBasedash();
 
-    const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
+    const [viewMode, setViewMode] = useState('All');
+    const [allPlayers, setAllPlayers] = useState(null);
 
-    const [roster, setRoster] = useState(null);
+
+    const handleViewModeChange = (event: SelectChangeEvent) => {
+        // setIsLoading(true);
+        setViewMode(event.target.value as string);
+    };
 
     const handleSelect = (e, dt, type, indexes) => {
         const rowData = dt.row(indexes).data();
 
         if (rowData && rowData.id) {
             setSelectedPlayer(rowData.id);
+            setSelectedTeam(rowData.team);
             setTeamViewTab('Player');
         }
     };
@@ -55,6 +55,7 @@ export default function Rosters({ setTeamViewTab }) {
 
     const columns = [
         { data: 'id', title: '', visible: false },
+        { data: 'team', title: '', visible: false },
         {
             data: 'name', title: 'Name', width: '20%',
             render: function (data, type, row) {
@@ -78,56 +79,39 @@ export default function Rosters({ setTeamViewTab }) {
         }
     ];
 
-
     useEffect(() => {
-
-        const getRoster = async () => {
-            if (!selectedTeam) {
-                setRoster(null);
-                return;
-            };
-
+        const getAllPlayers = async () => {
             try {
-                const rawRoster = await fetchRoster(Consts.teamInfo[selectedTeam].id);
-                const formattedRoster = await transformRoster(rawRoster);
-                setRoster(formattedRoster);
+                const rawAllPlayers = await fetchAllPlayers();
+                rawAllPlayers.roster = rawAllPlayers.people;
+                delete rawAllPlayers.people;
+                const formattedAllPlayers = await transformPlayerData(rawAllPlayers);
+                const sortedFormattedAllPlayers = [...formattedAllPlayers].sort((a, b) => a.type.sort - b.type.sort);
+                setAllPlayers(sortedFormattedAllPlayers.filter(player => (viewMode === 'All' || player.type.display === viewMode)));
             } catch (error) {
-                setRoster(null);
+                setAllPlayers(null);
                 console.error("Team stats fetch failed: ", error);
             }
         };
 
-        getRoster();
-    }, [selectedTeam]);
-
-    const handleTeamChange = useCallback((val) => {
-        setSelectedTeam(val[0]);
-    }, []);
+        getAllPlayers();
+    }, [viewMode]);
 
     return (
         <>
-            <Box sx={{ width: '100%', mb: 5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 2 }}>
-                    {selectedTeamLogo &&
-                        <img src={selectedTeamLogo} style={{ width: 80, height: 80 }} ></img>
-                    }
-                    <Typography variant='h6'>
-                        {selectedTeam}
-                    </Typography>
-                    <Box sx={{ ml: 'auto', width: '600px' }}>
-                        <TeamSelect
-                            currentValue={selectedTeam}
-                            onTeamChange={handleTeamChange}
-                            multiple={false} />
-                    </Box>
-                </Box>
-                <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
-                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
-            </Box>
-
-            {roster &&
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 2 }}>
+                <ToggleButtonGroup
+                    color="primary"
+                    value={viewMode}
+                    exclusive
+                    onChange={handleViewModeChange}
+                >
+                    <ToggleButton value="All">All</ToggleButton>
+                    <ToggleButton value="Pitcher">Pitchers</ToggleButton>
+                    <ToggleButton value="Hitter">Hitters</ToggleButton>
+                </ToggleButtonGroup>
                 <DataTable
-                    data={roster}
+                    data={allPlayers}
                     columns={columns}
                     options={{
                         select: {
@@ -142,13 +126,13 @@ export default function Rosters({ setTeamViewTab }) {
                         rowGroup: {
                             dataSrc: 'type.display',
                         },
-                        order: [[9, 'asc']],
-                        orderFixed: [[9, 'asc']],
+                        order: []
                     }}
                     onSelect={handleSelect}
                     onDeselect={handleDeselect}
                 />
-            }
+            </Box>
         </>
     )
+
 }

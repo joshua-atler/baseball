@@ -5,3 +5,6 @@ export const fetchRoster = (teamID: number) =>
 
 export const fetchPlayer = (playerID: number) =>
     apiClient(false, `/people/${playerID}`)
+
+export const fetchAllPlayers = () =>
+    apiClient(false, '/sports/1/players')

@@ -24,13 +24,13 @@ class Consts {
         });
 
         Object.keys(Consts.teamInfo).forEach((teamName) => {
-        const teamObj = Consts.teamInfo[teamName];
-        const matchedId = Consts.abbrsToID[teamObj.abbr];
+            const teamObj = Consts.teamInfo[teamName];
+            const matchedId = Consts.abbrsToID[teamObj.abbr];
 
-        if (matchedId) {
-            Consts.teamInfo[teamName].id = matchedId;
-        }
-    });
+            if (matchedId) {
+                Consts.teamInfo[teamName].id = matchedId;
+            }
+        });
     };
 
     static createTeam(abbr, nickname) {
