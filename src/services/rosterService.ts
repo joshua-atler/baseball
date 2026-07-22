@@ -8,3 +8,7 @@ export const fetchPlayer = (playerID: number) =>
 
 export const fetchAllPlayers = () =>
     apiClient(false, '/sports/1/players')
+
+export const fetchPlayerStats = (group: string, season: number) =>
+    apiClient(false, `/stats?stats=season&group=${group}&season=${season}&limit=3000&sportId=1&playerPool=all`)
+
