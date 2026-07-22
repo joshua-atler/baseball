@@ -12,11 +12,10 @@ import 'datatables.net-select-dt';
 
 import { Box, ToggleButtonGroup, ToggleButton, SelectChangeEvent } from '@mui/material';
 
-import { fetchAllPlayers, fetchPlayerStats } from '../../services/rosterService.ts';
+import { fetchPlayerStats } from '../../services/rosterService.ts';
 import { Consts } from '../../consts/consts.ts';
 
 import { useBasedash } from '../../context/BasedashContext';
-import { transformPlayerData } from '../../utils/allPlayersTransformer.ts';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 
 DataTable.use(DT);
@@ -37,16 +36,15 @@ export default function Rosters({ setTeamViewTab }) {
 
 
     const handleViewModeChange = (event: SelectChangeEvent) => {
-        // setIsLoading(true);
         setViewMode(event.target.value as string);
     };
 
     const handleSelect = (e, dt, type, indexes) => {
         const rowData = dt.row(indexes).data();
 
-        if (rowData && rowData.id) {
-            setSelectedPlayer(rowData.id);
-            setSelectedTeam(rowData.team);
+        if (rowData && rowData.player.id) {
+            setSelectedPlayer(rowData.player.id);
+            setSelectedTeam(rowData.team.name);
             setTeamViewTab('Player');
         }
     };
@@ -74,9 +72,9 @@ export default function Rosters({ setTeamViewTab }) {
         { data: 'stat.wins', title: 'W', visible: true },
         { data: 'stat.losses', title: 'L', visible: true },
         { data: 'stat.strikeOuts', title: 'SO', visible: true },
-        { data: 'stat.inningsPitched', title: 'IP', visible: true},
-        { data: 'stat.hits', title: 'H', visible: true},
-        { data: 'stat.runs', title: 'R', visible: true},
+        { data: 'stat.inningsPitched', title: 'IP', visible: true },
+        { data: 'stat.hits', title: 'H', visible: true },
+        { data: 'stat.runs', title: 'R', visible: true },
         { data: 'stat.era', title: 'ERA', className: 'dt-right', visible: true },
         { data: 'stat.whip', title: 'WHIP', className: 'dt-right', visible: true }
     ] : [
@@ -124,23 +122,33 @@ export default function Rosters({ setTeamViewTab }) {
                 {
                     isLoading ?
                         <LoadingCircle size={60} /> : <>
-                            <DataTable
-                                data={allPlayers}
-                                columns={columns}
-                                options={{
-                                    select: {
-                                        info: false
-                                    },
-                                    searching: true,
-                                    paging: false,
-                                    info: false,
-                                    ordering: true,
-                                    dom: "ft",
-                                    destroy: true
-                                }}
-                                onSelect={handleSelect}
-                                onDeselect={handleDeselect}
-                            />
+                            <Box sx={{
+                                '& .dataTable tbody tr:hover': {
+                                    backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
+                                },
+                                '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
+                                    backgroundColor: (theme) => `${theme.palette.custom.darkGray} !important`,
+                                    boxShadow: 'none !important'
+                                },
+                            }}>
+                                <DataTable
+                                    data={allPlayers}
+                                    columns={columns}
+                                    options={{
+                                        select: {
+                                            info: false
+                                        },
+                                        searching: true,
+                                        paging: false,
+                                        info: false,
+                                        ordering: true,
+                                        dom: "ft",
+                                        destroy: true
+                                    }}
+                                    onSelect={handleSelect}
+                                    onDeselect={handleDeselect}
+                                />
+                            </Box>
                         </>
                 }
             </Box>
