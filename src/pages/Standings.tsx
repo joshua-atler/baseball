@@ -48,6 +48,7 @@ import { transformStandings, transformLineChartStandings } from '../utils/standi
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { Visibility } from '@mui/icons-material';
 import { formatter } from '../utils/dateFormatters.ts';
+import { useStandingsColumns } from '../columns/useStandingsColumns.tsx';
 
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
@@ -108,66 +109,13 @@ function StandingsTable({ tableData, standingsMode, groupingsMode }) {
         .at(-1)?.i
         : undefined;
 
-    const columns = [
-        {
-            data: 'team', title: `${tableData?.division}`, width: '20%',
-            render: function (data) {
-                return `<img src=${data.teamLogo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`
-            }
-        },
-        { data: 'wins', title: 'W' },
-        { data: 'losses', title: 'L' },
-        ...(standingsMode === 'regular season' && groupingsMode === 'division' ? [{ data: 'gamesBack', title: 'GB' }] : []),
-        ...(standingsMode === 'regular season' && groupingsMode === 'league' ? [{ data: 'leagueGamesBack', title: 'GB' }] : []),
-        ...(standingsMode === 'regular season' && groupingsMode === 'MLB' ? [{ data: 'sportGamesBack', title: 'GB' }] : []),
-        ...(standingsMode === 'wild card' ? [{
-            data: 'wildCardGamesBack',
-            title: 'GB',
-            render: (data) => {
-                return `<div style="text-align: right;">${data ?? ''}</div>`;
-            }
-        }] : []),
-        ...(standingsMode === 'spring training' ? [{ data: 'springLeagueGamesBack', title: 'GB' }] : []),
-
-        {
-            data: 'records', title: 'Home',
-            render: function (data) {
-                const home = data?.splitRecords?.find(record => record.type === 'home');
-                const homeRecord = `${home?.wins}-${home?.losses}`;
-                return homeRecord;
-            }
-        },
-        {
-            data: 'records', title: 'Away',
-            render: function (data) {
-                const away = data?.splitRecords?.find(record => record.type === 'away');
-                const awayRecord = `${away?.wins}-${away?.losses}`;
-                return awayRecord;
-            }
-        },
-        { data: 'runsScored', title: 'RS' },
-        { data: 'runsAllowed', title: 'RA' },
-        {
-            data: 'streak.streakCode', title: 'Streak', render: function (data) {
-                const streakCode = data ?? '-';
-                return streakCode;
-            }
-        },
-        {
-            data: 'records', title: 'L10',
-            render: function (data) {
-                const lastTen = data?.splitRecords?.find(record => record.type === 'lastTen');
-                const lastTenRecord = `${lastTen?.wins}-${lastTen?.losses}`;
-                return lastTenRecord;
-            }
-        },
-    ];
+    const { standingsColumns } = useStandingsColumns(tableData, standingsMode, groupingsMode);
 
     return (
 
         <DataTable
             data={tableData?.teamRecords}
-            columns={columns}
+            columns={standingsColumns}
             options={{
                 searching: false,
                 paging: false,
