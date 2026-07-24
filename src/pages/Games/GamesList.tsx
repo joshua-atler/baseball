@@ -22,6 +22,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchSchedule } from '../../services/gamesService.ts';
 import { transformGames } from '../../utils/gameTransformers.ts';
 import { formatter, shortYearFormatter } from '../../utils/dateFormatters.ts';
+import { useGameColumns } from '../../columns/useGameColumns.tsx';
 
 DataTable.use(DT);
 
@@ -44,18 +45,7 @@ export default function GamesList({ }) {
 
     const [tableData, setTableData] = useState([]);
 
-    const columns = [
-        { data: 'gamePk', title: '', visible: false },
-        { data: 'gameMetadata', title: '', visible: false },
-        { data: 'date', title: 'Date' },
-        { data: 'time', title: 'Time' },
-        { data: 'away', title: 'Away' },
-        { data: 'awayScore', title: '' },
-        { data: 'home', title: 'Home' },
-        { data: 'homeScore', title: '' },
-        { data: 'inning', title: 'Inning' },
-        { data: 'status', title: 'Status' },
-    ];
+    const { gamesColumns } = useGameColumns(); 
 
     const { timeZone } = useBasedash();
 
@@ -201,7 +191,7 @@ export default function GamesList({ }) {
                         <DataTable
                             hidden={true}
                             data={tableData}
-                            columns={columns}
+                            columns={gamesColumns}
                             options={{
                                 paging: true,
                                 searching: false,
