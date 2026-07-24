@@ -23,6 +23,7 @@ import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 import { transformRoster } from '../../utils/rosterTransformer.ts';
+import { useRosterColumns } from '../../columns/useRosterColumns.tsx';
 
 
 DataTable.use(DT);
@@ -53,31 +54,7 @@ export default function Rosters({ setTeamViewTab }) {
         setSelectedPlayer(null);
     };
 
-    const columns = [
-        { data: 'id', title: '', visible: false },
-        {
-            data: 'name', title: 'Name', width: '20%',
-            render: function (data, type, row) {
-                return `<img class="roster-player-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.id}/headshot/silo/current"> ${data}`;
-            }
-        },
-        { data: 'position', title: 'Position', width: '10%' },
-        { data: 'jerseyNumber', title: '#', className: 'dt-right' },
-        { data: 'batThrow', title: 'Bat/Throw', width: '10%', className: 'dt-center' },
-        { data: 'weight', title: 'Weight', className: 'dt-right' },
-        { data: 'height', title: 'Height', className: 'dt-right' },
-        { data: 'age', title: 'Age', className: 'dt-right' },
-        { data: 'mlbDebut', title: 'MLB Debut', width: '15%', className: 'dt-center', defaultContent: 'N/A' },
-        {
-            data: 'type', title: 'Type', visible: false,
-            render: {
-                _: 'display',
-                sort: 'sort',
-                type: 'display'
-            }
-        }
-    ];
-
+    const { rosterColumns } = useRosterColumns();
 
     useEffect(() => {
 
@@ -128,7 +105,7 @@ export default function Rosters({ setTeamViewTab }) {
             {roster &&
                 <DataTable
                     data={roster}
-                    columns={columns}
+                    columns={rosterColumns}
                     options={{
                         select: {
                             info: false
