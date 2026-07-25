@@ -132,13 +132,13 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         currGame.date = dateString;
         currGame.time = timeString;
         if (awayTeam in Consts.teamInfo) {
-            currGame.away = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[awayTeam].logo}"><span>${awayTeam}</span>`;
+            currGame.away = `<img width="30" height="30" style="vertical-align: middle; margin-right: 5px;" src="${Consts.teamInfo[awayTeam].logo}"><span>${awayTeam}</span>`;
         } else {
             currGame.away = awayTeam;
         }
         currGame.awayScore = awayScore;
         if (homeTeam in Consts.teamInfo) {
-            currGame.home = `<img width="30" height="30" class="logo" src="${Consts.teamInfo[homeTeam].logo}"><span>${homeTeam}</span>`;
+            currGame.home = `<img width="30" height="30" style="vertical-align: middle; margin-right: 5px;" src="${Consts.teamInfo[homeTeam].logo}"><span>${homeTeam}</span>`;
         } else {
             currGame.home = homeTeam;
         }

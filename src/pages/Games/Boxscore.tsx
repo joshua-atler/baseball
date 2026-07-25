@@ -17,6 +17,7 @@ import { fetchPlayer } from '../../services/playerService.ts';
 import { fetchStandings } from '../../services/standingsService.ts';
 import { transformStandingsForBoxscore } from '../../utils/standingsTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
+import { TeamLogo } from '../../components/TeamLogo.tsx';
 
 const cleanBroadcastName = (name) => {
     return name.split(/\s+presented\s+by\s+/i)[0].trim();
@@ -26,8 +27,10 @@ function LinescoreRow({ currGame, team, theme }) {
     const currentInning = currGame?.liveData?.linescore?.currentInning;
     const currentTeam = currGame?.liveData?.linescore?.isTopInning ? 'away' : 'home';
 
+    console.log(currGame?.gameData?.teams?.[team]?.abbreviation);
+
     return <tr>
-        <td>{currGame && <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.[team]?.abbreviation}.svg`} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? team.charAt(0).toUpperCase() + team.slice(1)}</td>
+        <td>{currGame && <TeamLogo teamAbbr={currGame?.gameData?.teams?.[team]?.abbreviation} size={30} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? team.charAt(0).toUpperCase() + team.slice(1)}</td>
 
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
             const highlight = currentInning === inning.num && currentTeam === team && currGame?.gameData?.status?.detailedState !== 'Final';
@@ -379,7 +382,7 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                                         }
                                     }}>{currGame ?
                                         <>
-                                            <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.away?.abbreviation}.svg`} />
+                                            <TeamLogo teamAbbr={currGame?.gameData?.teams?.away?.abbreviation} size={30} />
                                             {currGame?.gameData?.teams?.away?.teamName}
                                             {awayRecord && ` (${awayRecord})`}
                                         </>
@@ -398,7 +401,7 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                                     }}>
                                     {currGame ?
                                         <>
-                                            <img width="30" height="30" className="logo" src={`/teamLogos/${currGame?.gameData?.teams?.home?.abbreviation}.svg`} />
+                                            <TeamLogo teamAbbr={currGame?.gameData?.teams?.home?.abbreviation} size={30} />
                                             {currGame?.gameData?.teams?.home?.teamName}
                                             {homeRecord && ` (${homeRecord})`}
                                         </>

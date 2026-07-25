@@ -24,6 +24,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGameStats } from '../../utils/gameTransformers.ts';
+import { TeamLogo } from '../../components/TeamLogo.tsx';
 
 type StatsMode = "batting" | "pitching" | "fielding";
 interface StatsRow {
@@ -151,13 +152,13 @@ export default function GameStats() {
                                     <TableCell sx={{ width: '33%' }}><Typography variant="h5" component="span">Stat</Typography></TableCell>
                                     <TableCell sx={{ width: '33%' }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <img width="30" height="30" className="logo" src={gameStats.away.team.logo} />
+                                            <TeamLogo teamAbbr={gameStats.away.team.logo} size={30} />
                                             <Typography variant="h5" component="span">{gameStats.away.team.abbr}</Typography>
                                         </Box>
                                     </TableCell>
                                     <TableCell sx={{ width: '33%', verticalAlign: 'middle' }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <img width="30" height="30" className="logo" src={gameStats.home.team.logo} />
+                                            <TeamLogo teamAbbr={gameStats.home.team.logo} size={30} />
                                             <Typography variant="h5" component="span">{gameStats.home.team.abbr}</Typography>
                                         </Box>
                                     </TableCell>

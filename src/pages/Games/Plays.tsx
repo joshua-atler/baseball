@@ -15,6 +15,7 @@ import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGamePlays } from '../../utils/gameTransformers.ts';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { TeamLogo } from '../../components/TeamLogo.tsx';
 
 const strikeZoneWidth = 180;
 const strikeZoneHeight = 240;
@@ -44,7 +45,7 @@ function Inning({ inning, theme }) {
                     },
                 }}
             >
-                <img width="50" height="50" className="logo" src={inning.logo} />
+                <TeamLogo teamAbbr={inning.logo} size={30} />
                 <Typography variant="h5">{inning.inningNum}
                     {
                         inning.half === 'Top' ? <>
