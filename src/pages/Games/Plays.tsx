@@ -45,7 +45,7 @@ function Inning({ inning, theme }) {
                     },
                 }}
             >
-                <TeamLogo teamAbbr={inning.logo} size={30} />
+                <TeamLogo teamAbbr={inning.teamAbbr} size={50} />
                 <Typography variant="h5">{inning.inningNum}
                     {
                         inning.half === 'Top' ? <>

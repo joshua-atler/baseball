@@ -286,7 +286,7 @@ export const transformGamePlays = (playsContent) => {
             formattedPlays.push({
                 inningNum: i + 1,
                 half: 'Top',
-                logo: `/teamLogos/${awayAbbr}.svg`,
+                teamAbbr: awayAbbr,
                 plays: topPlays
             });
         }
@@ -295,7 +295,7 @@ export const transformGamePlays = (playsContent) => {
             formattedPlays.push({
                 inningNum: i + 1,
                 half: 'Bottom',
-                logo: `/teamLogos/${homeAbbr}.svg`,
+                teamAbbr: homeAbbr,
                 plays: bottomPlays
             });
         }
