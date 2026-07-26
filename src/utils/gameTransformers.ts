@@ -76,15 +76,15 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
                     baseData.push(['#888888', '#AAAAAA']);
                 }
             }
-            bases = `<svg class="svg" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base"><title>Bases.</title>
+            bases = `<svg style="vertical-align: middle; display: inline-block;" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base"><title>Bases.</title>
                 <rect fill="${baseData[0][0]}" stroke-width="1" stroke="${baseData[0][1]}" width="6" height="6" transform="translate(5, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
                 <rect fill="${baseData[1][0]}" stroke-width="1" stroke="${baseData[1][1]}" width="6" height="6" transform="translate(12, 0.5) rotate(-315)" rx="1px" ry="1px"></rect>
                 <rect fill="${baseData[2][0]}" stroke-width="1" stroke="${baseData[2][1]}" width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
                 </svg>`;
 
-            inningData = '<span class="inning-num">' + inningData + '</span>';
+            inningData = '<span style="width: 45px; display: inline-block;">' + inningData + '</span>';
             inningData = inningData + bases + '&nbsp;' + outs + '&nbsp;' + count;
-            inningData = '<span class="svg-span">' + inningData + '</span>';
+            inningData = '<span style="vertical-align: middle; display: inline-block;">' + inningData + '</span>';
         }
 
         let detailedState = gameResponse['gameData']['status']['detailedState'];

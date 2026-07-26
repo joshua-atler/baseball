@@ -45,7 +45,7 @@ export default function GamesList({ }) {
 
     const [tableData, setTableData] = useState([]);
 
-    const { gamesColumns } = useGameColumns(); 
+    const { gamesColumns } = useGameColumns();
 
     const { timeZone } = useBasedash();
 
@@ -124,23 +124,35 @@ export default function GamesList({ }) {
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 2 }} id="games-filters">
-                <DatePicker
-                    ref={datePickerRef}
-                    value={dates}
-                    format="MM/DD/YY"
-                    minDate="01/01/20"
-                    onChange={(e, newValue) => {
-                        setDates(newValue.validatedValue.map(v => new Date(v)));
-                        if (newValue.validatedValue.length === 2) {
-                            datePickerRef.current?.closeCalendar();
+                <Box
+                    sx={{
+                        '& .date-select-input': {
+                            height: '36px',
+                            width: '200px',
+                            textAlign: 'center',
+                            padding: '0px',
+                            marginRight: '20px'
                         }
                     }}
-                    className="bg-dark"
-                    inputClass="date-select-input"
-                    dateSeparator=" - "
-                    range
-                    showOtherDays
-                />
+                >
+                    <DatePicker
+                        ref={datePickerRef}
+                        value={dates}
+                        format="MM/DD/YY"
+                        minDate="01/01/20"
+                        onChange={(e, newValue) => {
+                            setDates(newValue.validatedValue.map(v => new Date(v)));
+                            if (newValue.validatedValue.length === 2) {
+                                datePickerRef.current?.closeCalendar();
+                            }
+                        }}
+                        className="bg-dark"
+                        inputClass="date-select-input"
+                        dateSeparator=" - "
+                        range
+                        showOtherDays
+                    />
+                </Box>
                 <ButtonGroup variant="contained">
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(-1)}>Yesterday</Button>
                     <Button disabled={isLoading !== null} onClick={() => handleDateButtonClick(0)}>Today</Button>
@@ -150,7 +162,7 @@ export default function GamesList({ }) {
                 {isSameDay && <Typography sx={{ userSelect: 'none' }}><a target="_blank" rel="noopener noreferrer" href={`https://www.mlb.com/stories/mlb-top-plays-${month}-${day}-${year}`}>
                     {'Top Plays'}<HiExternalLink style={{ verticalAlign: 'middle' }} />
                 </a></Typography>}
-            </Box>
+            </Box >
             <Box sx={{ display: 'flex', alignItems: 'stretch', mb: 2, gap: 0 }}>
                 <Box sx={{ mr: 3, width: 600 }}>
                     <TeamSelect

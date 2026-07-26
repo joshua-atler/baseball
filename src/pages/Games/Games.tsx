@@ -51,18 +51,49 @@ export const Games = () => {
 
     return (
         <>
-            <Grid container spacing={2} id="games-grid" sx={{ fontSize: 14}}>
+            <Grid container spacing={2} sx={{ fontSize: 14 }}>
                 <Grid>
-                    <GamesList/>
+                    <GamesList />
                 </Grid>
                 {/* {screenWidth > 2550 ? */}
                 {/* <> */}
                 <Grid>
-                    <Boxscore
-                        highlightedPlayer={undefined}
-                        // highlightedPlayer={highlightedPlayer}
-                        setSelectedPlayer={setSelectedPlayer}
-                    />
+                    <Box sx={{
+                        'table#linescore': {
+                            'th, td': {
+                                width: '20px',
+                                textAlign: 'center',
+                            },
+                            'th:first-of-type, td:first-of-type': {
+                                width: '25%',
+                                textAlign: 'left',
+                            }
+                        },
+                        'table#boxscore th, table#pitching th, table#pitching td, table#pitchers th': {
+                            border: '1px solid white',
+                            textAlign: 'center',
+                        },
+                        'table#boxscore': {
+                            tableLayout: 'fixed',
+                            'th': { boxSizing: 'border-box' },
+                            'td': { boxSizing: 'border-box', padding: '3px' },
+                            'tbody td, tfoot td': { textAlign: 'center' },
+                            'td:first-of-type': { textAlign: 'left' },
+                            'td:nth-of-type(3)': { borderRight: '1px solid white' },
+                        },
+                        'table#pitchers': {
+                            'th, td': { padding: '5px'},
+                            'tbody td, tfoot td': { textAlign: 'center' },
+                            'td:first-of-type': { textAlign: 'left' },
+                            'td:nth-of-type(2)': { borderRight: '1px solid white' },
+                        }
+                    }}>
+                        <Boxscore
+                            highlightedPlayer={undefined}
+                            // highlightedPlayer={highlightedPlayer}
+                            setSelectedPlayer={setSelectedPlayer}
+                        />
+                    </Box>
                 </Grid>
                 <Grid>
                     <Tabs value={getTabValue(tabValue)} onChange={(e, newValue) => {
@@ -110,7 +141,7 @@ export const Games = () => {
                             </Box>
                         </Grid> */}
                 {/* </>} */}
-            </Grid>
+            </Grid >
         </>
     )
 }

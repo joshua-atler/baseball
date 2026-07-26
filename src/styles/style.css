@@ -1,124 +1,7 @@
 
-tr.selected {
-    background-color: #444444 !important;
-}
-
-
-span.inning-num {
-    width: 45px;
-    display: inline-block;
-}
-
-span.svg-span,
-span.svg-span svg.svg {
-    vertical-align: middle;
-    display: inline-block;
-}
-
-table:not(#dt) {
-    width: 600px;
-    margin-bottom: 20px;
-    border: 1px solid white;
-    border-collapse: collapse;
-}
-
-table th,
-table td {
-    padding: 8px;
-}
-
-table#linescore th:nth-child(1),
-table#linescore td:nth-child(1) {
-    width: 25%;
-    text-align: left;
-}
-
-table#linescore th:nth-child(1),
-table#linescore th:nth-last-child(4),
-table#linescore td:nth-child(1),
-table#linescore td:nth-last-child(4) {
-    border-right: 1px solid white;
-}
-
-table#linescore th:not(:nth-child(1)),
-table#linescore td:not(:nth-child(1)) {
-    width: 20px;
-    text-align: center;
-}
-
-table#boxscore th,
-table#pitching th,
-table#pitching td,
-table#pitchers th,
 table.standings th,
 table.standings td {
     border: 1px solid white;
-    text-align: center;
-}
-
-table#boxscore td:nth-child(1),
-table#pitchers td:nth-child(1) {
-    text-align: left;
-}
-
-table#boxscore td:nth-child(3),
-table#pitchers td:nth-child(2) {
-    border-right: 1px solid white;
-}
-
-table#pitchers tbody td,
-table#pitchers tfoot td {
-    text-align: center;
-}
-
-table#pitching {
-    table-layout: fixed;
-}
-
-table#boxscore>thead>tr:nth-child(1)>th>span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    width: 40%;
-    background-color: #555555;
-    padding: 10px;
-    border-radius: 20px;
-    user-select: none;
-    transition: 0.5s;
-}
-
-/* table#boxscore>thead>tr:nth-child(1)>th>span:hover {
-    background-color: #1735da !important;
-} */
-
-/* table#boxscore>thead>tr:nth-child(1)>th>span:active {
-    background-color: #0416c0 !important;
-    transition: none;
-} */
-
-table#boxscore>thead>tr:nth-child(1)>th>span:nth-child(1) {
-    float: left;
-}
-
-table#boxscore>thead>tr:nth-child(1)>th>span:nth-child(2) {
-    float: right;
-}
-
-table#boxscore thead tr:nth-child(1) th {
-    text-align: left;
-}
-
-table#boxscore thead tr:nth-child(1) {
-    height: 50px;
-}
-
-table#boxscore thead tr:nth-child(2) td:not(:nth-child(1)) {
-    text-align: center;
-}
-
-table#boxscore tbody td,
-table#boxscore tfoot td {
     text-align: center;
 }
 
@@ -145,11 +28,6 @@ span.tooltip::after {
     visibility: hidden;
 }
 
-/* table#boxscore th:last-child span.tooltip::after,
-table#pitchers th:last-child span.tooltip::after {
-    left: -20px !important;
-} */
-
 span.tooltip::after,
 span.tooltip::after {
     width: 125px;
@@ -158,87 +36,6 @@ span.tooltip::after {
 span.tooltip:hover::after {
     opacity: 1;
     visibility: visible;
-}
-
-a {
-    color: rgb(158, 158, 255);
-}
-
-/* a:visited {
-    color: rgb(158, 158, 255);
-} */
-
-#map {
-    width: 800px;
-    height: 500px;
-}
-
-#map .leaflet-control-layers-toggle {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAYAAAAehFoBAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVOSURBVFhH7ZdtaFNXGMf/9+ZNq7XaWjtbYzqHw67Gl6nU2kFrcNa3IX7whUo3sBWsOCn6QT8UBaHoECYywTItG0PEflChttg5qiB01m0VrCJoQ9NYpQ5dZ9LX3Jvcu+ece5tUbRJNLGwjPzjJOc899+a5z3me/zlBggQJEiRI8L9GKCiond7d7TkCKHZBEJhN5VfoGmuaKTKBAJsIQRT5PVD1J7B7Wd/tltHUtMZXXLxQYXbZ4xEflpRMkJqaIFitoRteh/26oqiC0dg8xW4/8lF9vSTYbN/Wu92+L/QpcSJTI++DMP+N/LuoKBnnzm1HVlYqv/KssRGPN2yAgY+iQJEwZGcfWdzZedggy47zshzmDd+C0ApI2LNnDg4dKkBl5TKUlMxDfv409PX1UYQH0NU1jKGh51i5MgcmkwFJNhu8z59DamuLvoxsBfx+y/eSVEszj8bubRAJ5887sHnzChiNom7TePlyEBcvtqK8vIVGfpw+/Rl27fqcX/Pcv48Ou13LoyhQvrUuUZT8V58eEzL27ZuLLVsK3nCWMXVqEsrKHDh1Ko9GIioqfsX16/f4tZT585F28iR4YtOyR0JV+Cx6QhxoK+nH2rWfwGCIHKeNG5fQ5wRqRqxZcxVO5zNuz9y2DaZFi4IORSNmhw1ULarqp54RNtsMzRiB9PQUyuvpvC/LPlRVNcDjGYRlxgx8UF2tSVO0XCZidjgQUCgvrXj4sAxz587UreGxWIyYPXsS9RR6WRPq6p6gpqaZp0PGqlWYtHMnBYDcjuJ0jA6ryM2dgPXrc+D19qOtrYO/QCR6e/vhcnmpJ3LdZulx8GAbGup/h2A2I2vvXmYMr8k6MTos4MEDCZs2/Yxly37AhQt3okqT09lDUXVSj2n1sN4Uyu2ruNvu5gWYeuKEpuJGpt1jQ78Sr6z5cfduKRYssOnjsfF6B2meK7ji7AVfvBjApUv3kJc3C7t3r4afNPvxmTP4a/9+iMxpP6uRIK1Lgfy4HZ44UaAN40OUlubBbo/s9Fj4fH4MDvowbRrLb/LR68Ujcnjg7FmIrLK1/GFwh+OSNSadQ0MKjh//A52df+rWd4MV44izDOOUKciuqoK5sBBqyNkgcTlM5xL6FNDcXEpa/KlmfA+wbXvyunWhU8mo+hBFURuw6LMioEWiJlEL0J7PbJGQ0NCwGg6HHWZz+EKJBWt5OdKpCDmj5E4ccZ7JUmFhMlpatlJxfEkaO4sE/s0lCRHA1q2Z5Ox8ffx+MaemYk5lJdJqanikheRkHtJRKSHhwIECrFgxjyo+m05cDrJF0laZJCmHis6sj8eHDDqC8q3b6+WhfSWHJSkkI7L8iqSMgYCcnCy9P35MzMpC5rFjwdCJoY3FQmfZFjQ23sHNmw9QXf0L2cLVJLvJgrS0ZG04zgy5XHqPwmQ2f6NKEtvfWR4zR1jBsW8TbTiG17R7BJWia8atWxVISUnSbeODp70dzoULWbeNdHipmJZmoP1S1fWZpYmFGjsGhnNWo79fxbVr7bhx4z6Gh9l2Gz9DT5+i5/JlPLtyhf+FelJXB1dZGQ+faLV2sDlCbu53jp6e4Z88ngAlpKqMkjzOiKKYTAKtBH8xlcaClkpMAn30B3MLiosXMcNo2Aw+6y1Re1tbhY78fGF0IlJfEGdm3plsTdr88W9ON3evqOjH1O7u3tljHfqZY2xbz8gQFbdbUrq6QlLH5iuKDzt2ZKO29ivdGuSdHf779m24li8XxenauZkeLlA/sGC78kg4/HVGEgZzXovnvxczji6m6rLrw/8KR8PJVoIECRIkSDAWwD/Z9dSKFhasOAAAAABJRU5ErkJggg==');
-}
-
-table#records {
-    width: 962px;
-    border-collapse: collapse;
-}
-
-table#records th,
-table#records td {
-    border: 1px solid #000000;
-    padding: 0px;
-    margin: 0px;
-    text-align: center;
-    width: 30px;
-    height: 30px;
-    box-sizing: border-box;
-}
-
-table#records img.logo {
-    margin: 0px;
-}
-
-table#records th {
-    background-color: #555555;
-}
-
-table#records td {
-    background-color: #555555;
-}
-
-div.dt-paging button.dt-paging-button {
-    background-image: none !important;
-    background-color: #555555 !important;
-}
-
-div.dt-paging button.dt-paging-button:hover {
-    background-image: none !important;
-    background-color: #888888 !important;
-}
-
-div.dt-paging button.dt-paging-button:active {
-    background-image: none !important;
-    background-color: #333333 !important;
-}
-
-div.dt-paging button.dt-paging-button.disabled {
-    background-image: none !important;
-    background-color: #555555 !important;
-}
-
-table.dataTable {
-    border: 0px !important;
-}
-
-table#dt thead tr th {
-    text-align: center;
-}
-
-.date-select-input {
-    height: 36px;
-    width: 200px;
-    text-align: center;
-    padding: 0px;
-    margin-right: 20px;
 }
 
 
@@ -254,23 +51,6 @@ table#pitching-game-log th,
 table#hitting-stats th,
 table#hitting-game-log th {
     user-select: none;
-}
-
-table#boxscore {
-    table-layout: fixed;
-}
-
-table#boxscore th,
-table#boxscore td {
-    box-sizing: border-box;
-}
-
-table#boxscore thead tr:nth-child(2) th {
-    padding: 5px;
-}
-
-table#boxscore td {
-    padding: 3px;
 }
 
 table#boxscore tbody tr:nth-child(2n) {
@@ -317,19 +97,6 @@ table#boxscore colgroup col:nth-child(12) {
     max-width: 35px;
     word-break: break-all;
     white-space: pre-line;
-}
-
-table#pitchers th,
-table#pitchers td {
-    box-sizing: border-box;
-}
-
-table#pitchers th {
-    padding: 5px;
-}
-
-table#pitchers td {
-    padding: 3px;
 }
 
 table#pitchers tbody tr:nth-child(2n) {
@@ -404,57 +171,20 @@ table.pitches div.pitch-circle {
     text-align: center;
 }
 
-.table-highlight {
-    background-color: #555555;
-}
-
 
 table#boxscore tr.selected-batter {
     background-color: #374bfb !important;
 }
-
-/* table#roster-dt thead th:first-child {
-    position: absolute;
-    margin-left: 110px;
-} */
 
 table#roster-dt thead th:first-child span {
     /* position: absolute; */
     margin-left: 75px;
 }
 
-table#roster-dt td {
-    height: 85px;
-}
-
 img.roster-player-photo {
     vertical-align: middle;
     margin-right: 5px;
     height: 65px;
-}
-
-/* table#roster-dt td.dt-empty {
-    display: none;
-} */
-
-/* table#roster-dt tbody tr:nth-child(2n) {
-    background-color: #2c323a;
-} */
-
-table#roster-dt tbody tr.dtrg-group {
-    background-color: #2c323a;
-}
-
-table#roster-dt span.dt-column-order {
-    display: none;
-}
-
-table#roster-dt thead th {
-    cursor: auto;
-}
-
-table#roster-dt thead th {
-    outline: none !important;
 }
 
 #roster-teams-select-container {
@@ -492,65 +222,10 @@ table#roster-dt thead th {
     /* object-fit: contain !important; */
 }
 
-/* .ss-values span {
-    font-weight: bold;
-    line-height: 30px !important;
-} */
-
-/* .ss-option span {
-    font-size: 20px !important;
-    line-height: 30px !important;
-} */
-
-/* .ss-list span {
-    font-size: 20px !important;
-    line-height: 30px !important;
-} */
-
 div#roster-dt_wrapper div.dt-search {
     float: right;
     margin-right: 50px;
 }
-
-/* table#news {
-    margin: 0 auto;
-    width: 75ch !important;
-} */
-
-#win-prob-chart {
-    background-color: #2c323a;
-    border-radius: 20px;
-    margin: 0 auto;
-    width: 600px;
-}
-
-/* #news-content blockquote.twitter-tweet {
-    background: #1b1b1f;
-    border: 1px solid #e1e8ed;
-    border-radius: 5px;
-    padding: 15px;
-    max-width: 550px;
-    margin: auto;
-}*/
-
-/* #player-stats-photo {
-    margin-top: 10px;
-    margin-left: 75px;
-    vertical-align: middle;
-}
-
-#player-stats-photo img {
-    background-color: #2c323a;
-    width: 150px;
-    height: 150px;
-    border-radius: 150px;
-}
-
-#player-stats-label {
-    font-size: 24px;
-    line-height: 150px;
-    margin-left: 20px;
-} */
 
 .roster-team-color-banner,
 .player-team-color-banner,
@@ -559,41 +234,6 @@ div#roster-dt_wrapper div.dt-search {
     background-color: transparent;
     clear: left;
 }
-
-/* table#pitching-stats {
-    width: 100% !important;
-    table-layout: fixed;
-} */
-
-/* table#pitching-stats colgroup col:nth-child(1) {
-    width: 150px !important;
-    max-width: 150px !important;
-} */
-
-/* table#pitching-stats colgroup col {
-    width: 80px !important;
-    max-width: 80px !important;
-    min-width: 80px !important;
-} */
-
-/* table#pitching-stats th:nth-child(1),
-table#pitching-stats td:nth-child(1) {
-    width: 150px !important;
-    max-width: 150px !important;
-    text-align: left;
-} */
-
-/* table#pitching-stats th,
-table#pitching-stats td {
-    width: 80px !important;
-    max-width: 80px !important;
-    min-width: 80px !important;
-    text-align: left;
-} */
-
-/* table#pitching-stats colgroup col:nth-child(2) {
-    border-right: 5px solid #e1e8ed;
-} */
 
 table#hitting-stats {
     width: 100% !important;
@@ -680,33 +320,6 @@ table#hitting-stats colgroup col:nth-child(2) {
     height: 400px !important;
 }
 
-/* .strike-zone-scatter-plots {
-    display: flex;
-} */
-
-/* .strike-zone-scatter-plots canvas {
-    margin-right: 20px;
-    border: 1px solid white;
-} */
-
-/* .strike-zone-labels {
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-.strike-zone-labels span {
-    font-size: 18px;
-    width: 200px;
-    display: inline-block;
-    margin-right: 20px;
-    text-align: center;
-} */
-
-/* #strike-zone-scatter-plot canvas {
-    width: 200px !important;
-    height: 300px !important;
-} */
-
 /* hitting charts */
 #hits-pie-chart {
     width: 600px;
@@ -761,13 +374,6 @@ tr.stats-subrow-hidden {
     display: none;
 }
 
-/* #game-stats {
-    background-color: #2c323a;
-    width: 400px;
-    padding: 10px;
-    margin-bottom: 40px;
-} */
-
 table#playerStatsGameLog {
     width: 150px;
     padding: 5px;
@@ -786,33 +392,6 @@ table#playerStatsGameLog td:nth-child(2) {
     word-break: break-all;
     white-space: pre-line;
 }
-
-/* #game-stats {
-    margin-bottom: 20px;
-    display: flex;
-} */
-
-/* #game-stats button {
-    float: right;
-}
-
-#game-stats .margin {
-    margin-right: 20px;
-}
-
-#game-stats .small-margin {
-    margin-right: 5px;
-}
-
-#game-stats button {
-    width: 75px;
-    height: 34px;
-} */
-
-/* table.pitches {
-    width: 100% !important;
-    table-layout: fixed;
-} */
 
 table.pitches colgroup col:nth-child(1) {
     width: 30px !important;
@@ -892,12 +471,6 @@ table#pitching-stats-dt colgroup col:not(:nth-child(1)) {
     width: 200px !important;
     max-width: 200px !important;
 }
-
-/* table.pitches th:nth-child(1),
-table.pitches td:nth-child(1) {
-    width: 30px !important;
-    max-width: 30px !important;
-} */
 
 tr.dtrg-group.dtrg-start {
     background-color: #1a1a1a !important;

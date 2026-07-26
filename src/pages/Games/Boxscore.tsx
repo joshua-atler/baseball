@@ -27,10 +27,8 @@ function LinescoreRow({ currGame, team, theme }) {
     const currentInning = currGame?.liveData?.linescore?.currentInning;
     const currentTeam = currGame?.liveData?.linescore?.isTopInning ? 'away' : 'home';
 
-    console.log(currGame?.gameData?.teams?.[team]?.abbreviation);
-
     return <tr>
-        <td>{currGame && <TeamLogo teamAbbr={currGame?.gameData?.teams?.[team]?.abbreviation} size={30} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? team.charAt(0).toUpperCase() + team.slice(1)}</td>
+        <td style={{ borderRight: '1px solid white' }}>{currGame && <TeamLogo teamAbbr={currGame?.gameData?.teams?.[team]?.abbreviation} size={30} />}{currGame?.gameData?.teams?.[team]?.abbreviation ?? team.charAt(0).toUpperCase() + team.slice(1)}</td>
 
         {currGame?.liveData?.linescore?.innings?.map((inning, i) => {
             const highlight = currentInning === inning.num && currentTeam === team && currGame?.gameData?.status?.detailedState !== 'Final';
@@ -45,7 +43,7 @@ function LinescoreRow({ currGame, team, theme }) {
 
         {currGame &&
             <>
-                <td>{currGame?.liveData?.linescore?.teams?.[team]?.runs ?? '-'}</td>
+                <td style={{ borderLeft: '1px solid white' }}>{currGame?.liveData?.linescore?.teams?.[team]?.runs ?? '-'}</td>
                 <td>{currGame?.liveData?.linescore?.teams?.[team]?.hits ?? '-'}</td>
                 <td>{currGame?.liveData?.linescore?.teams?.[team]?.errors ?? '-'}</td>
             </>
@@ -299,12 +297,12 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
             <table id="linescore">
                 <thead>
                     <tr>
-                        <th>Team</th>
+                        <th style={{ borderRight: '1px solid white' }}>Team</th>
                         {Array.from({ length: numInnings }).map((_, i) => {
                             const inningNum = i + 1;
                             return <th key={inningNum}>{inningNum}</th>
                         })}
-                        <th>R</th>
+                        <th style={{ borderLeft: '1px solid white' }}>R</th>
                         <th>H</th>
                         <th>E</th>
                     </tr>
@@ -314,7 +312,7 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
                     <LinescoreRow currGame={currGame} team='home' theme={theme} />
                 </tbody>
             </table>
-            <table id="pitching">
+            <table id="pitching" style={{ tableLayout: 'fixed' }}>
                 <thead>
                     <tr>
                         <th>Win</th>

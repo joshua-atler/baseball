@@ -4,7 +4,7 @@ import * as React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { Box, CssBaseline } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, rgbToHex } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -32,7 +32,28 @@ export default function App() {
                         <BasedashProvider>
                             <Header />
                             <NavTabs />
-                            <Box sx={{ p: 4 }}>
+                            <Box
+                                sx={{
+                                    p: 4,
+                                    '& table th, & table td': {
+                                        padding: '8px'
+                                    },
+                                    '& table:not(.dataTable)': {
+                                        width: '600px',
+                                        marginBottom: '20px',
+                                        border: '1px solid white',
+                                        borderCollapse: 'collapse',
+                                    },
+                                    '& div.dt-paging button.dt-paging-button': {
+                                        backgroundImage: 'none !important',
+                                        backgroundColor: '#555555 !important',
+
+                                        '&:hover': { backgroundColor: '#888888 !important' },
+                                        '&:active': { backgroundColor: '#333333 !important' },
+                                        '&.disabled': { backgroundColor: '#555555 !important' }
+                                    }
+                                }}
+                            >
                                 <Routes>
                                     <Route path="/games" element={<Games />} />
                                     <Route path="/players" element={<Players />} />
