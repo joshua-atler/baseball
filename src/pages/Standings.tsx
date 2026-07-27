@@ -34,9 +34,6 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis, LabelList, Legend, Toolti
 // import { RechartsDevtools } from '@recharts/devtools';
 import { useTheme } from '@mui/material/styles';
 
-
-import '../styles/style.css';
-
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 

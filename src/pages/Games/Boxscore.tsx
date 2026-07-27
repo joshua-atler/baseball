@@ -10,7 +10,6 @@ import { useTheme } from '@mui/material/styles';
 
 
 import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';

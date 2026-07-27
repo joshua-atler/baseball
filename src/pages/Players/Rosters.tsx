@@ -19,7 +19,6 @@ import DT from 'datatables.net-dt';
 import { useBasedash } from '../../context/BasedashContext';
 
 import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 import { transformRoster } from '../../utils/rosterTransformer.ts';
 import { useRosterColumns } from '../../columns/useRosterColumns.tsx';

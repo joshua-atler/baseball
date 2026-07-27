@@ -55,45 +55,57 @@ export const Games = () => {
                 <Grid>
                     <GamesList />
                 </Grid>
-                {/* {screenWidth > 2550 ? */}
-                {/* <> */}
                 <Grid>
                     <Box sx={{
-                        'table#linescore': {
-                            'th, td': {
+                        '& table#linescore': {
+                            '& th, & td': {
                                 width: '20px',
                                 textAlign: 'center',
                             },
-                            'th:first-of-type, td:first-of-type': {
+                            '& th:first-of-type, & td:first-of-type': {
                                 width: '25%',
                                 textAlign: 'left',
                             }
                         },
-                        'table#boxscore': {
+                        '& table#boxscore': {
                             tableLayout: 'fixed',
-                            'th': { boxSizing: 'border-box' },
-                            'td': { boxSizing: 'border-box', padding: '3px' },
-                            'tbody td, tfoot td': { textAlign: 'center' },
-                            'td:first-of-type': { textAlign: 'left' },
-                            'td:nth-of-type(3)': { borderRight: '1px solid white' },
+                            '& th': { boxSizing: 'border-box' },
+                            '& td': { boxSizing: 'border-box', padding: '3px' },
+                            '& tbody td, & tfoot td': { textAlign: 'center' },
+                            '& tbody tr:nth-child(2n)': { backgroundColor: 'custom.dark' },
+                            '& td:first-of-type': { textAlign: 'left' },
+                            '& td:nth-of-type(3)': { borderRight: '1px solid white' },
+                            '& colgroup col': {
+                                wordBreak: 'break-all',
+                                whiteSpace: 'pre-line',
+                            },
+                            '& colgroup col:nth-of-type(1)': { width: '100px', maxWidth: '100px' },
+                            '& colgroup col:nth-of-type(2)': { width: '25px', maxWidth: '25px' },
+                            '& colgroup col:nth-of-type(3)': { width: '75px', maxWidth: '75px' },
+                            '& colgroup col:nth-of-type(n+4):nth-of-type(-n+10)': { width: '25px', maxWidth: '25px' },
+                            '& colgroup col:nth-of-type(n+11):nth-of-type(-n+12)': { width: '35px', maxWidth: '35px' },
                         },
-                        'table#pitchers': {
-                            'th, td': { padding: '5px'},
-                            'tbody td, tfoot td': { textAlign: 'center' },
-                            'td:first-of-type': { textAlign: 'left' },
-                            'td:nth-of-type(2)': { borderRight: '1px solid white' },
+                        '& table#pitchers': {
+                            '& th, & td': { padding: '5px' },
+                            '& tbody td, & tfoot td': { textAlign: 'center' },
+                            '& td:first-of-type': { textAlign: 'left' },
+                            '& td:nth-of-type(2)': { borderRight: '1px solid white' },
+                            '& tbody tr:nth-child(2n)': { backgroundColor: 'custom.dark' },
+                            '& colgroup col': {
+                                wordBreak: 'break-all',
+                                whiteSpace: 'pre-line',
+                            },
+                            '& colgroup col:nth-of-type(1)': { width: '175px', maxWidth: '175px' },
+                            '& colgroup col:nth-of-type(2)': { width: '25px', maxWidth: '25px' },
+                            '& colgroup col:nth-of-type(n+3):nth-of-type(-n+10)': { width: '30px', maxWidth: '30px' },
                         },
-                        'table#boxscore th, table#pitching th, table#pitching td, table#pitchers th': {
+                        '& table#boxscore th, & table#pitching th, & table#pitching td, & table#pitchers th': {
                             border: '1px solid white',
                             textAlign: 'center',
                         },
-                        'table#boxscore th, table#pitchers th': {
-                            userSelect: 'none'
-                        }
                     }}>
                         <Boxscore
                             highlightedPlayer={undefined}
-                            // highlightedPlayer={highlightedPlayer}
                             setSelectedPlayer={setSelectedPlayer}
                         />
                     </Box>

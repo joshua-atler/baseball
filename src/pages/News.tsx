@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 
 import { Consts } from '../consts/consts.ts';
-import '../styles/style.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
 import { useNews } from '../services/newsService.ts';
 import { string } from 'prop-types';

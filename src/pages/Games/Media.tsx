@@ -7,7 +7,6 @@ import ReactPlayer from 'react-player';
 import { Box, Typography } from '@mui/material';
 
 import { Consts } from './consts.ts';
-import '../../styles/style.css';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
 import { GameTabContent } from '../../components/GameTabContent.tsx';

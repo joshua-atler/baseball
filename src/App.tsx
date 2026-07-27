@@ -19,8 +19,6 @@ import Stats from './pages/Stats.tsx';
 import Standings from './pages/Standings.tsx';
 import Settings from './pages/Settings.tsx';
 
-import './styles/style.css';
-
 export default function App() {
     return (
         <>

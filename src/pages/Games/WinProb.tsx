@@ -10,7 +10,6 @@ import $ from 'jquery';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
 import { data } from 'react-router';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { useTheme } from '@mui/material/styles';

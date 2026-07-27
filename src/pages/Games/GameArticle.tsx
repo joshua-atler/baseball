@@ -10,7 +10,6 @@ import { HiExternalLink } from 'react-icons/hi';
 import $ from 'jquery';
 
 import { Consts } from './consts.ts';
-import '../../styles/style.css';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { fetchContent } from '../../services/gamesService.ts';

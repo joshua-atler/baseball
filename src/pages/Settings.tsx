@@ -19,7 +19,6 @@ import Grid from '@mui/material/Grid2';
 import $ from 'jquery';
 
 import { Consts } from '../consts/consts.ts';
-import '../styles/style.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
 
 

@@ -43,7 +43,6 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 import Chart from 'chart.js/auto';
 
 import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
 import '../../styles/dtStyle.css';
 // import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
