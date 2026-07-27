@@ -92,6 +92,10 @@ export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
                 },
                 '& .ss-arrow': {
                     transform: 'scale(1.4)'
+                },
+                '& .ss-values': {
+                    height: '42px',
+                    fontSize: '14px'
                 }
             }
         }}>

@@ -69,10 +69,6 @@ export const Games = () => {
                                 textAlign: 'left',
                             }
                         },
-                        'table#boxscore th, table#pitching th, table#pitching td, table#pitchers th': {
-                            border: '1px solid white',
-                            textAlign: 'center',
-                        },
                         'table#boxscore': {
                             tableLayout: 'fixed',
                             'th': { boxSizing: 'border-box' },
@@ -86,6 +82,13 @@ export const Games = () => {
                             'tbody td, tfoot td': { textAlign: 'center' },
                             'td:first-of-type': { textAlign: 'left' },
                             'td:nth-of-type(2)': { borderRight: '1px solid white' },
+                        },
+                        'table#boxscore th, table#pitching th, table#pitching td, table#pitchers th': {
+                            border: '1px solid white',
+                            textAlign: 'center',
+                        },
+                        'table#boxscore th, table#pitchers th': {
+                            userSelect: 'none'
                         }
                     }}>
                         <Boxscore

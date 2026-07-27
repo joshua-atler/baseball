@@ -78,6 +78,14 @@ export default function App() {
                                             opacity: 1,
                                             visibility: 'visible'
                                         }
+                                    },
+                                    '& tr.dtrg-group.dtrg-start': {
+                                        backgroundColor: '#1a1a1a !important',
+                                        color: '#fff !important',
+                                        fontWeight: 'bold',
+                                        letterSpacing: '0.5px',
+                                        textTransform: 'uppercase',
+                                        fontSize: '0.85rem',
                                     }
                                 }}
                             >
