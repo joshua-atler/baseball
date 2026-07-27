@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import { Consts } from '../consts/consts.ts';
 import { memo, useEffect, useRef } from 'react';
 import SlimSelect from 'slim-select';
+import '../styles/slimSelectStyle.css';
 
 
 export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
@@ -81,7 +82,19 @@ export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
     }, [currentValue]);
 
     return <>
-        <Box>
+        <Box sx={{
+            '& .ss-main': {
+                '& .ss-deselect': {
+                    width: '50px !important',
+                    borderRadius: '15px',
+                    '&:hover': { backgroundColor: '#aaaaaa' },
+                    '& svg': { width: '12px !important', height: '12px !important' }
+                },
+                '& .ss-arrow': {
+                    transform: 'scale(1.4)'
+                }
+            }
+        }}>
             <select ref={selectRef} multiple={multiple}></select>
         </Box>
     </>;

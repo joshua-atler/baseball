@@ -45,7 +45,7 @@ import Chart from 'chart.js/auto';
 import { Consts } from '../../consts/consts.ts';
 import '../../styles/style.css';
 import '../../styles/dtStyle.css';
-import '../../styles/slimSelectStyle.css';
+// import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
 import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
 import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats, transformPitcherGameLog } from '../../utils/playerTransformers.ts';

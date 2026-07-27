@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom/client';
 import { Box, Typography } from '@mui/material';
 
 import $ from 'jquery';
-import SlimSelect from 'slim-select';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-rowgroup';

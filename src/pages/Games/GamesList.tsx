@@ -13,7 +13,6 @@ import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import 'datatables.net-select-dt';
 import dayjs from 'dayjs';
-import SlimSelect from 'slim-select';
 
 import { TeamSelect } from '../../components/TeamSelect.tsx';
 

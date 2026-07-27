@@ -7,7 +7,7 @@ export const useRosterColumns = () => {
         {
             data: 'name', title: 'Name', width: '20%',
             render: function (data, type, row) {
-                return `<img class="roster-player-photo" src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.id}/headshot/silo/current"> ${data}`;
+                return `<img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.id}/headshot/silo/current" style="vertical-align: middle; margin-right: 5px; height: 65px;"> ${data}`;
             }
         },
         { data: 'position', title: 'Position', width: '10%' },

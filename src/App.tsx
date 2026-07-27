@@ -42,7 +42,7 @@ export default function App() {
                                         width: '600px',
                                         marginBottom: '20px',
                                         border: '1px solid white',
-                                        borderCollapse: 'collapse',
+                                        borderCollapse: 'collapse'
                                     },
                                     '& div.dt-paging button.dt-paging-button': {
                                         backgroundImage: 'none !important',
@@ -51,6 +51,33 @@ export default function App() {
                                         '&:hover': { backgroundColor: '#888888 !important' },
                                         '&:active': { backgroundColor: '#333333 !important' },
                                         '&.disabled': { backgroundColor: '#555555 !important' }
+                                    },
+                                    '& span.tooltip': {
+                                        borderBottom: '2px dotted white',
+                                        position: 'relative',
+                                        userSelect: 'none',
+
+                                        '&::after': {
+                                            content: 'attr(data-tooltip)',
+                                            position: 'absolute',
+                                            backgroundColor: 'black',
+                                            color: 'white',
+                                            padding: '5px',
+                                            borderRadius: '5px',
+                                            bottom: '200%',
+                                            left: '50%',
+                                            width: '125px',
+                                            textAlign: 'center',
+                                            transform: 'translateX(-50%)',
+                                            opacity: 0,
+                                            transition: 'opacity 0.3s',
+                                            visibility: 'hidden',
+                                        },
+
+                                        '&:hover::after': {
+                                            opacity: 1,
+                                            visibility: 'visible'
+                                        }
                                     }
                                 }}
                             >
@@ -67,7 +94,7 @@ export default function App() {
                         </BasedashProvider>
                     </LocalizationProvider>
                 </ThemeProvider>
-            </Router>
+            </Router >
         </>
     )
 }

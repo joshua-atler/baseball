@@ -49,7 +49,7 @@ function LinescoreRow({ currGame, team, theme }) {
             </>
         }
         {!currGame && Array.from({ length: 3 }).map((_, i) => {
-            return <td key={i}>-</td>
+            return <td key={i} style={i === 0 ? { borderLeft: '1px solid white' } : undefined}>-</td>
         })}
     </tr>
 }
