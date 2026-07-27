@@ -1,19 +1,18 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-
-import { Box, Typography, Tabs, Tab } from '@mui/material';
+import { Box, Tab, Tabs, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import GamesList from './GamesList';
-import Boxscore from './Boxscore';
-import Plays from './Plays';
-import GameArticle from './GameArticle';
-import Media from './Media';
-import GameStats from './GameStats';
-import WinProb from './WinProb';
-import { useBasedash } from '../../context/BasedashContext';
+import { useEffect, useState } from 'react';
+
 import { GameTabContent } from '../../components/GameTabContent';
+import { useBasedash } from '../../context/BasedashContext';
+import Boxscore from './Boxscore';
+import GameArticle from './GameArticle';
+import GamesList from './GamesList';
+import GameStats from './GameStats';
+import Media from './Media';
+import Plays from './Plays';
+import WinProb from './WinProb';
 
 
 const useScreenWidth = () => {

@@ -1,19 +1,14 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-
+import { Box, Link, Tooltip, Typography } from '@mui/material';
 import parse from 'html-react-parser';
-import { Box, Skeleton, Typography, Link, Tooltip } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
 
-import $ from 'jquery';
-
-import { Consts } from './consts.ts';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
-import { fetchContent } from '../../services/gamesService.ts';
 import { useBasedash } from '../../context/BasedashContext.tsx';
+import { fetchContent } from '../../services/gamesService.ts';
 import { transformGameArticle } from '../../utils/gameTransformers.ts';
 
 export default function GameArticle() {

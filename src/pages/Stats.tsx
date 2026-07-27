@@ -1,33 +1,27 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-dt';
+import 'datatables.net-select-dt';
+
 import {
-    Box,
-    Button,
-    Typography,
-    FormControl,
-    Select,
-    MenuItem,
-    ToggleButtonGroup,
-    ToggleButton
+  Box,
+  FormControl,
+  MenuItem,
+  Select,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import DatePicker, { DateObject } from 'react-multi-date-picker';
-
-import $ from 'jquery';
-import 'datatables.net-dt';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-select-dt';
-import dayjs from 'dayjs';
-
-import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
+import DataTable from 'datatables.net-react';
+import { useEffect, useState } from 'react';
 
-import { Consts } from '../consts/consts.ts';
+import { useStatsColumns } from '../columns/useStatsColumns.tsx';
+import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { fetchTeamStats } from '../services/statsService.ts';
 import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../utils/statsTransformers.ts';
-import { LoadingCircle } from '../components/LoadingCircle.tsx';
-import { useStatsColumns } from '../columns/useStatsColumns.tsx';
 
 
 DataTable.use(DT);

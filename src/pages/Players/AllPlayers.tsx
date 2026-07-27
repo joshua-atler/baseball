@@ -1,23 +1,19 @@
 
 
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-
-import { useEffect, useState } from 'react';
-
-import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-rowgroup';
 import 'datatables.net-select-dt';
 
-import { Box, ToggleButtonGroup, ToggleButton, SelectChangeEvent, Select, MenuItem } from '@mui/material';
+import { Box, MenuItem, Select, SelectChangeEvent, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import DT from 'datatables.net-dt';
+import DataTable from 'datatables.net-react';
+import { useEffect, useState } from 'react';
 
-import { fetchPlayerStats } from '../../services/rosterService.ts';
-import { Consts } from '../../consts/consts.ts';
-
-import { useBasedash } from '../../context/BasedashContext';
-import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 import { useAllPlayersColumns } from '../../columns/useAllPlayersColumns.tsx';
+import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { useBasedash } from '../../context/BasedashContext';
+import { fetchPlayerStats } from '../../services/rosterService.ts';
 
 DataTable.use(DT);
 

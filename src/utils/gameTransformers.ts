@@ -1,10 +1,10 @@
-import { TimeZone } from "../context/BasedashContext";
 import { Consts } from "../consts/consts";
+import { TimeZone } from "../context/BasedashContext";
 import { shortYearFormatter } from "./dateFormatters";
 
 
 export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string, timeZone: TimeZone, onProgress) => {
-    let gamesForDates = [];
+    const gamesForDates = [];
     for (let i = 0; i < gamesJson.dates.length; i++) {
         for (let j = 0; j < gamesJson.dates[i].games.length; j++) {
             if (isLiveGames && gamesJson.dates[i].games[j].status.abstractGameState != 'Live') {
@@ -24,7 +24,7 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         }
     }
 
-    let gamesList = [];
+    const gamesList = [];
     for (let i = 0; i < gamesForDates.length; i++) {
         if (gamesForDates[i]['status']['detailedState'] != 'Suspended') {
             gamesList.push(gamesForDates[i]['gamePk']);
@@ -40,27 +40,27 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         const res = await fetch(url);
         const gameResponse = await res.json();
 
-        let now = new Date();
-        let dateString = new Date(gameResponse['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
-        let time = new Date(gameResponse['gameData']['datetime']['dateTime']);
+        const now = new Date();
+        const dateString = new Date(gameResponse['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
+        const time = new Date(gameResponse['gameData']['datetime']['dateTime']);
 
         time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);
 
-        let timeString = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const timeString = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
         let awayScore = '-';
-        let awayTeam = gameResponse['gameData']['teams']['away']['name'];
+        const awayTeam = gameResponse['gameData']['teams']['away']['name'];
         let homeScore = '-';
-        let homeTeam = gameResponse['gameData']['teams']['home']['name'];
+        const homeTeam = gameResponse['gameData']['teams']['home']['name'];
         let inningData = '';
         let outs = '';
         let count = '';
         let status = gameResponse['gameData']['status']['abstractGameState'];
-        let started = time < now;
+        const started = time < now;
 
         let homeWin = false;
 
         if (gameResponse['liveData']['linescore']['currentInning'] !== undefined && status == 'Live') {
-            let inningState = gameResponse['liveData']['linescore']['inningState'].substring(0, 3);
+            const inningState = gameResponse['liveData']['linescore']['inningState'].substring(0, 3);
             inningData = inningState + ' ' + gameResponse['liveData']['linescore']['currentInning'].toString();
             outs = gameResponse['liveData']['linescore']['outs'];
             outs = '<span style="color: #EFB21F">&#11044;</span>'.repeat(outs) + '<span style="color: #888888">&#11044;</span>'.repeat(3 - outs);
@@ -68,8 +68,8 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
             const runners = gameResponse['liveData']['linescore']['offense'];
             let bases = ['third', 'second', 'first'];
-            let baseData = [];
-            for (let base of bases) {
+            const baseData = [];
+            for (const base of bases) {
                 if (base in runners) {
                     baseData.push(['#EFB21F', '#EFB21F']);
                 } else {
@@ -87,7 +87,7 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
             inningData = '<span style="vertical-align: middle; display: inline-block;">' + inningData + '</span>';
         }
 
-        let detailedState = gameResponse['gameData']['status']['detailedState'];
+        const detailedState = gameResponse['gameData']['status']['detailedState'];
         if (status != 'Preview' && started) {
             if (gameResponse['liveData']['linescore']['teams']['away']['runs'] !== undefined) {
                 awayScore = gameResponse['liveData']['linescore']['teams']['away']['runs'];

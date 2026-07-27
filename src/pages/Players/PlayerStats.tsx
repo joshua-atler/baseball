@@ -1,63 +1,50 @@
 // @ts-nocheck
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ReactDOM from 'react-dom/client';
-import { renderToString } from 'react-dom/server';
-import { HiCheck, HiX, HiExternalLink } from 'react-icons/hi';
-
-import {
-    Box,
-    Typography,
-    Chip,
-    Stack,
-    Card,
-    CardActions,
-    CardContent,
-    CardMedia,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-    Switch,
-    FormControlLabel,
-    Modal,
-    Button,
-    Table,
-    TableBody,
-    TableRow,
-    TableCell
-} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  FormControlLabel,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Typography
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
-import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
+import DataTable from 'datatables.net-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { HiExternalLink } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 DataTable.use(DT);
 
-import { useBasedash } from '../../context/BasedashContext';
-
-import $ from 'jquery';
-import 'datatables.net-dt';
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
-import Chart from 'chart.js/auto';
-
-import { Consts } from '../../consts/consts.ts';
+import 'datatables.net-dt';
 import '../../styles/dtStyle.css';
 // import '../../styles/slimSelectStyle.css';
 import '../../styles/cssToggleSwitchStyle.css';
-import { fetchPlayer, fetchAwards } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats, transformPitcherGameLog } from '../../utils/playerTransformers.ts';
-import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, Legend, CartesianGrid, XAxis, YAxis, ScatterChart, Scatter } from 'recharts';
-import { LoadingCircle } from '../../components/LoadingCircle.tsx';
-import { fetchGame } from '../../services/gamesService.ts';
-import PitchSpeedsChart from '../../charts/PitchSpeedsChart.tsx';
-import PitchArsenalChart from '../../charts/PitchArsenalChart.tsx';
+
 import AllSeasonPitchesChart from '../../charts/AllSeasonPitchesChart.tsx';
 import GamePitchesChart from '../../charts/GamePitchesChart.tsx';
-import InningsPitchedChart from '../../charts/InningsPitchedChart.tsx';
 import GamePitchesVelocityChart from '../../charts/GamePitchesVelocityChart.tsx';
+import InningsPitchedChart from '../../charts/InningsPitchedChart.tsx';
+import PitchArsenalChart from '../../charts/PitchArsenalChart.tsx';
+import PitchSpeedsChart from '../../charts/PitchSpeedsChart.tsx';
 import { usePitcherColumns } from '../../columns/usePitcherColumns.tsx';
+import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { Consts } from '../../consts/consts.ts';
+import { useBasedash } from '../../context/BasedashContext';
+import { fetchGame } from '../../services/gamesService.ts';
+import { fetchAwards, fetchPlayer } from '../../services/playerService.ts';
+import { transformAwards, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -152,15 +139,15 @@ export default function PlayerStats({ }) {
         setModalData({});
     }
 
-    var pitchingStatsDT;
-    var pitchingGameLogDT;
+    let pitchingStatsDT;
+    let pitchingGameLogDT;
 
-    var hittingStatsDT;
-    var hittingGameLogDT;
+    let hittingStatsDT;
+    let hittingGameLogDT;
 
-    var playerID = null;
-    var playerStats = null;
-    var teamColor = null;
+    const playerID = null;
+    const playerStats = null;
+    const teamColor = null;
 
     const svgUpArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="up"><path d="m280-400 200-200 200 200H280Z"/></svg>';
 
@@ -172,7 +159,7 @@ export default function PlayerStats({ }) {
         let cleanName = name.toLowerCase();
         cleanName = cleanName.replace(/ /g, "-");
         cleanName = cleanName.replace(/'/g, "-");
-        let match = cleanName.match(/\./g);
+        const match = cleanName.match(/\./g);
         if (match && match.length == 2) {
             cleanName = cleanName.replace(/\./, '-');
         }
@@ -421,7 +408,7 @@ export default function PlayerStats({ }) {
             const playerInfo = rawPlayerInfo.people[0];
             setPlayerInfo(playerInfo);
 
-            var statsURLs = [];
+            const statsURLs = [];
 
             const seasonPitchingStats = Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
                 const year = Temporal.Now.plainDateISO().year - i;

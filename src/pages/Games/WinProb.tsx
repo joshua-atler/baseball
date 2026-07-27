@@ -1,19 +1,14 @@
 // @ts-nocheck
 
-import { useRef, useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-
-import { Box, Typography } from '@mui/material';
-
-import $ from 'jquery';
-
+import { Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { Consts } from '../../consts/consts.ts';
-import { data } from 'react-router';
-import { useBasedash } from '../../context/BasedashContext.tsx';
-import { useTheme } from '@mui/material/styles';
+import { useEffect, useRef, useState } from 'react';
+
 import { GameTabContent } from '../../components/GameTabContent.tsx';
+import { Consts } from '../../consts/consts.ts';
+import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame, fetchWinProbability } from '../../services/gamesService.ts';
 
 function rgbaColor(color) {
@@ -82,7 +77,7 @@ export default function WinProb({ }) {
 
                 const labels = [];
                 const homeTeamWinProbs = [];
-                for (let play of winProbData) {
+                for (const play of winProbData) {
                     labels.push(play['atBatIndex'] + 1);
                     homeTeamWinProbs.push(play['homeTeamWinProbability']);
                 }

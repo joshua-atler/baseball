@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { Consts } from '../consts/consts';
 
 const IMG_STYLE = 'vertical-align: middle; margin-right: 5px; height: 65px;';

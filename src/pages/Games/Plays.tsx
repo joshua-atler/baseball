@@ -1,21 +1,19 @@
 // @ts-nocheck
 
-import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-
-import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, Tooltip, Stack, Chip } from '@mui/material';
-import { HiExternalLink } from 'react-icons/hi';
-import { Circle, CircleOutlined, ArrowDropUp, ArrowDropDown, KeyboardDoubleArrowDown, KeyboardDoubleArrowUp, ArrowForward } from '@mui/icons-material';
+import { ArrowDropDown, ArrowDropUp, ArrowForward, Circle, CircleOutlined, KeyboardDoubleArrowDown } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { HiExternalLink } from 'react-icons/hi';
 
-import { Consts } from '../../consts/consts.ts';
-import { fetchGame } from '../../services/gamesService.ts';
-import { useBasedash } from '../../context/BasedashContext';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
-import { transformGamePlays } from '../../utils/gameTransformers.ts';
-import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { TeamLogo } from '../../components/TeamLogo.tsx';
+import { Consts } from '../../consts/consts.ts';
+import { useBasedash } from '../../context/BasedashContext';
+import { fetchGame } from '../../services/gamesService.ts';
+import { transformGamePlays } from '../../utils/gameTransformers.ts';
 
 const strikeZoneWidth = 180;
 const strikeZoneHeight = 240;

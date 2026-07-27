@@ -1,8 +1,10 @@
+import '../styles/slimSelectStyle.css';
+
 import { Box } from '@mui/material';
-import { Consts } from '../consts/consts.ts';
 import { memo, useEffect, useRef } from 'react';
 import SlimSelect from 'slim-select';
-import '../styles/slimSelectStyle.css';
+
+import { Consts } from '../consts/consts.ts';
 
 
 export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
@@ -15,7 +17,7 @@ export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
     const slimSelectInstance = useRef<SlimSelect | null>(null);
 
     const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
-    let selectData = [];
+    const selectData = [];
 
     divisionNames.forEach((divName, index) => {
         const league = index < 3 ? 'AL' : 'NL';
