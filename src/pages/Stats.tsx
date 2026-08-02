@@ -20,6 +20,7 @@ import { useStatsColumns } from '../columns/useStatsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { fetchTeamStats } from '../services/statsService.ts';
 import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../utils/statsTransformers.ts';
+import { HittingStats, PitchingStats, FieldingStats } from '../types/stats.ts';
 
 
 DataTable.use(DT);
@@ -30,9 +31,9 @@ export default function Stats({
     const [statsYear, setStatsYear] = useState(Temporal.Now.plainDateISO().year);
     const [statsGameType, setSeasonType] = useState('Regular Season');
     const [statsMode, setStatsMode] = useState('hitting');
-    const [hittingTableData, setHittingTableData] = useState(null);
-    const [pitchingTableData, setPitchingTableData] = useState(null);
-    const [fieldingTableData, setFieldingTableData] = useState(null);
+    const [hittingTableData, setHittingTableData] = useState<HittingStats[] | null>(null);
+    const [pitchingTableData, setPitchingTableData] = useState<PitchingStats[] | null>(null);
+    const [fieldingTableData, setFieldingTableData] = useState<FieldingStats[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const firstYear = 2010;

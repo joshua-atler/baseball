@@ -1,7 +1,8 @@
 import { Consts } from "../consts/consts";
+import { HittingStats, PitchingStats, FieldingStats } from "../types/stats";
 
 
-export const transformHittingStats = (rawHittingStats) => {
+export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
     if (rawHittingStats.stats.length === 0) {
         return [];
     }
@@ -31,7 +32,7 @@ export const transformHittingStats = (rawHittingStats) => {
     return hittingStats;
 }
 
-export const transformPitchingStats = (rawPitchingStats) => {
+export const transformPitchingStats = (rawPitchingStats: any): PitchingStats[] => {
     if (rawPitchingStats.stats.length === 0) {
         return [];
     }
@@ -61,7 +62,7 @@ export const transformPitchingStats = (rawPitchingStats) => {
     return pitchingStats;
 }
 
-export const transformFieldingStats = (rawFieldingStats) => {
+export const transformFieldingStats = (rawFieldingStats: any): FieldingStats[] => {
     if (rawFieldingStats.stats.length === 0) {
         return [];
     }
