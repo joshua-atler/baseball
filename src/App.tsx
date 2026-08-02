@@ -1,25 +1,22 @@
 // @ts-nocheck
 
-import * as React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { Analytics } from '@vercel/analytics/react';
 import { Box, CssBaseline } from '@mui/material';
-import { ThemeProvider, createTheme, rgbToHex } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Analytics } from '@vercel/analytics/react';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 
 import { BasedashProvider } from './context/BasedashContext.tsx';
-import { baseDashTheme } from './theme.ts';
-import { NavTabs } from './NavTabs.tsx';
 import { Header } from './Header.tsx';
+import { NavTabs } from './NavTabs.tsx';
 import { Games } from './pages/Games/Games.tsx';
-import Players from './pages/Players/Players.tsx';
 import { News } from './pages/News.tsx';
-import Stats from './pages/Stats.tsx';
-import Standings from './pages/Standings.tsx';
+import Players from './pages/Players/Players.tsx';
 import Settings from './pages/Settings.tsx';
-
-import './styles/style.css';
+import Standings from './pages/Standings.tsx';
+import Stats from './pages/Stats.tsx';
+import { baseDashTheme } from './theme.ts';
 
 export default function App() {
     return (
@@ -42,7 +39,7 @@ export default function App() {
                                         width: '600px',
                                         marginBottom: '20px',
                                         border: '1px solid white',
-                                        borderCollapse: 'collapse',
+                                        borderCollapse: 'collapse'
                                     },
                                     '& div.dt-paging button.dt-paging-button': {
                                         backgroundImage: 'none !important',
@@ -51,6 +48,41 @@ export default function App() {
                                         '&:hover': { backgroundColor: '#888888 !important' },
                                         '&:active': { backgroundColor: '#333333 !important' },
                                         '&.disabled': { backgroundColor: '#555555 !important' }
+                                    },
+                                    '& span.tooltip': {
+                                        borderBottom: '2px dotted white',
+                                        position: 'relative',
+                                        userSelect: 'none',
+
+                                        '&::after': {
+                                            content: 'attr(data-tooltip)',
+                                            position: 'absolute',
+                                            backgroundColor: 'black',
+                                            color: 'white',
+                                            padding: '5px',
+                                            borderRadius: '5px',
+                                            bottom: '200%',
+                                            left: '50%',
+                                            width: '125px',
+                                            textAlign: 'center',
+                                            transform: 'translateX(-50%)',
+                                            opacity: 0,
+                                            transition: 'opacity 0.3s',
+                                            visibility: 'hidden',
+                                        },
+
+                                        '&:hover::after': {
+                                            opacity: 1,
+                                            visibility: 'visible'
+                                        }
+                                    },
+                                    '& tr.dtrg-group.dtrg-start': {
+                                        backgroundColor: '#1a1a1a !important',
+                                        color: '#fff !important',
+                                        fontWeight: 'bold',
+                                        letterSpacing: '0.5px',
+                                        textTransform: 'uppercase',
+                                        fontSize: '0.85rem',
                                     }
                                 }}
                             >
@@ -67,7 +99,7 @@ export default function App() {
                         </BasedashProvider>
                     </LocalizationProvider>
                 </ThemeProvider>
-            </Router>
+            </Router >
         </>
     )
 }

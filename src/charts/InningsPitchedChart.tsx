@@ -1,7 +1,6 @@
-import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { handleScatterClick } from './chartUtils';
-import { Consts } from '../consts/consts';
 import { useTheme } from '@mui/material/styles';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+
 
 
 

@@ -1,16 +1,12 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
+import { Box, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 
-import { Box, Typography } from '@mui/material';
-
-import { Consts } from './consts.ts';
-import '../../styles/style.css';
+import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
-import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGameMedia } from '../../utils/gameTransformers.ts';
 
 

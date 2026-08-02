@@ -1,30 +1,26 @@
 // @ts-nocheck
 
-import { useState, useEffect, useMemo } from 'react';
-import ReactDOM from 'react-dom/client';
-import ReactPlayer from 'react-player';
-
 import {
-    Box,
-    Typography,
-    TableContainer,
-    Table,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    Paper,
-    ToggleButtonGroup,
-    ToggleButton
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
 } from '@mui/material';
-
 import { useTheme } from '@mui/material/styles';
-import { Consts } from './consts.ts';
+import { useEffect, useMemo, useState } from 'react';
+
+import { GameTabContent } from '../../components/GameTabContent.tsx';
+import { TeamLogo } from '../../components/TeamLogo.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
-import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { transformGameStats } from '../../utils/gameTransformers.ts';
-import { TeamLogo } from '../../components/TeamLogo.tsx';
 
 type StatsMode = "batting" | "pitching" | "fielding";
 interface StatsRow {

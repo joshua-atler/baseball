@@ -1,23 +1,19 @@
 // @ts-nocheck
 
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { HiExternalLink, HiOutlineTicket } from 'react-icons/hi';
-
-import { ToggleButtonGroup, ToggleButton, Box, Stack, Typography, Divider, Tooltip, Chip } from '@mui/material';
+import { Box, Chip, Divider, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useTheme } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { HiExternalLink } from 'react-icons/hi';
+import { Link, useNavigate } from 'react-router-dom';
 
-
-import { Consts } from '../../consts/consts.ts';
-import '../../styles/style.css';
+import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
+import { TeamLogo } from '../../components/TeamLogo.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
 import { fetchStandings } from '../../services/standingsService.ts';
 import { transformStandingsForBoxscore } from '../../utils/standingsTransformers.ts';
-import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
-import { TeamLogo } from '../../components/TeamLogo.tsx';
 
 const cleanBroadcastName = (name) => {
     return name.split(/\s+presented\s+by\s+/i)[0].trim();
@@ -49,7 +45,7 @@ function LinescoreRow({ currGame, team, theme }) {
             </>
         }
         {!currGame && Array.from({ length: 3 }).map((_, i) => {
-            return <td key={i}>-</td>
+            return <td key={i} style={i === 0 ? { borderLeft: '1px solid white' } : undefined}>-</td>
         })}
     </tr>
 }

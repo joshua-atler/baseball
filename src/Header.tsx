@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
 import { Box, Toolbar, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 import backgroundImage from './assets/baseballs.jpg';
 
 

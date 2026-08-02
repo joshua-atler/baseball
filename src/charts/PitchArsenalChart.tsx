@@ -1,4 +1,5 @@
-import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+
 import { Consts } from '../consts/consts.ts';
 
 

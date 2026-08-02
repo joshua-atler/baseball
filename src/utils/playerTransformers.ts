@@ -1,5 +1,5 @@
 import { fetchGame, fetchSchedule } from "../services/gamesService";
-import { formatter, scheduleFormmater } from "./dateFormatters";
+import { scheduleFormmater } from "./dateFormatters";
 
 
 export const transformAwards = (awards: object) => {

@@ -1,102 +1,42 @@
 // @ts-nocheck
 
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import {
-    Box,
-    Button,
-    Typography,
-    InputLabel,
-    MenuItem,
-    FormControl,
-    Select,
-    SelectChangeEvent,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    ToggleButtonGroup,
-    ToggleButton,
-    Tooltip,
-    IconButton,
-    Tabs,
-    Tab,
-    Stack,
-    Slider
-} from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import {
+  Box,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Slider,
+  Stack,
+  Tab,
+  Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, LabelList, Legend, Tooltip as RechartsTooltip } from 'recharts';
 // import { RechartsDevtools } from '@recharts/devtools';
 import { useTheme } from '@mui/material/styles';
-
-
-import '../styles/style.css';
-
-import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
+import DataTable from 'datatables.net-react';
+import { useEffect, useMemo, useState } from 'react';
+import { CartesianGrid, Line, LineChart, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
 
 DataTable.use(DT);
 
-import { Consts } from '../consts/consts.ts';
-import { fetchStandings, fetchLineChartStandings, fetchSeason } from '../services/standingsService.ts';
-import { transformStandings, transformLineChartStandings } from '../utils/standingsTransformers.ts';
-import { LoadingCircle } from '../components/LoadingCircle.tsx';
-import { Visibility } from '@mui/icons-material';
-import { formatter } from '../utils/dateFormatters.ts';
+
 import { useStandingsColumns } from '../columns/useStandingsColumns.tsx';
+import { LoadingCircle } from '../components/LoadingCircle.tsx';
+import { Consts } from '../consts/consts.ts';
+import { fetchLineChartStandings, fetchSeason, fetchStandings } from '../services/standingsService.ts';
+import { formatter } from '../utils/dateFormatters.ts';
+import { transformLineChartStandings, transformStandings } from '../utils/standingsTransformers.ts';
 
 
 // const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
-
-const lineChartData = [
-    {
-        name: 'A',
-        uv: 400,
-        pv: 240,
-        amt: -2400,
-    },
-    {
-        name: 'B',
-        uv: 300,
-        pv: 456,
-        amt: 3000,
-    },
-    {
-        name: 'C',
-        uv: 300,
-        pv: 139,
-        amt: -2400,
-    },
-    {
-        name: 'D',
-        uv: 200,
-        pv: 980,
-        amt: 3000,
-    },
-    {
-        name: 'E',
-        uv: 278,
-        pv: 390,
-        amt: -5000,
-    },
-    {
-        name: 'F',
-        uv: 189,
-        pv: 480,
-        amt: 5000,
-    },
-    {
-        name: 'G',
-        uv: -50,
-        pv: 480,
-        amt: -9000,
-    },
-];
 
 function StandingsTable({ tableData, standingsMode, groupingsMode }) {
 

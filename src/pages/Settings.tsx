@@ -1,25 +1,15 @@
 // @ts-nocheck
 
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import {
-    Box,
-    Button,
-    Stack,
-    Typography,
-    InputLabel,
-    MenuItem,
-    FormControl,
-    Select,
-    SelectChangeEvent
+  Box,
+  FormControl,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import $ from 'jquery';
-
-import { Consts } from '../consts/consts.ts';
-import '../styles/style.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
 
 

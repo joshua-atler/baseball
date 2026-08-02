@@ -1,8 +1,7 @@
-import { Link, useLocation, useNavigate, } from 'react-router-dom';
-import { Tab } from '@mui/material';
-
 import { TabContext, TabList } from '@mui/lab';
+import { Tab } from '@mui/material';
 import { useEffect } from 'react';
+import { Link, useLocation, useNavigate, } from 'react-router-dom';
 
 export const NavTabs = () => {
 

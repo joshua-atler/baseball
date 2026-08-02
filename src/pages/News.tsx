@@ -1,25 +1,19 @@
 // @ts-nocheck
 
-import { useEffect, useState, useCallback } from 'react';
-
 import {
-    Box,
-    Button,
-    Typography,
-    Card,
-    CardActionArea,
-    CardActions,
-    CardMedia,
-    CardContent
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography
 } from '@mui/material';
+import { useCallback, useState } from 'react';
 
+import { TeamSelect } from '../components/TeamSelect.tsx';
 import { Consts } from '../consts/consts.ts';
-import '../styles/style.css';
-import '../styles/slimSelectStyle.css';
 import { useBasedash } from '../context/BasedashContext.tsx';
 import { useNews } from '../services/newsService.ts';
-import { string } from 'prop-types';
-import { TeamSelect } from '../components/TeamSelect.tsx';
 
 
 interface NewsTeam {

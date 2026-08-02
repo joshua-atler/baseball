@@ -1,6 +1,7 @@
-import { ResponsiveContainer, ScatterChart, Scatter, CartesianGrid, XAxis, YAxis, Tooltip, Cell } from 'recharts';
-import { handleScatterClick } from './chartUtils';
+import { CartesianGrid, Cell, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { Consts } from '../consts/consts';
+import { handleScatterClick } from './chartUtils';
 import PitchTooltip from './PitchTooltip';
 
 

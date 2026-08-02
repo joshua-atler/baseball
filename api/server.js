@@ -1,7 +1,7 @@
-import express from 'express';
 import axios from 'axios';
 import cors from 'cors';
 import 'dotenv/config';
+import express from 'express';
 
 const app = express();
 const PORT = 5000;

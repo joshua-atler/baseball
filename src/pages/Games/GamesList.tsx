@@ -1,28 +1,22 @@
 // @ts-nocheck
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { HiExternalLink } from 'react-icons/hi';
-
-import { Box, Button, ButtonGroup, Label, Checkbox, FormControlLabel, LinearProgress, Skeleton, Typography } from '@mui/material';
-import DatePicker, { DateObject } from 'react-multi-date-picker';
-import { useTheme } from '@mui/material/styles';
-
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
 import 'datatables.net-select-dt';
-import dayjs from 'dayjs';
-import SlimSelect from 'slim-select';
-
-import { TeamSelect } from '../../components/TeamSelect.tsx';
-
 import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
+
+import { Box, Button, ButtonGroup, Checkbox, FormControlLabel, LinearProgress, Skeleton, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import DT from 'datatables.net-dt';
+import DataTable from 'datatables.net-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { HiExternalLink } from 'react-icons/hi';
+import DatePicker from 'react-multi-date-picker';
+
+import { useGameColumns } from '../../columns/useGameColumns.tsx';
+import { TeamSelect } from '../../components/TeamSelect.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchSchedule } from '../../services/gamesService.ts';
-import { transformGames } from '../../utils/gameTransformers.ts';
 import { formatter, shortYearFormatter } from '../../utils/dateFormatters.ts';
-import { useGameColumns } from '../../columns/useGameColumns.tsx';
+import { transformGames } from '../../utils/gameTransformers.ts';
 
 DataTable.use(DT);
 
@@ -107,7 +101,7 @@ export default function GamesList({ }) {
     }, [isAutoUpdate]);
 
     async function fillTableWithDates(dates) {
-        let allData = [];
+        const allData = [];
 
         const startDate = formatter.format(dates[0]);
         if (dates.length === 2) {
