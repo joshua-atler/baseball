@@ -1,7 +1,8 @@
 import { Box, Toolbar, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import backgroundImage from './assets/baseballs.jpg';
+import baseballsBackground from './assets/baseballs.jpg';
+import basedashLogo from './assets/basedash_logo.png';
 
 
 export const Header = () => {
@@ -9,7 +10,7 @@ export const Header = () => {
         <>
             <Box
                 sx={{
-                    backgroundImage: `url(${backgroundImage})`,
+                    backgroundImage: `url(${baseballsBackground})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     height: '64px',
@@ -29,7 +30,7 @@ export const Header = () => {
                 </Typography>
                 <Box
                     sx={{
-                        // backgroundImage: `url(${BasedashLogo})`,
+                        backgroundImage: `url(${basedashLogo})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         width: '100px',
