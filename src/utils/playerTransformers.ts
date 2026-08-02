@@ -1,8 +1,9 @@
 import { fetchGame, fetchSchedule } from "../services/gamesService";
+import { Award, GameLog, PitchArsenal, PitcherStats, PitchLog, PitchSpeeds } from "../types/player";
 import { scheduleFormmater } from "./dateFormatters";
 
 
-export const transformAwards = (awards: object) => {
+export const transformAwards = (awards: any): Award[] => {
     awards = awards.people[0].awards;
     awards = awards.reduce((acc, { name, team, date }) => {
         if (!acc[name]) {
@@ -18,13 +19,12 @@ export const transformAwards = (awards: object) => {
     return awards;
 }
 
-export const transformPitcherStats = (rawPitcherStats: []) => {
+export const transformPitcherStats = (rawPitcherStats: any): PitcherStats[] => {
     const pitcherStats = rawPitcherStats.flatMap((stats, _) => {
         if (!stats.people[0].stats) {
             return undefined;
         } else {
             const regularStats = stats.people[0].stats[0];
-            // const advancedStats = stats.people[0].stats[1];
 
             return regularStats.splits.map((split) => {
                 return {
@@ -39,7 +39,7 @@ export const transformPitcherStats = (rawPitcherStats: []) => {
     return pitcherStats;
 }
 
-export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal) => {
+export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal: any): PitchArsenal[] => {
 
     const pitcherPitchArsenal = rawPitcherPitchArsenal.splits.map(s => {
         return {
@@ -51,7 +51,7 @@ export const transformPitcherPitchArsenal = (rawPitcherPitchArsenal) => {
     return pitcherPitchArsenal;
 }
 
-export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
+export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal: any): PitchSpeeds[] => {
 
     const pitcherPitchSpeeds = rawPitcherPitchArsenal.splits.map(s => {
         return {
@@ -63,11 +63,7 @@ export const transformPitcherPitchSpeeds = (rawPitcherPitchArsenal) => {
     return pitcherPitchSpeeds;
 }
 
-export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer) => {
-    // console.log('transformPitcherPitchLog');
-    // console.log('rawPitcherPitchLog');
-    // console.log(rawPitcherGameLog);
-
+export const transformPitcherPitchLog = async (rawPitcherGameLog: any, selectedPlayer: number): PitchLog[] => {
     const seasonGames = await Promise.all(rawPitcherGameLog.map(async (game) => {
         const gameContent = await fetchGame(game.game.gamePk);
 
@@ -76,19 +72,7 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
         };
     }));
 
-    // liveData -> allPlays -> playEvents -> isPitch: true -> pitchData
-    // { gamePk: allPitches}
-
-    // console.log('seasonGames');
-    // console.log(seasonGames);
-
     const pitchLog = Object.fromEntries(seasonGames.map(game => {
-
-        // console.log(game.liveData.allPlays);
-        // console.log(game);
-        // console.log(game.gameContent.liveData.plays.allPlays.length);
-        // console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).length);
-        // console.log(game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer));
 
         const playsForGame = game.gameContent.liveData.plays.allPlays.filter(play => play.matchup.pitcher.id === selectedPlayer).map(play => {
             return {
@@ -96,9 +80,6 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
                 pitches: play.playEvents.filter(playEvent => playEvent.isPitch)
             }
         });
-
-        // console.log('playsForGame');
-        // console.log(playsForGame);
 
         const pitchesByInning: { [inning: number]: any[] } = {};
         playsForGame.forEach((play) => {
@@ -119,7 +100,7 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog, selectedPlayer
     return pitchLog;
 }
 
-export const transformPitcherGameLog = async (rawPitcherGameLog) => {
+export const transformPitcherGameLog = async (rawPitcherGameLog: any): Promise<GameLog[]> => {
 
     const gameLog = await Promise.all(rawPitcherGameLog.toReversed().map(async game => {
 

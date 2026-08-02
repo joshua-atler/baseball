@@ -31,7 +31,7 @@ export default function Rosters({ setTeamViewTab }) {
 
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
-    const [roster, setRoster] = useState(null);
+    const [roster, setRoster] = useState<RosterPlayer[] | null>(null);
 
     const handleSelect = (e, dt, type, indexes) => {
         const rowData = dt.row(indexes).data();

@@ -19,7 +19,7 @@ DataTable.use(DT);
 
 
 
-export default function Rosters({ setTeamViewTab }) {
+export default function AllPlayers({ setTeamViewTab }) {
     const {
         setSelectedPlayer,
         setSelectedTeam

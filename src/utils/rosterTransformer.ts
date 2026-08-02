@@ -1,17 +1,15 @@
 import { fetchPlayer } from "../services/playerService";
+import { RosterPlayer } from "../types/roster";
 
+const POSITION_ORDER: Record<string, number> = {
+    'Pitcher': 1,
+    'Catcher': 2,
+    'Infielder': 3,
+    'Outfielder': 4
+};
 
-
-export const transformRoster = (rawRoster) => {
-
-    const POSITION_ORDER = {
-        'Pitcher': 1,
-        'Catcher': 2,
-        'Infielder': 3,
-        'Outfielder': 4
-    };
-
-    const roster = rawRoster.roster.map(async (player) => {
+export const transformRoster = (rawRoster: any) => {
+    const roster = rawRoster.roster.map(async (player: any): Promise<RosterPlayer[]> => {
 
         const rawPlayerInfo = await fetchPlayer(player.person.id);
         const playerInfo = rawPlayerInfo.people[0];

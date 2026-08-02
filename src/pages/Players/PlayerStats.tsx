@@ -45,6 +45,7 @@ import { useBasedash } from '../../context/BasedashContext';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchAwards, fetchPlayer } from '../../services/playerService.ts';
 import { transformAwards, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { PitcherStats, PitcherYearDetails } from '../../types/player.ts';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -174,9 +175,9 @@ export default function PlayerStats({ }) {
     const playerURL = playerInfo === null ? '' : `https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`;
     const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
-    const [awards, setAwards] = useState([]);
-    const [pitcherStats, setPitcherStats] = useState(null);
-    const [pitcherYearDetails, setPitcherYearDetails] = useState({
+    const [awards, setAwards] = useState<Award[]>([]);
+    const [pitcherStats, setPitcherStats] = useState<PitcherStats | null>(null);
+    const [pitcherYearDetails, setPitcherYearDetails] = useState<PitcherYearDetails>({
         isLoading: false,
         year: null,
         pitchSpeeds: null,
