@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useEffect, useState } from 'react';

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import {
   Box,
   Card,
@@ -16,11 +14,6 @@ import { useBasedash } from '../context/BasedashContext.tsx';
 import { useNews } from '../services/newsService.ts';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 
-
-interface NewsTeam {
-    logo: string,
-    label: string
-}
 
 const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
     return (

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-dt';
 import 'datatables.net-select-dt';

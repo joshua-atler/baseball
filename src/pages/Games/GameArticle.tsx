@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Box, Link, Tooltip, Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import { useEffect, useState } from 'react';

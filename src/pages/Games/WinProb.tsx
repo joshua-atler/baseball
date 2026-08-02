@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import Chart from 'chart.js/auto';

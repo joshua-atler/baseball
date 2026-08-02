@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,

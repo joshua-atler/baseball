@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { fetchTeams } from '../services/teamsService.js';
 import * as svgsConst from './svg/*.js';
 const svgsConst = import.meta.glob('./svg/*.js', { eager: true });

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { ArrowDropDown, ArrowDropUp, ArrowForward, Circle, CircleOutlined, KeyboardDoubleArrowDown } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';

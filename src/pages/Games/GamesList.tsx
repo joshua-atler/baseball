@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import 'datatables.net-select-dt';
 import 'react-multi-date-picker/styles/backgrounds/bg-dark.css';
 

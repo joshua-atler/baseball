@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import {
   Box,
   FormControl,
@@ -33,8 +31,7 @@ export default function Settings() {
                     <Grid>
                         <Box sx={{ minWidth: 120, width: 300 }}>
                             <FormControl fullWidth>
-                                <Select defaultValue={30} displayEmpty
-                                    id="todo"
+                                <Select displayEmpty
                                     value={timeZone}
                                     onChange={handleTimeZoneChange}
                                 >

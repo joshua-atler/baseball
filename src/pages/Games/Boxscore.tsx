@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Box, Chip, Divider, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useTheme } from '@mui/material/styles';

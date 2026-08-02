@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-rowgroup';
@@ -16,6 +14,7 @@ import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchRoster } from '../../services/rosterService.ts';
 import { transformRoster } from '../../utils/rosterTransformer.ts';
+import { RosterPlayer } from '../../types/roster.ts';
 
 
 DataTable.use(DT);
@@ -23,7 +22,6 @@ DataTable.use(DT);
 
 export default function Rosters({ setTeamViewTab }) {
     const {
-        selectedPlayer,
         setSelectedPlayer,
         selectedTeam,
         setSelectedTeam
