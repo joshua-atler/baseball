@@ -14,6 +14,7 @@ import { TeamSelect } from '../components/TeamSelect.tsx';
 import { Consts } from '../consts/consts.ts';
 import { useBasedash } from '../context/BasedashContext.tsx';
 import { useNews } from '../services/newsService.ts';
+import { LoadingCircle } from '../components/LoadingCircle.tsx';
 
 
 interface NewsTeam {
@@ -147,7 +148,7 @@ export function News() {
                     <Box sx={{ width: '90%', mx: 'auto', alignItems: 'center' }}>
                         {(() => {
                             if (isLoading) {
-                                return <Typography variant="h6">Loading...</Typography>;
+                                return <LoadingCircle size={60} />;
                             } else if (isError) {
                                 return <Typography variant="h6">Error loading news</Typography>;
                             } else {
