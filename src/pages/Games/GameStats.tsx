@@ -129,6 +129,7 @@ export default function GameStats() {
         }));
     }, [gameStats, statsMode]);
 
+
     return (
         <GameTabContent>
             {gameStats ?
@@ -152,13 +153,13 @@ export default function GameStats() {
                                     <TableCell sx={{ width: '33%' }}><Typography variant="h5" component="span">Stat</Typography></TableCell>
                                     <TableCell sx={{ width: '33%' }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <TeamLogo teamAbbr={gameStats.away.team.logo} size={30} />
+                                            <TeamLogo teamAbbr={gameStats.away.team.abbr} size={30} />
                                             <Typography variant="h5" component="span">{gameStats.away.team.abbr}</Typography>
                                         </Box>
                                     </TableCell>
                                     <TableCell sx={{ width: '33%', verticalAlign: 'middle' }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <TeamLogo teamAbbr={gameStats.home.team.logo} size={30} />
+                                            <TeamLogo teamAbbr={gameStats.home.team.abbr} size={30} />
                                             <Typography variant="h5" component="span">{gameStats.home.team.abbr}</Typography>
                                         </Box>
                                     </TableCell>
