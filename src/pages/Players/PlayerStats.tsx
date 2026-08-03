@@ -1,20 +1,20 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  FormControlLabel,
-  Stack,
-  Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Card,
+    CardContent,
+    Chip,
+    FormControlLabel,
+    Stack,
+    Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import DT from 'datatables.net-dt';
@@ -42,8 +42,8 @@ import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchAwards, fetchPlayer } from '../../services/playerService.ts';
-import { transformAwards, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
 import { PitcherStats, PitcherYearDetails } from '../../types/player.ts';
+import { transformAwards, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
 
 
 function AwardCard({ award, teams, dates }) {

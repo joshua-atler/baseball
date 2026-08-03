@@ -1,22 +1,21 @@
 import InfoIcon from '@mui/icons-material/Info';
 import {
-  Box,
-  FormControl,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Slider,
-  Stack,
-  Tab,
-  Tabs,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography
+    Box,
+    FormControl,
+    IconButton,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Slider,
+    Stack,
+    Tab,
+    Tabs,
+    ToggleButton,
+    ToggleButtonGroup,
+    Tooltip,
+    Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-// import { RechartsDevtools } from '@recharts/devtools';
 import { useTheme } from '@mui/material/styles';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
@@ -30,11 +29,10 @@ import { useStandingsColumns } from '../columns/useStandingsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { Consts } from '../consts/consts.ts';
 import { fetchLineChartStandings, fetchSeason, fetchStandings } from '../services/standingsService.ts';
+import { FormattedStandings, GroupingsMode, LineChartDataset, StandingsMode } from '../types/standings.ts';
 import { formatter } from '../utils/dateFormatters.ts';
 import { transformLineChartStandings, transformStandings } from '../utils/standingsTransformers.ts';
 
-
-// const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West', 'AL', 'NL', 'Cactus League', 'Grapefruit League'];
 
 function StandingsTable({ tableData, standingsMode, groupingsMode }) {
 
@@ -72,15 +70,14 @@ export default function Standings() {
     const theme = useTheme();
     const [standingsYear, setStandingsYear] = useState(Temporal.Now.plainDateISO().year);
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
-    const [standingsMode, setStandingsMode] = useState('regular season');
-    const [groupingsMode, setGroupingsMode] = useState('division');
+    const [standingsMode, setStandingsMode] = useState<StandingsMode>('regular season');
+    const [groupingsMode, setGroupingsMode] = useState<GroupingsMode>('division');
     const [leagueTab, setLeagueTab] = useState('AL');
     const firstYear = 2010;
-    const [selectedDate, setSelectedDate] = useState(Date.now());
     const [sliderValue, setSliderValue] = useState(0);
     const [debouncedValue, setDebouncedValue] = useState(0);
     const [seasonBounds, setSeasonBounds] = useState({});
-    const [standings, setStandings] = useState(null);
+    const [standings, setStandings] = useState<FormattedStandings[] | LineChartDataset[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
 
@@ -206,8 +203,8 @@ export default function Standings() {
                     const endDate = isCurrentYear ? formatter.format(new Date()) : seasonData.regularSeasonEndDate;
 
                     const rawStandings = await fetchLineChartStandings(startDate, endDate);
+                    const formattedStandings = transformLineChartStandings(rawStandings, groupingsMode);
 
-                    const formattedStandings = await transformLineChartStandings(rawStandings, standingsMode, groupingsMode);
                     setStandings(formattedStandings);
                 }
             } catch (error) {

@@ -11,6 +11,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchPlayer } from '../../services/playerService.ts';
 import { fetchStandings } from '../../services/standingsService.ts';
+import { StandingsForBoxscore } from '../../types/standings.ts';
 import { transformStandingsForBoxscore } from '../../utils/standingsTransformers.ts';
 
 const cleanBroadcastName = (name) => {
@@ -88,7 +89,7 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
 
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
-    const [teamRecords, setTeamRecords] = useState(null);
+    const [teamRecords, setTeamRecords] = useState<StandingsForBoxscore | null>(null);
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
 
@@ -108,8 +109,6 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
             setTeamRecords(null);
             return;
         }
-
-        const teamRecords = standings.records.flatMap(division => division.teamRecords);
 
         setTeamRecords(transformStandingsForBoxscore(standings, awayTeamID, homeTeamID));
     }
