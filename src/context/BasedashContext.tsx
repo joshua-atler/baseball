@@ -46,4 +46,10 @@ export const BasedashProvider = ({ children }) => {
     )
 };
 
-export const useBasedash = () => useContext(BasedashContext);
+export const useBasedash = () => {
+    const context = useContext(BasedashContext);
+    if (!context) {
+        throw new Error('useBasedash must be used within a BasedashProvider');
+    }
+    return context;
+};
