@@ -6,7 +6,6 @@ import { HiCheck, HiExternalLink, HiX } from 'react-icons/hi';
 import { Consts } from '../consts/consts';
 
 
-
 export const usePitcherColumns = () => {
     const theme = useTheme();
 
@@ -38,8 +37,8 @@ export const usePitcherColumns = () => {
         { data: 'date', title: 'Date', className: 'dt-right' },
         {
             data: 'matchup', title: 'Matchup', render: (data) => {
-                const awayLogoURL = Consts.teamInfo[data[0]].logo;
-                const homeLogoURL = Consts.teamInfo[data[1]].logo;
+                const awayLogoURL = Consts.teamInfo[data[0]].logo ?? '';
+                const homeLogoURL = Consts.teamInfo[data[1]].logo ?? '';
                 return `<span style="display: inline-flex; align-items: center"><img src=${awayLogoURL} style="width: 40px; height: 40px" />
                 <span style="margin: 0 10px; font-weight: 500;">@</span>
                 <img src=${homeLogoURL} style="width: 40px; height: 40px" /></span>`;

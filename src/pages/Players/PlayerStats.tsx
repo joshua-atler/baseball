@@ -20,31 +20,27 @@ import {
 import { useTheme } from '@mui/material/styles';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 import 'datatables.net-dt';
 import '../../styles/dtStyle.css';
-// import '../../styles/slimSelectStyle.css';
-import '../../styles/cssToggleSwitchStyle.css';
 
-import AllSeasonPitchesChart from '../../charts/AllSeasonPitchesChart.tsx';
-import GamePitchesChart from '../../charts/GamePitchesChart.tsx';
-import GamePitchesVelocityChart from '../../charts/GamePitchesVelocityChart.tsx';
-import InningsPitchedChart from '../../charts/InningsPitchedChart.tsx';
-import PitchArsenalChart from '../../charts/PitchArsenalChart.tsx';
-import PitchSpeedsChart from '../../charts/PitchSpeedsChart.tsx';
+import { useHitterColumns } from '../../columns/useHitterColumns.tsx';
 import { usePitcherColumns } from '../../columns/usePitcherColumns.tsx';
-import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchGame } from '../../services/gamesService.ts';
 import { fetchAwards, fetchPlayer } from '../../services/playerService.ts';
-import { PitcherStats, PitcherYearDetails } from '../../types/player.ts';
-import { transformAwards, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { Award, HitterStats, PitcherStats, PitcherYearDetails } from '../../types/player.ts';
+import { transformAwards, transformHitterStats, transformPitcherGameLog, transformPitcherPitchArsenal, transformPitcherPitchLog, transformPitcherPitchSpeeds, transformPitcherStats } from '../../utils/playerTransformers.ts';
+import { HitterStatsView } from './HitterStatsView.tsx';
+import { PitcherStatsView } from './PitcherStatsView.tsx';
 
 
 function AwardCard({ award, teams, dates }) {
@@ -91,91 +87,53 @@ function Awards({ awards, theme }) {
     );
 }
 
-const PITCH_COLORS = {
-    'Fastball': 'rgb(55, 160, 235)',
-    'Four-seam FB': 'rgb(55, 160, 235)',
-    'Four-Seam Fastball': 'rgb(55, 160, 235)',
-    'Cutter': 'rgb(255, 100, 130)',
-    'Splitter': 'rgb(75, 200, 200)',
-    'Sinker': 'rgb(255, 160, 60)',
-    'Sweeper': 'rgb(50, 100, 150)',
-    'Slider': 'rgb(100, 200, 50)',
-    'Curveball': 'rgb(255, 200, 85)',
-    'Knuckle Curve': 'rgb(85, 255, 200)',
-    'Changeup': 'rgb(100, 50, 255)',
-};
+const fixName = (name: string) => {
+    let cleanName = name.toLowerCase();
+    cleanName = cleanName.replace(/ /g, "-");
+    cleanName = cleanName.replace(/'/g, "-");
+    const match = cleanName.match(/\./g);
+    if (match && match.length == 2) {
+        cleanName = cleanName.replace(/\./, '-');
+    }
+    cleanName = cleanName.replace(/\./g, "");
+    cleanName = cleanName.normalize("NFD");
+    cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
 
-export default function PlayerStats({ }) {
+    return cleanName;
+}
+
+export default function PlayerStats() {
     const theme = useTheme();
     const {
         selectedPlayer,
-        setSelectedPlayer,
         selectedTeam,
         setSelectedGame,
         setSelectedGameMetadata
     } = useBasedash();
 
     const { pitcherStatsColumns, pitcherGameLogColumns } = usePitcherColumns();
+    const { hitterStatsColumns, hitterGameLogColumns } = useHitterColumns();
 
     const navigate = useNavigate();
-    const awardsContainerRef = useRef(null);
-    const awardsRef = useRef(null);
-    const [playerPosition, setPlayerPosition] = useState('');
-
-    const [seasonPitchingForAllYears, setSeasonPitchingForAllYears] = useState([]);
-    const [seasonPitching, setSeasonPitching] = useState({});
-    const [careerPitching, setCareerPitching] = useState({});
-
-    const [seasonHittingForAllYears, setSeasonHittingForAllYears] = useState([]);
-    const [seasonHitting, setSeasonHitting] = useState({});
-    const [careerHitting, setCareerHitting] = useState({});
-
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalData, setModalData] = useState({});
-
-    const handleModalOpen = () => setModalOpen(true);
-    const handleModalClose = () => {
-        setModalOpen(false);
-        setModalData({});
-    }
-
-    let pitchingStatsDT;
-    let pitchingGameLogDT;
-
-    let hittingStatsDT;
-    let hittingGameLogDT;
-
-    const playerID = null;
-    const playerStats = null;
-    const teamColor = null;
-
-    const svgUpArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="up"><path d="m280-400 200-200 200 200H280Z"/></svg>';
-
-    const svgDownArrow = '<svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ffffff" style="position: absolute; left: 50px;" data-direction="down"><path d="M480-360 280-560h400L480-360Z"/></svg>';
-
-
-    ///////////////////////////////////////////////////////////
-    const fixName = (name) => {
-        let cleanName = name.toLowerCase();
-        cleanName = cleanName.replace(/ /g, "-");
-        cleanName = cleanName.replace(/'/g, "-");
-        const match = cleanName.match(/\./g);
-        if (match && match.length == 2) {
-            cleanName = cleanName.replace(/\./, '-');
-        }
-        cleanName = cleanName.replace(/\./g, "");
-        cleanName = cleanName.normalize("NFD");
-        cleanName = cleanName.replace(/[\u0300-\u036f]/g, "").replace(/ñ/g, "n");
-
-        return cleanName;
-    }
 
     const [playerInfo, setPlayerInfo] = useState(null);
     const playerURL = playerInfo === null ? '' : `https://www.mlb.com/player/${fixName(playerInfo.fullName)}-${selectedPlayer}`;
     const storyURL = playerInfo === null ? '' : `https://www.mlb.com/stories/player/${selectedPlayer}?storylocal=player-page-header-embed`;
     const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
+
+    const bioRows = (playerInfo === null) ? [] : [
+        { label: 'Age', value: playerInfo.currentAge },
+        { label: 'Position', value: playerInfo.primaryPosition.name },
+        { label: 'Birthplace', value: `${playerInfo.birthCity}, ${playerInfo.birthCountry}` },
+        { label: 'Height', value: playerInfo.height },
+        { label: 'Weight', value: playerInfo.weight },
+        { label: 'MLB Debut', value: playerInfo.mlbDebutDate },
+        { label: 'Bat/Throw', value: `${playerInfo.batSide.code}/${playerInfo.pitchHand.code}` }
+    ];
+
     const [awards, setAwards] = useState<Award[]>([]);
-    const [pitcherStats, setPitcherStats] = useState<PitcherStats | null>(null);
+
+    const [pitcherStats, setPitcherStats] = useState<PitcherStats[] | null>(null);
     const [pitcherYearDetails, setPitcherYearDetails] = useState<PitcherYearDetails>({
         isLoading: false,
         year: null,
@@ -196,7 +154,6 @@ export default function PlayerStats({ }) {
     }, [pitcherYearDetails]);
     const [seasonInningsPitched, setSeasonInningsPitched] = useState([]);
 
-
     const [selectedPitcherGamePitches, setSelectedPitcherGamePitches] = useState(null);
     const [selectedPitcherGamePitchesVelocity, setSelectedPitcherGamePitchesVelocity] = useState(null);
 
@@ -205,16 +162,6 @@ export default function PlayerStats({ }) {
     const [groupTeamsChecked, setGroupTeamsChecked] = useState(false);
 
     const totalPitches = pitcherYearDetails?.pitchArsenal?.map(pitch => pitch.count).reduce((acc, curr) => acc + curr, 0);
-
-    const bioRows = (playerInfo === null) ? [] : [
-        { label: 'Age', value: playerInfo.currentAge },
-        { label: 'Position', value: playerInfo.primaryPosition.name },
-        { label: 'Birthplace', value: `${playerInfo.birthCity}, ${playerInfo.birthCountry}` },
-        { label: 'Height', value: playerInfo.height },
-        { label: 'Weight', value: playerInfo.weight },
-        { label: 'MLB Debut', value: playerInfo.mlbDebutDate },
-        { label: 'Bat/Throw', value: `${playerInfo.batSide.code}/${playerInfo.pitchHand.code}` }
-    ];
 
     const displayedPitcherStats = useMemo(() => {
         if (pitcherStats === null) return null;
@@ -235,7 +182,6 @@ export default function PlayerStats({ }) {
             }
         });
 
-
         if (allYearsChecked) {
             return filteredYears;
         } else {
@@ -243,6 +189,35 @@ export default function PlayerStats({ }) {
         }
 
     }, [pitcherStats, allYearsChecked, groupTeamsChecked]);
+
+    const [hitterStats, setHitterStats] = useState<HitterStats[] | null>(null);
+
+    const displayedHitterStats = useMemo(() => {
+        if (hitterStats === null) return null;
+
+        const multiTeamYears = new Set(
+            hitterStats.filter(row => (row.team === '' && row.year !== 'Career')).map(row => row.year)
+        );
+
+        const filteredYears = hitterStats.filter(row => {
+            if (!multiTeamYears.has(row.year)) {
+                return true;
+            } else {
+                if (groupTeamsChecked) {
+                    return row.team === '';
+                } else {
+                    return row.team !== '';
+                }
+            }
+        });
+
+        if (allYearsChecked) {
+            return filteredYears;
+        } else {
+            return filteredYears.filter(row => row.year === Temporal.Now.plainDateISO().year.toString());
+        }
+
+    }, [hitterStats, allYearsChecked, groupTeamsChecked]);
 
     const allYearsToggle = (event) => {
         setAllYearsChecked(event.target.checked);
@@ -252,11 +227,11 @@ export default function PlayerStats({ }) {
         setGroupTeamsChecked(event.target.checked);
     }
 
+
     useEffect(() => {
         async function loadInningsPitched() {
-            const gamePromises = pitcherYearDetails.gameLog.map(async (gameInfo) => {
-                const gameData = await fetchGame(gameInfo.gamePk);
-                return gameData;
+            const gamePromises = pitcherYearDetails.gameLog?.map(async (gameInfo) => {
+                return await fetchGame(gameInfo.gamePk);
             })
             const allGames = await Promise.all(gamePromises);
 
@@ -288,7 +263,7 @@ export default function PlayerStats({ }) {
             setSeasonInningsPitched([]);
         }
 
-    }, [pitcherYearDetails.gameLog]);
+    }, [pitcherYearDetails.gameLog, playerInfo?.id]);
 
     const handlePitcherRowSelect = (e, dt, type, indexes) => {
 
@@ -395,12 +370,16 @@ export default function PlayerStats({ }) {
         };
     }, [pitcherYearDetails.gameLog, navigate]);
 
+    console.log('hitterStats');
+    console.log(hitterStats);
+
     useEffect(() => {
         const getPlayer = async () => {
             if (selectedPlayer === null) {
                 setPlayerInfo(null);
                 setAwards([]);
                 setPitcherStats(null);
+                setHitterStats(null);
                 return;
             }
 
@@ -408,26 +387,29 @@ export default function PlayerStats({ }) {
             const playerInfo = rawPlayerInfo.people[0];
             setPlayerInfo(playerInfo);
 
-            const statsURLs = [];
-
             const seasonPitchingStats = Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
-                const year = Temporal.Now.plainDateISO().year - i;
-                return fetchPlayer(selectedPlayer, ['pitching'], ['season', 'seasonAdvanced'], year);
+                return fetchPlayer(selectedPlayer, ['pitching'], ['season', 'seasonAdvanced'], Temporal.Now.plainDateISO().year - i);
             });
-
             const careerPitchingStats = fetchPlayer(selectedPlayer, ['pitching'], ['career', 'careerAdvanced']);
-
             const rawPitcherStats = await Promise.all([...seasonPitchingStats, careerPitchingStats]);
-
             const pitcherStats = transformPitcherStats(rawPitcherStats);
             setPitcherStats(pitcherStats);
+
+
+            const seasonHittingStats = Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
+                return fetchPlayer(selectedPlayer, ['hitting'], ['season', 'seasonAdvanced'], Temporal.Now.plainDateISO().year - i);
+            });
+            const careerHittingStats = fetchPlayer(selectedPlayer, ['hitting'], ['career', 'careerAdvanced']);
+            const rawHitterStats = await Promise.all([...seasonHittingStats, careerHittingStats]);
+            const hitterStats = transformHitterStats(rawHitterStats);
+            setHitterStats(hitterStats);
 
             const rawAwards = await fetchAwards(selectedPlayer);
             if (rawAwards.people[0].awards) {
                 const awards = transformAwards(rawAwards);
                 setAwards(awards);
             } else {
-                setAwards(null);
+                setAwards([]);
             }
         }
 
@@ -782,6 +764,9 @@ export default function PlayerStats({ }) {
 
     }, [selectedPlayer]);
 
+    console.log('playerInfo');
+    console.log(playerInfo);
+
     return (
         <>
             {/* <StatsModal open={modalOpen} handleClose={handleModalClose} modalData={modalData} /> */}
@@ -872,113 +857,27 @@ export default function PlayerStats({ }) {
                     <FormControlLabel control={<Switch onChange={allYearsToggle} checked={allYearsChecked} />} label='All years' />
                     <FormControlLabel control={<Switch onChange={groupTeamsToggle} checked={groupTeamsChecked} />} label='Group teams' />
                 </Box>
-                {['Pitcher', 'Two-Way Player'].includes(playerInfo.primaryPosition.name) ? <>
-                    <Typography variant="h6">Pitcher stats</Typography>
-                    {pitcherStats && <Box sx={{
-                        width: 1200,
-                        '& .dataTable tbody tr:hover': {
-                            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
-                        },
-                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
-                            backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
-                            boxShadow: 'none !important'
-                        },
-                    }}>
-                        <DataTable
-                            data={displayedPitcherStats}
-                            columns={pitcherStatsColumns}
-                            options={{
-                                select: {
-                                    info: false
-                                },
-                                paging: false,
-                                info: false,
-                                ordering: false,
-                                dom: "t",
-                                destroy: true,
-                            }}
-                            onSelect={handlePitcherRowSelect}
-                            onDeselect={handlePitcherRowDeselect}
-                        />
-                    </Box>
-                    }
-                    {pitcherYearDetails.isLoading && <>
-                        <LoadingCircle size={60} />
-                    </>}
-                    {pitcherYearDetails.year &&
-                        <Typography variant='h4'>{pitcherYearDetails.year}</Typography>
-                    }
-                    <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-                        {pitcherYearDetails.pitchArsenal &&
-                            <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '600px' }}>
-                                <Typography variant='h5'>Pitch Arsenal (Total: {totalPitches})</Typography>
-                                <PitchArsenalChart pitchArsenal={pitcherYearDetails.pitchArsenal} />
-                            </Box>
-                        }
-                        {pitcherYearDetails.pitchSpeeds &&
-                            <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '600px' }}>
-                                <Typography variant='h5'>Pitch Speeds</Typography>
-                                <PitchSpeedsChart pitchSpeeds={pitcherYearDetails.pitchSpeeds} />
-                            </Box>
-                        }
-                    </Box>
-                    {allSeasonPitches &&
-                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '1200px' }}>
-                            <Typography variant='h5'>All Pitches</Typography>
-                            <AllSeasonPitchesChart allSeasonPitches={allSeasonPitches} />
-                        </Box>
-                    }
-                    {seasonInningsPitched.length > 0 &&
-                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '1200px' }}>
-                            <Typography variant='h5'>Innings Pitched</Typography>
-                            <InningsPitchedChart seasonInningsPitched={seasonInningsPitched} />
-                        </Box>
-                    }
-                    {pitcherYearDetails.gameLog && <Box sx={{
-                        width: 1200,
-                        '& .dataTable tbody tr:hover': {
-                            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
-                        },
-                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
-                            backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
-                            boxShadow: 'none !important'
-                        },
-                    }}>
-                        <Typography variant='h5'>Game Log</Typography>
-                        <DataTable
-                            data={pitcherYearDetails.gameLog}
-                            columns={pitcherGameLogColumns}
-                            options={{
-                                select: {
-                                    info: false
-                                },
-                                paging: false,
-                                info: false,
-                                ordering: false,
-                                dom: "t",
-                                destroy: true,
-                            }}
-                            onSelect={handlePitcherGameRowSelect}
-                            onDeselect={handlePitcherGameRowDeselect}
-                        />
-                    </Box>
-                    }
-                    {selectedPitcherGamePitches &&
-                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '1200px' }}>
-                            <Typography variant='h5'>Game Pitches</Typography>
-                            <GamePitchesChart selectedPitcherGamePitches={selectedPitcherGamePitches} />
-                        </Box>
-                    }
-                    {selectedPitcherGamePitchesVelocity &&
-                        <Box sx={{ display: 'flex', flexDirection: 'column', height: '600px', width: '1200px' }}>
-                            <Typography variant='h5'>Game Pitches Velocity</Typography>
-                            <GamePitchesVelocityChart selectedPitcherGamePitchesVelocity={selectedPitcherGamePitchesVelocity} />
-                        </Box>
-                    }
-                </> : <>
-                    <Typography variant="h6">hitter stats</Typography>
-                </>
-                }
+                {pitcherStats && <PitcherStatsView
+                    pitcherStats={pitcherStats}
+                    displayedPitcherStats={displayedPitcherStats}
+                    pitcherStatsColumns={pitcherStatsColumns}
+                    handlePitcherRowSelect={handlePitcherRowSelect}
+                    handlePitcherRowDeselect={handlePitcherRowDeselect}
+                    pitcherYearDetails={pitcherYearDetails}
+                    totalPitches={totalPitches}
+                    allSeasonPitches={allSeasonPitches}
+                    seasonInningsPitched={seasonInningsPitched}
+                    pitcherGameLogColumns={pitcherGameLogColumns}
+                    handlePitcherGameRowSelect={handlePitcherGameRowSelect}
+                    handlePitcherGameRowDeselect={handlePitcherGameRowDeselect}
+                    selectedPitcherGamePitches={selectedPitcherGamePitches}
+                    selectedPitcherGamePitchesVelocity={selectedPitcherGamePitchesVelocity}
+                />}
+                {hitterStats && <HitterStatsView
+                    hitterStats={hitterStats}
+                    displayedHitterStats={displayedHitterStats}
+                    hitterStatsColumns={hitterStatsColumns}
+                />}
                 {/* <div id="hitting-stats-container">
                     <table id="hitting-stats">
                         <thead>

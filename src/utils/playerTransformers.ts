@@ -1,5 +1,5 @@
 import { fetchGame, fetchSchedule } from "../services/gamesService";
-import { Award, GameLog, PitchArsenal, PitcherStats, PitchLog, PitchSpeeds } from "../types/player";
+import { Award, HitterStats, PitchArsenal, PitcherGameLog, PitcherStats, PitchLog, PitchSpeeds } from "../types/player";
 import { scheduleFormmater } from "./dateFormatters";
 
 
@@ -100,7 +100,7 @@ export const transformPitcherPitchLog = async (rawPitcherGameLog: any, selectedP
     return pitchLog;
 }
 
-export const transformPitcherGameLog = async (rawPitcherGameLog: any): Promise<GameLog[]> => {
+export const transformPitcherGameLog = async (rawPitcherGameLog: any): Promise<PitcherGameLog[]> => {
 
     const gameLog = await Promise.all(rawPitcherGameLog.toReversed().map(async game => {
 
@@ -131,4 +131,24 @@ export const transformPitcherGameLog = async (rawPitcherGameLog: any): Promise<G
     }));
 
     return gameLog;
+}
+
+export const transformHitterStats = (rawHitterStats: any): HitterStats[] => {
+    const hitterStats = rawHitterStats.flatMap((stats, _) => {
+        if (!stats.people[0].stats) {
+            return undefined;
+        } else {
+            const regularStats = stats.people[0].stats[0];
+
+            return regularStats.splits.map((split) => {
+                return {
+                    year: split.season ?? 'Career',
+                    team: split.team ? split.team.name : '',
+                    stats: split.stat
+                }
+            })
+        }
+    }).filter(stats => stats !== undefined);
+
+    return hitterStats;
 }

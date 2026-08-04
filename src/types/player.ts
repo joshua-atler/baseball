@@ -80,7 +80,7 @@ export interface PitcherYearDetails {
     year: string | null;
     pitchSpeeds: PitchSpeeds[] | null;
     pitchArsenal: PitchArsenal[] | null;
-    gameLog: GameLog[] | null;
+    gameLog: PitcherGameLog[] | null;
     playLog: any[] | null;
     pitchLog: PitchLog[] | null;
     error: boolean;
@@ -104,7 +104,7 @@ export interface PitchLog {
     };
 }
 
-export interface GameLog {
+export interface PitcherGameLog {
     gamePk: number;
     gameMetadata: GameMetadata;
     date: string;
@@ -140,4 +140,13 @@ export interface SeriesStatus {
     abbreviation: string;
 }
 
+export interface HitterStats {
+    year: string;
+    team: string;
+    stats: HittingMetrics
+}
 
+export interface HittingMetrics {
+    age: number;
+    // -----------
+}
