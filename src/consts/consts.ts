@@ -1,3 +1,5 @@
+import { SxProps, Theme } from '@mui/material';
+
 import { fetchTeams } from '../services/teamsService.js';
 import * as svgsConst from './svg/*.js';
 const svgsConst = import.meta.glob('./svg/*.js', { eager: true });
@@ -309,8 +311,24 @@ class Consts {
         'Knuckle Curve': 'rgb(85, 255, 200)',
         'Changeup': 'rgb(100, 50, 255)',
     }
+
+    static dataTableContainerSx: SxProps<Theme> = {
+        width: 1200,
+        '& .dataTable tbody tr:hover': {
+            backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
+        },
+        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *': {
+            backgroundColor: (theme) => `${theme.palette.custom.dark} !important`,
+            boxShadow: 'none !important',
+        },
+    };
 }
 
 export { Consts };
 
-window.Consts = Consts;
+
+declare global {
+    interface Window {
+        Consts: typeof Consts;
+    }
+}
