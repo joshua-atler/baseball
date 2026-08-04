@@ -1,18 +1,18 @@
 import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography
+    Box,
+    Card,
+    CardActionArea,
+    CardContent,
+    CardMedia,
+    Typography
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 
+import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { TeamSelect } from '../components/TeamSelect.tsx';
 import { Consts } from '../consts/consts.ts';
 import { useBasedash } from '../context/BasedashContext.tsx';
 import { useNews } from '../services/newsService.ts';
-import { LoadingCircle } from '../components/LoadingCircle.tsx';
 
 
 const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
