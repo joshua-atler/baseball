@@ -2,14 +2,15 @@ import 'datatables.net-buttons/js/buttons.colVis.mjs';
 import 'datatables.net-dt';
 import 'datatables.net-select-dt';
 
+import { Temporal } from '@js-temporal/polyfill';
 import {
-  Box,
-  FormControl,
-  MenuItem,
-  Select,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography
+    Box,
+    FormControl,
+    MenuItem,
+    Select,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import DT from 'datatables.net-dt';
@@ -19,10 +20,11 @@ import { useEffect, useState } from 'react';
 import { useStatsColumns } from '../columns/useStatsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { fetchTeamStats } from '../services/statsService.ts';
+import { FieldingStats, HittingStats, PitchingStats } from '../types/stats.ts';
 import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../utils/statsTransformers.ts';
-import { HittingStats, PitchingStats, FieldingStats } from '../types/stats.ts';
 
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 export default function Stats({
@@ -91,7 +93,7 @@ export default function Stats({
 
                 setPitchingTableData(null);
                 setFieldingTableData(null);
-                setIsLoading(null);
+                setIsLoading(false);
             } else if (statsMode === 'pitching') {
                 const rawPitchingStats = await fetchTeamStats('pitching', statsYear, getGameType(statsGameType));
                 const pitchingStats = await transformPitchingStats(rawPitchingStats);
@@ -99,7 +101,7 @@ export default function Stats({
 
                 setHittingTableData(null);
                 setFieldingTableData(null);
-                setIsLoading(null);
+                setIsLoading(false);
             } else if (statsMode === 'fielding') {
                 const rawFieldingStats = await fetchTeamStats('fielding', statsYear, getGameType(statsGameType));
                 const fieldingStats = await transformFieldingStats(rawFieldingStats);
@@ -107,7 +109,7 @@ export default function Stats({
 
                 setHittingTableData(null);
                 setPitchingTableData(null);
-                setIsLoading(null);
+                setIsLoading(false);
             }
         };
 

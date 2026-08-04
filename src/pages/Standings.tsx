@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import InfoIcon from '@mui/icons-material/Info';
 import {
     Box,
@@ -22,6 +23,7 @@ import DataTable from 'datatables.net-react';
 import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 

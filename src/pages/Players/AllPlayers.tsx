@@ -5,6 +5,7 @@ import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-rowgroup';
 import 'datatables.net-select-dt';
 
+import { Temporal } from '@js-temporal/polyfill';
 import { Box, MenuItem, Select, SelectChangeEvent, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
@@ -15,6 +16,7 @@ import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchPlayerStats } from '../../services/rosterService.ts';
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 
