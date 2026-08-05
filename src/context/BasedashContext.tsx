@@ -1,23 +1,43 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const BasedashContext = createContext(undefined);
+import { TeamName } from '../consts/consts';
 
 export type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 
-export const BasedashProvider = ({ children }) => {
-    const [selectedGame, setSelectedGame] = useState(null);
-    const [selectedGameMetadata, setSelectedGameMetadata] = useState(null);
-    const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [selectedTeam, setSelectedTeam] = useState(null);
+interface BasedashProviderProps {
+    children: React.ReactNode;
+}
+
+export interface BasedashContextType {
+    selectedGame: number | null;
+    setSelectedGame: React.Dispatch<React.SetStateAction<number | null>>;
+    selectedGameMetadata: Record<string, any> | null;
+    setSelectedGameMetadata: React.Dispatch<
+        React.SetStateAction<Record<string, any> | null>
+    >;
+    selectedPlayer: number | null;
+    setSelectedPlayer: React.Dispatch<React.SetStateAction<number | null>>;
+    selectedTeam: TeamName | null;
+    setSelectedTeam: React.Dispatch<React.SetStateAction<TeamName | null>>;
+    timeZone: TimeZone;
+    setTimeZone: React.Dispatch<React.SetStateAction<TimeZone>>;
+}
+
+const BasedashContext = createContext<BasedashContextType | undefined>(
+    undefined
+);
+
+export const BasedashProvider = ({ children }: BasedashProviderProps) => {
+    const [selectedGame, setSelectedGame] = useState<number | null>(null);
+    const [selectedGameMetadata, setSelectedGameMetadata] = useState<Record<
+        string,
+        any
+    > | null>(null);
+    const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+    const [selectedTeam, setSelectedTeam] = useState<TeamName | null>(null);
     const [timeZone, setTimeZone] = useState<TimeZone>('ET');
 
-    const isMobileDevice = () => {
-        return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(
-            navigator.userAgent
-        );
-    };
-
-    const state = useMemo(
+    const state = useMemo<BasedashContextType>(
         () => ({
             selectedGame,
             setSelectedGame,
@@ -29,19 +49,23 @@ export const BasedashProvider = ({ children }) => {
             setSelectedTeam,
             timeZone,
             setTimeZone,
-            isMobileDevice,
         }),
         [
             selectedGame,
+            setSelectedGame,
             selectedGameMetadata,
+            setSelectedGameMetadata,
             selectedPlayer,
+            setSelectedPlayer,
             selectedTeam,
+            setSelectedTeam,
             timeZone,
+            setTimeZone,
         ]
     );
 
     return (
-        <BasedashContext.Provider value={{ ...state }}>
+        <BasedashContext.Provider value={state}>
             {children}
         </BasedashContext.Provider>
     );

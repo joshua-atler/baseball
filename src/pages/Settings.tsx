@@ -8,13 +8,13 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-import { useBasedash } from '../context/BasedashContext.tsx';
+import { TimeZone, useBasedash } from '../context/BasedashContext.tsx';
 
 export default function Settings() {
     const { timeZone, setTimeZone } = useBasedash();
 
     const handleTimeZoneChange = (event: SelectChangeEvent) => {
-        setTimeZone(event.target.value);
+        setTimeZone(event.target.value as TimeZone);
     };
 
     return (
