@@ -84,7 +84,7 @@ function StandingsTable({ tableData, standingsMode, groupingsMode }) {
     );
 }
 
-export default function Standings() {
+export const Standings = () => {
     const theme = useTheme();
     const [standingsYear, setStandingsYear] = useState(
         Temporal.Now.plainDateISO().year
@@ -719,4 +719,4 @@ export default function Standings() {
             </Box>
         </Box>
     );
-}
+};

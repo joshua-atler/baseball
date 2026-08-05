@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 
 import { GameTabContent } from '../../components/GameTabContent';
 import { useBasedash } from '../../context/BasedashContext';
-import Boxscore from './Boxscore';
-import GameArticle from './GameArticle';
-import GamesList from './GamesList';
-import GameStats from './GameStats';
-import Media from './Media';
-import Plays from './Plays';
-import WinProb from './WinProb';
+import { Boxscore } from './Boxscore';
+import { GameArticle } from './GameArticle';
+import { GamesList } from './GamesList';
+import { GameStats } from './GameStats';
+import { Media } from './Media';
+import { Plays } from './Plays';
+import { WinProb } from './WinProb';
 
 const useScreenWidth = () => {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);

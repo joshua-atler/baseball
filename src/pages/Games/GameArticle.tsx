@@ -9,7 +9,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
 import { transformGameArticle } from '../../utils/gameTransformers.ts';
 
-export default function GameArticle() {
+export const GameArticle = () => {
     const { selectedGame } = useBasedash();
     const [article, setArticle] = useState(null);
 
@@ -139,4 +139,4 @@ export default function GameArticle() {
             )}
         </GameTabContent>
     );
-}
+};

@@ -2,12 +2,12 @@ import { Box, Typography } from '@mui/material';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
 
-import AllSeasonPitchesChart from '../../charts/AllSeasonPitchesChart';
-import GamePitchesChart from '../../charts/GamePitchesChart';
-import GamePitchesVelocityChart from '../../charts/GamePitchesVelocityChart';
-import InningsPitchedChart from '../../charts/InningsPitchedChart';
-import PitchArsenalChart from '../../charts/PitchArsenalChart';
-import PitchSpeedsChart from '../../charts/PitchSpeedsChart';
+import { AllSeasonPitchesChart } from '../../charts/AllSeasonPitchesChart';
+import { GamePitchesChart } from '../../charts/GamePitchesChart';
+import { GamePitchesVelocityChart } from '../../charts/GamePitchesVelocityChart';
+import { InningsPitchedChart } from '../../charts/InningsPitchedChart';
+import { PitchArsenalChart } from '../../charts/PitchArsenalChart';
+import { PitchSpeedsChart } from '../../charts/PitchSpeedsChart';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { Consts } from '../../consts/consts';
 

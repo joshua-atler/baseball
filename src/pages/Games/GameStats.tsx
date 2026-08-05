@@ -99,7 +99,7 @@ const getWinner = (row, statsMode) => {
     }
 };
 
-export default function GameStats() {
+export const GameStats = () => {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
     const [statsMode, setStatsMode] = useState<StatsMode>('batting');
@@ -272,4 +272,4 @@ export default function GameStats() {
             )}
         </GameTabContent>
     );
-}
+};

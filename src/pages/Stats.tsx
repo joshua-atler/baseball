@@ -30,7 +30,7 @@ import {
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export default function Stats() {
+export const Stats = () => {
     const [statsYear, setStatsYear] = useState(
         Temporal.Now.plainDateISO().year
     );
@@ -274,4 +274,4 @@ export default function Stats() {
             </Box>
         </Box>
     );
-}
+};

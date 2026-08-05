@@ -119,7 +119,7 @@ const fixName = (name: string) => {
     return cleanName;
 };
 
-export default function PlayerStats() {
+export const PlayerStats = () => {
     const theme = useTheme();
     const {
         selectedPlayer,
@@ -1149,4 +1149,4 @@ export default function PlayerStats() {
             )}
         </>
     );
-}
+};

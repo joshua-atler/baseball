@@ -531,7 +531,7 @@ function BallIcon({ pitch, pitchX, pitchY, ballNum }) {
     );
 }
 
-export default function Plays({}) {
+export const Plays = () => {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
     const [innings, setInnings] = useState([]);
@@ -601,4 +601,4 @@ export default function Plays({}) {
             )}
         </GameTabContent>
     );
-}
+};

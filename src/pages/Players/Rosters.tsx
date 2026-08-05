@@ -13,12 +13,12 @@ import { TeamSelect } from '../../components/TeamSelect.tsx';
 import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchRoster } from '../../services/rosterService.ts';
-import { transformRoster } from '../../utils/rosterTransformer.ts';
 import { RosterPlayer } from '../../types/roster.ts';
+import { transformRoster } from '../../utils/rosterTransformer.ts';
 
 DataTable.use(DT);
 
-export default function Rosters({ setTeamViewTab }) {
+export const Rosters = ({ setTeamViewTab }) => {
     const { setSelectedPlayer, selectedTeam, setSelectedTeam } = useBasedash();
 
     const selectedTeamLogo = selectedTeam
@@ -138,4 +138,4 @@ export default function Rosters({ setTeamViewTab }) {
             )}
         </>
     );
-}
+};

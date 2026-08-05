@@ -2,11 +2,11 @@ import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 
 import { useBasedash } from '../../context/BasedashContext';
-import AllPlayers from './AllPlayers.tsx';
-import PlayerStats from './PlayerStats';
-import Rosters from './Rosters';
+import { AllPlayers } from './AllPlayers.tsx';
+import { PlayerStats } from './PlayerStats';
+import { Rosters } from './Rosters';
 
-export default function Players() {
+export const Players = () => {
     const { selectedPlayer, setSelectedPlayer, selectedTeam, setSelectedTeam } =
         useBasedash();
 
@@ -37,4 +37,4 @@ export default function Players() {
             {teamViewTab === 'Player' && <PlayerStats />}
         </>
     );
-}
+};

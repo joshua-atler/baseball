@@ -7,7 +7,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
 import { transformGameMedia } from '../../utils/gameTransformers.ts';
 
-export default function Media() {
+export const Media = () => {
     const { selectedGame } = useBasedash();
     const [media, setMedia] = useState(null);
     const [isReady, setIsReady] = useState(false);
@@ -69,4 +69,4 @@ export default function Media() {
             )}
         </GameTabContent>
     );
-}
+};

@@ -9,7 +9,7 @@ import {
 
 import { Consts } from '../consts/consts.ts';
 
-export default function PitchArsenalChart({ pitchArsenal }) {
+export const PitchArsenalChart = ({ pitchArsenal }) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
@@ -70,4 +70,4 @@ export default function PitchArsenalChart({ pitchArsenal }) {
             </ResponsiveContainer>
         </>
     );
-}
+};

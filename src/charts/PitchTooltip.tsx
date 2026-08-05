@@ -1,4 +1,4 @@
-export default function PitchTooltip({ active, payload }) {
+export const PitchTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
         const pitch = payload[0].payload;
 
@@ -39,4 +39,4 @@ export default function PitchTooltip({ active, payload }) {
         );
     }
     return null;
-}
+};

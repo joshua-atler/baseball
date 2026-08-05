@@ -8,7 +8,7 @@ import {
     YAxis,
 } from 'recharts';
 
-export default function InningsPitchedChart({ seasonInningsPitched }) {
+export const InningsPitchedChart = ({ seasonInningsPitched }) => {
     const theme = useTheme();
     const maxInningsValue = Math.max(
         ...seasonInningsPitched.map((x) => x.inningsPitched),
@@ -61,4 +61,4 @@ export default function InningsPitchedChart({ seasonInningsPitched }) {
             </ResponsiveContainer>
         </>
     );
-}
+};

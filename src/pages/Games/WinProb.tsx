@@ -17,7 +17,7 @@ function rgbaColor(color) {
     return rgbaColor;
 }
 
-export default function WinProb({}) {
+export const WinProb = () => {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
 
@@ -228,4 +228,4 @@ export default function WinProb({}) {
             )}
         </GameTabContent>
     );
-}
+};

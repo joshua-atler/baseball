@@ -15,13 +15,13 @@ import { Header } from './Header.tsx';
 import { NavTabs } from './NavTabs.tsx';
 import { Games } from './pages/Games/Games.tsx';
 import { News } from './pages/News.tsx';
-import Players from './pages/Players/Players.tsx';
+import { Players } from './pages/Players/Players.tsx';
 import { Settings } from './pages/Settings.tsx';
-import Standings from './pages/Standings.tsx';
-import Stats from './pages/Stats.tsx';
+import { Standings } from './pages/Standings.tsx';
+import { Stats } from './pages/Stats.tsx';
 import { baseDashTheme } from './theme.ts';
 
-export default function App() {
+export const App = () => {
     return (
         <>
             <Analytics />
@@ -128,4 +128,4 @@ export default function App() {
             </Router>
         </>
     );
-}
+};

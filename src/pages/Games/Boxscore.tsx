@@ -184,7 +184,7 @@ function ProbablePitcher({ pitcher }) {
     );
 }
 
-export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
+export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const { selectedGame, selectedGameMetadata, timeZone } = useBasedash();
@@ -1048,4 +1048,4 @@ export default function Boxscore({ highlightedPlayer, setSelectedPlayer }) {
             </Box>
         </>
     );
-}
+};

@@ -27,7 +27,7 @@ import { transformGames } from '../../utils/gameTransformers.ts';
 
 DataTable.use(DT);
 
-export default function GamesList({}) {
+export const GamesList = () => {
     const theme = useTheme();
     const { setSelectedGame, setSelectedGameMetadata } = useBasedash();
 
@@ -319,4 +319,4 @@ export default function GamesList({}) {
             )}
         </>
     );
-}
+};

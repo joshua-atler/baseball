@@ -11,7 +11,7 @@ import {
 
 import { Consts } from '../consts/consts.ts';
 
-export default function PitchSpeedsChart({ pitchSpeeds }) {
+export const PitchSpeedsChart = ({ pitchSpeeds }) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
@@ -53,4 +53,4 @@ export default function PitchSpeedsChart({ pitchSpeeds }) {
             </ResponsiveContainer>
         </>
     );
-}
+};

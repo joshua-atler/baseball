@@ -24,7 +24,7 @@ import { fetchPlayerStats } from '../../services/rosterService.ts';
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export default function AllPlayers({ setTeamViewTab }) {
+export const AllPlayers = ({ setTeamViewTab }) => {
     const { setSelectedPlayer, setSelectedTeam } = useBasedash();
 
     const [viewMode, setViewMode] = useState('Pitchers');
@@ -161,4 +161,4 @@ export default function AllPlayers({ setTeamViewTab }) {
             </Box>
         </>
     );
-}
+};

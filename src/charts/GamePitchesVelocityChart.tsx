@@ -11,11 +11,11 @@ import {
 
 import { Consts } from '../consts/consts';
 import { handleScatterClick } from './chartUtils';
-import PitchTooltip from './PitchTooltip';
+import { PitchTooltip } from './PitchTooltip';
 
-export default function GamePitchesVelocityChart({
+export const GamePitchesVelocityChart = ({
     selectedPitcherGamePitchesVelocity,
-}) {
+}) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
@@ -93,4 +93,4 @@ export default function GamePitchesVelocityChart({
             </ResponsiveContainer>
         </>
     );
-}
+};

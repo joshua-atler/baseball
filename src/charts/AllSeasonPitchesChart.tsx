@@ -11,9 +11,9 @@ import {
 
 import { Consts } from '../consts/consts';
 import { handleScatterClick } from './chartUtils';
-import PitchTooltip from './PitchTooltip';
+import { PitchTooltip } from './PitchTooltip';
 
-export default function AllSeasonPitchesChart({ allSeasonPitches }) {
+export const AllSeasonPitchesChart = ({ allSeasonPitches }) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
@@ -80,4 +80,4 @@ export default function AllSeasonPitchesChart({ allSeasonPitches }) {
             </ResponsiveContainer>
         </>
     );
-}
+};
