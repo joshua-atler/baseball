@@ -8,6 +8,7 @@ import {
     FormControl,
     MenuItem,
     Select,
+    SelectChangeEvent,
     ToggleButton,
     ToggleButtonGroup,
     Typography,
@@ -19,8 +20,15 @@ import { useEffect, useState } from 'react';
 
 import { useStatsColumns } from '../columns/useStatsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
+import { Consts } from '../consts/consts.ts';
 import { fetchTeamStats } from '../services/statsService.ts';
-import { FieldingStats, HittingStats, PitchingStats } from '../types/stats.ts';
+import {
+    FieldingStats,
+    HittingStats,
+    PitchingStats,
+    StatsGameType,
+    StatsMode,
+} from '../types/stats.ts';
 import {
     transformFieldingStats,
     transformHittingStats,
@@ -30,12 +38,19 @@ import {
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
+const GAME_TYPES = {
+    'Regular Season': 'R',
+    Postseason: 'P',
+    'Spring Training': 'S',
+} as const;
+
 export const Stats = () => {
     const [statsYear, setStatsYear] = useState(
         Temporal.Now.plainDateISO().year
     );
-    const [statsGameType, setSeasonType] = useState('Regular Season');
-    const [statsMode, setStatsMode] = useState('hitting');
+    const [statsGameType, setStatsGameType] =
+        useState<StatsGameType>('Regular Season');
+    const [statsMode, setStatsMode] = useState<StatsMode>('hitting');
     const [hittingTableData, setHittingTableData] = useState<
         HittingStats[] | null
     >(null);
@@ -69,38 +84,33 @@ export const Stats = () => {
     const { hittingColumns, pitchingColumns, fieldingColumns } =
         useStatsColumns();
 
-    const handleYearChange = (event) => {
+    const handleYearChange = (event: SelectChangeEvent<number>) => {
         setIsLoading(true);
         setStatsYear(event.target.value as number);
     };
 
-    const handleStatsGameTypeChange = (event) => {
+    const handleStatsGameTypeChange = (
+        event: SelectChangeEvent<StatsGameType>
+    ) => {
         setIsLoading(true);
-        setSeasonType(event.target.value as string);
+        setStatsGameType(event.target.value as StatsGameType);
     };
-
-    const handleStatsModeChange = (event) => {
+    const handleStatsModeChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newStatsMode: StatsMode
+    ) => {
         setIsLoading(true);
-        setStatsMode(event.target.value as string);
-    };
-
-    const getGameType = (gameType) => {
-        const gameTypes = {
-            'Regular Season': 'R',
-            Postseason: 'P',
-            'Spring Training': 'S',
-        };
-
-        return gameTypes[gameType];
+        setStatsMode(newStatsMode);
     };
 
     useEffect(() => {
         const getStats = async () => {
+            const gameTypeCode = GAME_TYPES[statsGameType];
             if (statsMode === 'hitting') {
                 const rawHittingStats = await fetchTeamStats(
                     'hitting',
                     statsYear,
-                    getGameType(statsGameType)
+                    gameTypeCode
                 );
                 const hittingStats = transformHittingStats(rawHittingStats);
                 setHittingTableData(hittingStats);
@@ -112,7 +122,7 @@ export const Stats = () => {
                 const rawPitchingStats = await fetchTeamStats(
                     'pitching',
                     statsYear,
-                    getGameType(statsGameType)
+                    gameTypeCode
                 );
                 const pitchingStats = transformPitchingStats(rawPitchingStats);
                 setPitchingTableData(pitchingStats);
@@ -124,7 +134,7 @@ export const Stats = () => {
                 const rawFieldingStats = await fetchTeamStats(
                     'fielding',
                     statsYear,
-                    getGameType(statsGameType)
+                    gameTypeCode
                 );
                 const fieldingStats = transformFieldingStats(rawFieldingStats);
                 setFieldingTableData(fieldingStats);
@@ -184,8 +194,6 @@ export const Stats = () => {
                     <Box sx={{ minWidth: 120, width: 200 }}>
                         <FormControl fullWidth>
                             <Select
-                                defaultValue={2025}
-                                displayEmpty
                                 value={statsGameType}
                                 onChange={handleStatsGameTypeChange}
                             >
@@ -220,53 +228,27 @@ export const Stats = () => {
                     <LoadingCircle size={60} />
                 ) : (
                     <>
-                        <Box
-                            sx={{
-                                width: 1200,
-                                '& .dataTable tbody tr:hover': {
-                                    backgroundColor: (theme) =>
-                                        `${theme.palette.custom.lightGray} !important`,
-                                },
-                                '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected':
-                                    {
-                                        backgroundColor: (theme) =>
-                                            `${theme.palette.custom.darkGray} !important`,
-                                        boxShadow: 'none !important',
-                                    },
-                            }}
-                        >
+                        <Box sx={Consts.dataTableContainerSx}>
                             {statsMode === 'hitting' && (
-                                <>
-                                    <DataTable
-                                        hidden={true}
-                                        data={hittingTableData}
-                                        columns={hittingColumns}
-                                        autoWidth={false}
-                                        options={options}
-                                    />
-                                </>
+                                <DataTable
+                                    data={hittingTableData ?? []}
+                                    columns={hittingColumns}
+                                    options={options}
+                                />
                             )}
                             {statsMode === 'pitching' && (
-                                <>
-                                    <DataTable
-                                        hidden={true}
-                                        data={pitchingTableData}
-                                        columns={pitchingColumns}
-                                        autoWidth={false}
-                                        options={options}
-                                    />
-                                </>
+                                <DataTable
+                                    data={pitchingTableData ?? []}
+                                    columns={pitchingColumns}
+                                    options={options}
+                                />
                             )}
                             {statsMode === 'fielding' && (
-                                <>
-                                    <DataTable
-                                        hidden={true}
-                                        data={fieldingTableData}
-                                        columns={fieldingColumns}
-                                        autoWidth={false}
-                                        options={options}
-                                    />
-                                </>
+                                <DataTable
+                                    data={fieldingTableData ?? []}
+                                    columns={fieldingColumns}
+                                    options={options}
+                                />
                             )}
                         </Box>
                     </>

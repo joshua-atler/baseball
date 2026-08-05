@@ -20,11 +20,13 @@ import DatePicker from 'react-multi-date-picker';
 
 import { useGameColumns } from '../../columns/useGameColumns.tsx';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
+import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchSchedule } from '../../services/gamesService.ts';
 import { formatter, shortYearFormatter } from '../../utils/dateFormatters.ts';
 import { transformGames } from '../../utils/gameTransformers.ts';
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 export const GamesList = () => {
@@ -276,21 +278,7 @@ export const GamesList = () => {
                     ))}
                 </Box>
             ) : (
-                <Box
-                    sx={{
-                        width: 1200,
-                        '& .dataTable tbody tr:hover': {
-                            backgroundColor: (theme) =>
-                                `${theme.palette.custom.lightGray} !important`,
-                        },
-                        '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *':
-                            {
-                                backgroundColor: (theme) =>
-                                    `${theme.palette.custom.darkGray} !important`,
-                                boxShadow: 'none !important',
-                            },
-                    }}
-                >
+                <Box sx={Consts.dataTableContainerSx}>
                     <DataTable
                         hidden={true}
                         data={tableData}

@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 
 import { useAllPlayersColumns } from '../../columns/useAllPlayersColumns.tsx';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
+import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchPlayerStats } from '../../services/rosterService.ts';
 
@@ -124,20 +125,7 @@ export const AllPlayers = ({ setTeamViewTab }) => {
                     <LoadingCircle size={60} />
                 ) : (
                     <>
-                        <Box
-                            sx={{
-                                '& .dataTable tbody tr:hover': {
-                                    backgroundColor: (theme) =>
-                                        `${theme.palette.custom.lightGray} !important`,
-                                },
-                                '& table.dataTable tbody tr.selected *, & table.dataTable tbody tr td.selected *':
-                                    {
-                                        backgroundColor: (theme) =>
-                                            `${theme.palette.custom.darkGray} !important`,
-                                        boxShadow: 'none !important',
-                                    },
-                            }}
-                        >
+                        <Box sx={Consts.dataTableContainerSx}>
                             <DataTable
                                 data={allPlayers}
                                 columns={allPlayersColumns}

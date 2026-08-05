@@ -1,3 +1,6 @@
+export type StatsGameType = 'Regular Season' | 'Postseason' | 'Spring Training';
+export type StatsMode = 'hitting' | 'pitching' | 'fielding';
+
 export interface FieldingStats {
     team: {
         name: string;
