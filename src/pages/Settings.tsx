@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid2';
 
 import { TimeZone, useBasedash } from '../context/BasedashContext.tsx';
 
-export default function Settings() {
+export const Settings = () => {
     const { timeZone, setTimeZone } = useBasedash();
 
     const handleTimeZoneChange = (event: SelectChangeEvent) => {
@@ -54,4 +54,4 @@ export default function Settings() {
             </Box>
         </>
     );
-}
+};

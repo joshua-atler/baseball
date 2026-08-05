@@ -4,9 +4,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Analytics } from '@vercel/analytics/react';
 import {
-    BrowserRouter as Router,
     Navigate,
     Route,
+    BrowserRouter as Router,
     Routes,
 } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ import { NavTabs } from './NavTabs.tsx';
 import { Games } from './pages/Games/Games.tsx';
 import { News } from './pages/News.tsx';
 import Players from './pages/Players/Players.tsx';
-import Settings from './pages/Settings.tsx';
+import { Settings } from './pages/Settings.tsx';
 import Standings from './pages/Standings.tsx';
 import Stats from './pages/Stats.tsx';
 import { baseDashTheme } from './theme.ts';

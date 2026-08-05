@@ -30,7 +30,7 @@ import {
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export default function Stats({}) {
+export default function Stats() {
     const [statsYear, setStatsYear] = useState(
         Temporal.Now.plainDateISO().year
     );
@@ -71,7 +71,7 @@ export default function Stats({}) {
 
     const handleYearChange = (event) => {
         setIsLoading(true);
-        setStatsYear(event.target.value as string);
+        setStatsYear(event.target.value as number);
     };
 
     const handleStatsGameTypeChange = (event) => {
@@ -102,8 +102,7 @@ export default function Stats({}) {
                     statsYear,
                     getGameType(statsGameType)
                 );
-                const hittingStats =
-                    await transformHittingStats(rawHittingStats);
+                const hittingStats = transformHittingStats(rawHittingStats);
                 setHittingTableData(hittingStats);
 
                 setPitchingTableData(null);
@@ -115,8 +114,7 @@ export default function Stats({}) {
                     statsYear,
                     getGameType(statsGameType)
                 );
-                const pitchingStats =
-                    await transformPitchingStats(rawPitchingStats);
+                const pitchingStats = transformPitchingStats(rawPitchingStats);
                 setPitchingTableData(pitchingStats);
 
                 setHittingTableData(null);
@@ -128,8 +126,7 @@ export default function Stats({}) {
                     statsYear,
                     getGameType(statsGameType)
                 );
-                const fieldingStats =
-                    await transformFieldingStats(rawFieldingStats);
+                const fieldingStats = transformFieldingStats(rawFieldingStats);
                 setFieldingTableData(fieldingStats);
 
                 setHittingTableData(null);

@@ -76,7 +76,7 @@ const NewsCard = ({ title, link, pubDate, imageUrl }: NewsCardProps) => {
     );
 };
 
-export function News() {
+export const News = () => {
     const [selectedTeam, setSelectedTeam] = useState<TeamName | ''>('');
     // const { isMobileDevice } = useBasedash();
     const { articles, isLoading, isError } = useNews(
@@ -207,4 +207,4 @@ export function News() {
             </Box>
         </>
     );
-}
+};
