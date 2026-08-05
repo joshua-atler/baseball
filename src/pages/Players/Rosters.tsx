@@ -16,6 +16,7 @@ import { fetchRoster } from '../../services/rosterService.ts';
 import { RosterPlayer } from '../../types/roster.ts';
 import { transformRoster } from '../../utils/rosterTransformer.ts';
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
 export const Rosters = ({ setTeamViewTab }) => {
