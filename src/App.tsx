@@ -3,7 +3,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Analytics } from '@vercel/analytics/react';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Navigate,
+    Route,
+    Routes,
+} from 'react-router-dom';
 
 import { BasedashProvider } from './context/BasedashContext.tsx';
 import { Header } from './Header.tsx';
@@ -31,21 +36,30 @@ export default function App() {
                                 sx={{
                                     p: 4,
                                     '& table th, & table td': {
-                                        padding: '8px'
+                                        padding: '8px',
                                     },
                                     '& table:not(.dataTable)': {
                                         width: '600px',
                                         marginBottom: '20px',
                                         border: '1px solid white',
-                                        borderCollapse: 'collapse'
+                                        borderCollapse: 'collapse',
                                     },
                                     '& div.dt-paging button.dt-paging-button': {
                                         backgroundImage: 'none !important',
                                         backgroundColor: '#555555 !important',
 
-                                        '&:hover': { backgroundColor: '#888888 !important' },
-                                        '&:active': { backgroundColor: '#333333 !important' },
-                                        '&.disabled': { backgroundColor: '#555555 !important' }
+                                        '&:hover': {
+                                            backgroundColor:
+                                                '#888888 !important',
+                                        },
+                                        '&:active': {
+                                            backgroundColor:
+                                                '#333333 !important',
+                                        },
+                                        '&.disabled': {
+                                            backgroundColor:
+                                                '#555555 !important',
+                                        },
                                     },
                                     '& span.tooltip': {
                                         borderBottom: '2px dotted white',
@@ -71,8 +85,8 @@ export default function App() {
 
                                         '&:hover::after': {
                                             opacity: 1,
-                                            visibility: 'visible'
-                                        }
+                                            visibility: 'visible',
+                                        },
                                     },
                                     '& tr.dtrg-group.dtrg-start': {
                                         backgroundColor: '#1a1a1a !important',
@@ -81,23 +95,37 @@ export default function App() {
                                         letterSpacing: '0.5px',
                                         textTransform: 'uppercase',
                                         fontSize: '0.85rem',
-                                    }
+                                    },
                                 }}
                             >
                                 <Routes>
                                     <Route path="/games" element={<Games />} />
-                                    <Route path="/players" element={<Players />} />
+                                    <Route
+                                        path="/players"
+                                        element={<Players />}
+                                    />
                                     <Route path="/news" element={<News />} />
                                     <Route path="/stats" element={<Stats />} />
-                                    <Route path="/standings" element={<Standings />} />
-                                    <Route path="/settings" element={<Settings />} />
-                                    <Route path="*" element={<Navigate to="/games" replace />} />
+                                    <Route
+                                        path="/standings"
+                                        element={<Standings />}
+                                    />
+                                    <Route
+                                        path="/settings"
+                                        element={<Settings />}
+                                    />
+                                    <Route
+                                        path="*"
+                                        element={
+                                            <Navigate to="/games" replace />
+                                        }
+                                    />
                                 </Routes>
                             </Box>
                         </BasedashProvider>
                     </LocalizationProvider>
                 </ThemeProvider>
-            </Router >
+            </Router>
         </>
-    )
+    );
 }

@@ -1,6 +1,5 @@
-import { Consts } from "../consts/consts";
-import { HittingStats, PitchingStats, FieldingStats } from "../types/stats";
-
+import { Consts } from '../consts/consts';
+import { HittingStats, PitchingStats, FieldingStats } from '../types/stats';
 
 export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
     if (rawHittingStats.stats.length === 0) {
@@ -18,21 +17,25 @@ export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
         'obp',
         'slg',
         'ops',
-        'stolenBases'
+        'stolenBases',
     ]);
 
-    const hittingStats = rawHittingStats.stats[0].splits.map(split => ({
+    const hittingStats = rawHittingStats.stats[0].splits.map((split) => ({
         team: {
             name: split.team.name,
             logo: Consts.teamInfo[split.team.name].logo,
         },
-        ...Object.fromEntries(Object.entries(split.stat).filter(([key]) => hittingKeys.has(key))),
+        ...Object.fromEntries(
+            Object.entries(split.stat).filter(([key]) => hittingKeys.has(key))
+        ),
     }));
 
     return hittingStats;
-}
+};
 
-export const transformPitchingStats = (rawPitchingStats: any): PitchingStats[] => {
+export const transformPitchingStats = (
+    rawPitchingStats: any
+): PitchingStats[] => {
     if (rawPitchingStats.stats.length === 0) {
         return [];
     }
@@ -48,21 +51,25 @@ export const transformPitchingStats = (rawPitchingStats: any): PitchingStats[] =
         'avg',
         'whip',
         'shutouts',
-        'saves'
+        'saves',
     ]);
 
-    const pitchingStats = rawPitchingStats.stats[0].splits.map(split => ({
+    const pitchingStats = rawPitchingStats.stats[0].splits.map((split) => ({
         team: {
             name: split.team.name,
             logo: Consts.teamInfo[split.team.name].logo,
         },
-        ...Object.fromEntries(Object.entries(split.stat).filter(([key]) => pitchingKeys.has(key))),
+        ...Object.fromEntries(
+            Object.entries(split.stat).filter(([key]) => pitchingKeys.has(key))
+        ),
     }));
 
     return pitchingStats;
-}
+};
 
-export const transformFieldingStats = (rawFieldingStats: any): FieldingStats[] => {
+export const transformFieldingStats = (
+    rawFieldingStats: any
+): FieldingStats[] => {
     if (rawFieldingStats.stats.length === 0) {
         return [];
     }
@@ -76,16 +83,18 @@ export const transformFieldingStats = (rawFieldingStats: any): FieldingStats[] =
         'errors',
         'doublePlays',
         'triplePlays',
-        'wildPitches'
+        'wildPitches',
     ]);
 
-    const fieldingStats = rawFieldingStats.stats[0].splits.map(split => ({
+    const fieldingStats = rawFieldingStats.stats[0].splits.map((split) => ({
         team: {
             name: split.team.name,
             logo: Consts.teamInfo[split.team.name].logo,
         },
-        ...Object.fromEntries(Object.entries(split.stat).filter(([key]) => fieldingKeys.has(key))),
+        ...Object.fromEntries(
+            Object.entries(split.stat).filter(([key]) => fieldingKeys.has(key))
+        ),
     }));
 
     return fieldingStats;
-}
+};

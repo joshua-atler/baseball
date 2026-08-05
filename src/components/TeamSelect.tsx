@@ -6,102 +6,128 @@ import SlimSelect from 'slim-select';
 
 import { Consts } from '../consts/consts.ts';
 
+export const TeamSelect = memo(
+    ({
+        currentValue,
+        onTeamChange,
+        multiple,
+    }: {
+        currentValue: any;
+        onTeamChange: any;
+        multiple: boolean;
+    }) => {
+        const selectRef = useRef(null);
 
-export const TeamSelect = memo(({ currentValue, onTeamChange, multiple }: {
-    currentValue: any,
-    onTeamChange: any,
-    multiple: boolean
-}) => {
-    const selectRef = useRef(null);
+        const slimSelectInstance = useRef<SlimSelect | null>(null);
 
-    const slimSelectInstance = useRef<SlimSelect | null>(null);
+        const divisionNames = [
+            'AL East',
+            'AL Central',
+            'AL West',
+            'NL East',
+            'NL Central',
+            'NL West',
+        ];
+        const selectData = [];
 
-    const divisionNames = ['AL East', 'AL Central', 'AL West', 'NL East', 'NL Central', 'NL West'];
-    const selectData = [];
+        divisionNames.forEach((divName, index) => {
+            const league = index < 3 ? 'AL' : 'NL';
+            const divIndex = index % 3;
 
-    divisionNames.forEach((divName, index) => {
-        const league = index < 3 ? 'AL' : 'NL';
-        const divIndex = index % 3;
-
-        const group = {
-            label: divName,
-            options: Consts.teams[league][divIndex].map((teamName) => {
-                return {
-                    text: Consts.teamInfo[teamName].abbr,
-                    value: teamName,
-                    html: `
+            const group = {
+                label: divName,
+                options: Consts.teams[league][divIndex].map((teamName) => {
+                    return {
+                        text: Consts.teamInfo[teamName].abbr,
+                        value: teamName,
+                        html: `
                     <div style="display: flex; align-items: center;">
                         <img src="teamLogos/${Consts.teamInfo[teamName].abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
                         <span style="font-weight: bold;">${Consts.teamInfo[teamName].abbr}</span>
                     </div>
-                    `
-                };
-            })
-        };
+                    `,
+                    };
+                }),
+            };
 
-        selectData.push(group);
-    });
-    selectData.unshift({ placeholder: true, text: 'Select a team', value: '' });
+            selectData.push(group);
+        });
+        selectData.unshift({
+            placeholder: true,
+            text: 'Select a team',
+            value: '',
+        });
 
-    useEffect(() => {
-        if (selectRef.current && !slimSelectInstance.current) {
-            slimSelectInstance.current = new SlimSelect({
-                select: selectRef.current,
-                data: selectData,
-                settings: {
-                    showSearch: false,
-                    closeOnSelect: multiple ? false : true,
-                    allowDeselect: true,
-                    isMultiple: multiple,
-                    maxSelected: 5,
-                    contentLocation: document.body
-                },
-                events: {
-                    beforeOpen: () => {
-                        const containers = document.querySelectorAll('.ss-option');
-                        containers.forEach(el => el.classList.add('roster-select'));
+        useEffect(() => {
+            if (selectRef.current && !slimSelectInstance.current) {
+                slimSelectInstance.current = new SlimSelect({
+                    select: selectRef.current,
+                    data: selectData,
+                    settings: {
+                        showSearch: false,
+                        closeOnSelect: multiple ? false : true,
+                        allowDeselect: true,
+                        isMultiple: multiple,
+                        maxSelected: 5,
+                        contentLocation: document.body,
                     },
-                    afterChange: (newVal) => {
-                        const selectedTeams = newVal.map(v => v.value);
-                        onTeamChange(selectedTeams);
-                    }
-                }
-            })
-        }
-
-        return () => {
-            if (slimSelectInstance.current) {
-                slimSelectInstance.current.destroy();
-                slimSelectInstance.current = null;
+                    events: {
+                        beforeOpen: () => {
+                            const containers =
+                                document.querySelectorAll('.ss-option');
+                            containers.forEach((el) =>
+                                el.classList.add('roster-select')
+                            );
+                        },
+                        afterChange: (newVal) => {
+                            const selectedTeams = newVal.map((v) => v.value);
+                            onTeamChange(selectedTeams);
+                        },
+                    },
+                });
             }
-        };
-    }, [multiple]);
 
-    useEffect(() => {
-        if (slimSelectInstance.current && currentValue) {
-            slimSelectInstance.current.setSelected(currentValue);
-        }
-    }, [currentValue]);
-
-    return <>
-        <Box sx={{
-            '& .ss-main': {
-                '& .ss-deselect': {
-                    width: '50px !important',
-                    borderRadius: '15px',
-                    '&:hover': { backgroundColor: '#aaaaaa' },
-                    '& svg': { width: '12px !important', height: '12px !important' }
-                },
-                '& .ss-arrow': {
-                    transform: 'scale(1.4)'
-                },
-                '& .ss-values': {
-                    height: '42px',
-                    fontSize: '14px'
+            return () => {
+                if (slimSelectInstance.current) {
+                    slimSelectInstance.current.destroy();
+                    slimSelectInstance.current = null;
                 }
+            };
+        }, [multiple]);
+
+        useEffect(() => {
+            if (slimSelectInstance.current && currentValue) {
+                slimSelectInstance.current.setSelected(currentValue);
             }
-        }}>
-            <select ref={selectRef} multiple={multiple}></select>
-        </Box>
-    </>;
-});
+        }, [currentValue]);
+
+        return (
+            <>
+                <Box
+                    sx={{
+                        '& .ss-main': {
+                            '& .ss-deselect': {
+                                width: '50px !important',
+                                borderRadius: '15px',
+                                '&:hover': { backgroundColor: '#aaaaaa' },
+                                '& svg': {
+                                    width: '12px !important',
+                                    height: '12px !important',
+                                },
+                            },
+                            '& .ss-arrow': {
+                                transform: 'scale(1.4)',
+                            },
+                            '& .ss-values': {
+                                height: '42px',
+                                fontSize: '14px',
+                            },
+                        },
+                    }}
+                >
+                    <select ref={selectRef} multiple={multiple}></select>
+                </Box>
+            </>
+        );
+    }
+);

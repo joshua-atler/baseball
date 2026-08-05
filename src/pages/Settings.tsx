@@ -1,18 +1,16 @@
 import {
-  Box,
-  FormControl,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Typography
+    Box,
+    FormControl,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { useBasedash } from '../context/BasedashContext.tsx';
 
-
 export default function Settings() {
-
     const { timeZone, setTimeZone } = useBasedash();
 
     const handleTimeZoneChange = (event: SelectChangeEvent) => {
@@ -31,20 +29,29 @@ export default function Settings() {
                     <Grid>
                         <Box sx={{ minWidth: 120, width: 300 }}>
                             <FormControl fullWidth>
-                                <Select displayEmpty
+                                <Select
+                                    displayEmpty
                                     value={timeZone}
                                     onChange={handleTimeZoneChange}
                                 >
-                                    <MenuItem value={"PT"}>Pacific Time</MenuItem>
-                                    <MenuItem value={"MT"}>Mountain Time</MenuItem>
-                                    <MenuItem value={"CT"}>Central Time</MenuItem>
-                                    <MenuItem value={"ET"}>Eastern Time</MenuItem>
+                                    <MenuItem value={'PT'}>
+                                        Pacific Time
+                                    </MenuItem>
+                                    <MenuItem value={'MT'}>
+                                        Mountain Time
+                                    </MenuItem>
+                                    <MenuItem value={'CT'}>
+                                        Central Time
+                                    </MenuItem>
+                                    <MenuItem value={'ET'}>
+                                        Eastern Time
+                                    </MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>
                     </Grid>
                 </Grid>
-            </Box >
+            </Box>
         </>
     );
 }

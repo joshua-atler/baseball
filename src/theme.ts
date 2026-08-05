@@ -13,9 +13,9 @@ declare module '@mui/material/styles' {
             inningsHover: string;
             plays: string;
             playsHover: string;
-            basesIconEmptyFill: string,
-            basesIconEmptyEdge: string,
-            basesIconRunner: string
+            basesIconEmptyFill: string;
+            basesIconEmptyEdge: string;
+            basesIconRunner: string;
         };
     }
     interface PaletteOptions {
@@ -30,13 +30,12 @@ declare module '@mui/material/styles' {
             inningsHover: string;
             plays: string;
             playsHover: string;
-            basesIconEmptyFill: string,
-            basesIconEmptyEdge: string,
-            basesIconRunner: string
+            basesIconEmptyFill: string;
+            basesIconEmptyEdge: string;
+            basesIconRunner: string;
         };
     }
 }
-
 
 const darkTheme = createTheme({
     palette: {
@@ -86,7 +85,7 @@ export const baseDashTheme = createTheme({
             playsHover: '#666666',
             basesIconEmptyFill: '#888888',
             basesIconEmptyEdge: '#AAAAAA',
-            basesIconRunner: '#EFB21F'
+            basesIconRunner: '#EFB21F',
         },
     },
 });

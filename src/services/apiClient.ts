@@ -14,7 +14,9 @@ export const apiClient = async (v1dot1: boolean, endpoint: string) => {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            throw new Error(
+                `API Error: ${response.status} ${response.statusText}`
+            );
         }
 
         return await response.json();

@@ -4,21 +4,26 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
-    Typography
+    Typography,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { TeamSelect } from '../components/TeamSelect.tsx';
-import { Consts } from '../consts/consts.ts';
-import { useBasedash } from '../context/BasedashContext.tsx';
+import { Consts, TeamName } from '../consts/consts.ts';
 import { useNews } from '../services/newsService.ts';
 
+interface NewsCardProps {
+    title: string;
+    link: string;
+    pubDate: string;
+    imageUrl: string;
+}
 
-const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
+const NewsCard = ({ title, link, pubDate, imageUrl }: NewsCardProps) => {
     return (
         <>
-            {isMobileDevice ? (
+            {/* {isMobileDevice ? (
                 <>
                     <Card>
                         <CardActionArea
@@ -42,50 +47,54 @@ const NewsCard = ({ title, link, pubDate, imageUrl, isMobileDevice }) => {
                         </CardActionArea>
                     </Card>
                 </>
-            ) : (
-                <>
-                    <Card sx={{ width: '20%'  }}>
-                        <CardActionArea
-                            href={link}
-                            target={"_blank"}
+            ) : ( */}
+            <Card sx={{ width: '20%' }}>
+                <CardActionArea
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <CardMedia
+                        component="img"
+                        sx={{ objectFit: 'fill' }}
+                        image={imageUrl}
+                        title={title}
+                    />
+                    <CardContent>
+                        <Typography
+                            gutterBottom
+                            variant="subtitle1"
+                            component="div"
                         >
-                            <CardMedia
-                                component='img'
-                                sx={{ objectFit: 'fill' }}
-                                image={imageUrl}
-                                title={title}
-                            />
-                            <CardContent>
-                                <Typography gutterBottom variant='subtitle1' component='div'>
-                                    {title}
-                                </Typography>
-                                <Typography variant='subtitle2'>{pubDate}</Typography>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
-                </>
-            )}
+                            {title}
+                        </Typography>
+                        <Typography variant="subtitle2">{pubDate}</Typography>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
         </>
     );
-}
+};
 
 export function News() {
-    const [selectedTeam, setSelectedTeam] = useState<string>('');
-    const { isMobileDevice } = useBasedash();
-    const { articles, isLoading, isError } = useNews(selectedTeam ? Consts.teamInfo[selectedTeam].nickname : '');
+    const [selectedTeam, setSelectedTeam] = useState<TeamName | ''>('');
+    // const { isMobileDevice } = useBasedash();
+    const { articles, isLoading, isError } = useNews(
+        selectedTeam ? Consts.teamInfo[selectedTeam].nickname : ''
+    );
     const newsTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
 
-    const handleTeamChange = useCallback((val) => {
+    const handleTeamChange = useCallback((val: string[0]) => {
         if (val.length === 1) {
-            setSelectedTeam(val[0]);
+            setSelectedTeam(val[0] as TeamName);
         } else {
-            setSelectedTeam(null);
+            setSelectedTeam('');
         }
     }, []);
 
     return (
         <>
-            {isMobileDevice() ? (
+            {/* {isMobileDevice() ? (
                 // <>
                 //     <Box>
                 //         <div style={{ height: '250px' }}>
@@ -115,55 +124,87 @@ export function News() {
                 //         </Box>
                 //     </Box>
                 // </>
-                <>
-                </>
-            ) : (
-                <>
-                    <Box sx={{ width: '100%', mb: 5 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 2 }}>
-                            {newsTeamLogo &&
-                                <img src={newsTeamLogo} style={{ width: 80, height: 80 }} ></img>
-                            }
-                            <Typography variant='h6'>
-                                {selectedTeam}
-                            </Typography>
-                            <Box sx={{ ml: 'auto', width: '600px' }}>
-                                <TeamSelect
-                                    currentValue={selectedTeam}
-                                    onTeamChange={handleTeamChange}
-                                    multiple={false} />
-                            </Box>
-                        </Box>
-                        <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
-                        <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
+                <></>
+            ) : ( */}
+            <Box sx={{ width: '100%', mb: 5 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        mb: 2,
+                    }}
+                >
+                    {newsTeamLogo && (
+                        <img
+                            src={newsTeamLogo}
+                            style={{ width: 80, height: 80 }}
+                        ></img>
+                    )}
+                    <Typography variant="h6">{selectedTeam}</Typography>
+                    <Box sx={{ ml: 'auto', width: '600px' }}>
+                        <TeamSelect
+                            currentValue={selectedTeam}
+                            onTeamChange={handleTeamChange}
+                            multiple={false}
+                        />
                     </Box>
+                </Box>
+                <Box
+                    sx={{
+                        height: '30px',
+                        backgroundColor: selectedTeam
+                            ? Consts.teamInfo[selectedTeam].colors.primary
+                            : '',
+                    }}
+                ></Box>
+                <Box
+                    sx={{
+                        height: '20px',
+                        backgroundColor: selectedTeam
+                            ? Consts.teamInfo[selectedTeam].colors.secondary
+                            : '',
+                    }}
+                ></Box>
+            </Box>
 
-                    <Box sx={{ width: '90%', mx: 'auto', alignItems: 'center' }}>
-                        {(() => {
-                            if (isLoading) {
-                                return <LoadingCircle size={60} />;
-                            } else if (isError) {
-                                return <Typography variant="h6">Error loading news</Typography>;
-                            } else {
-                                return <>
-                                    <Box sx={{ width: '100%', justifyContent: 'space-between' }} display="flex" flexWrap="wrap" gap={4}>
-                                        {articles.map((article, index) => (
-                                            <NewsCard
-                                                key={index}
-                                                title={article.title}
-                                                description={article.description}
-                                                link={article.link}
-                                                pubDate={article.pubDate}
-                                                imageUrl={article.imageUrl}
-                                            />
-                                        ))}
-                                    </Box>
-                                </>;
-                            }
-                        })()}
-                    </Box>
-                </>
-            )}
+            <Box sx={{ width: '90%', mx: 'auto', alignItems: 'center' }}>
+                {(() => {
+                    if (isLoading) {
+                        return <LoadingCircle size={60} />;
+                    } else if (isError) {
+                        return (
+                            <Typography variant="h6">
+                                Error loading news
+                            </Typography>
+                        );
+                    } else {
+                        return (
+                            <>
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        justifyContent: 'space-between',
+                                    }}
+                                    display="flex"
+                                    flexWrap="wrap"
+                                    gap={4}
+                                >
+                                    {articles.map((article, index) => (
+                                        <NewsCard
+                                            key={index}
+                                            title={article.title}
+                                            link={article.link}
+                                            pubDate={article.pubDate}
+                                            imageUrl={article.imageUrl}
+                                        />
+                                    ))}
+                                </Box>
+                            </>
+                        );
+                    }
+                })()}
+            </Box>
         </>
     );
 }

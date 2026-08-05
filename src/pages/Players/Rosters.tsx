@@ -16,18 +16,14 @@ import { fetchRoster } from '../../services/rosterService.ts';
 import { transformRoster } from '../../utils/rosterTransformer.ts';
 import { RosterPlayer } from '../../types/roster.ts';
 
-
 DataTable.use(DT);
 
-
 export default function Rosters({ setTeamViewTab }) {
-    const {
-        setSelectedPlayer,
-        selectedTeam,
-        setSelectedTeam
-    } = useBasedash();
+    const { setSelectedPlayer, selectedTeam, setSelectedTeam } = useBasedash();
 
-    const selectedTeamLogo = selectedTeam ? Consts.teamInfo[selectedTeam].logo : '';
+    const selectedTeamLogo = selectedTeam
+        ? Consts.teamInfo[selectedTeam].logo
+        : '';
 
     const [roster, setRoster] = useState<RosterPlayer[] | null>(null);
 
@@ -47,20 +43,21 @@ export default function Rosters({ setTeamViewTab }) {
     const { rosterColumns } = useRosterColumns();
 
     useEffect(() => {
-
         const getRoster = async () => {
             if (!selectedTeam) {
                 setRoster(null);
                 return;
-            };
+            }
 
             try {
-                const rawRoster = await fetchRoster(Consts.teamInfo[selectedTeam].id);
+                const rawRoster = await fetchRoster(
+                    Consts.teamInfo[selectedTeam].id
+                );
                 const formattedRoster = await transformRoster(rawRoster);
                 setRoster(formattedRoster);
             } catch (error) {
                 setRoster(null);
-                console.error("Team stats fetch failed: ", error);
+                console.error('Team stats fetch failed: ', error);
             }
         };
 
@@ -74,37 +71,60 @@ export default function Rosters({ setTeamViewTab }) {
     return (
         <>
             <Box sx={{ width: '100%', mb: 5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 2 }}>
-                    {selectedTeamLogo &&
-                        <img src={selectedTeamLogo} style={{ width: 80, height: 80 }} ></img>
-                    }
-                    <Typography variant='h6'>
-                        {selectedTeam}
-                    </Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        mb: 2,
+                    }}
+                >
+                    {selectedTeamLogo && (
+                        <img
+                            src={selectedTeamLogo}
+                            style={{ width: 80, height: 80 }}
+                        ></img>
+                    )}
+                    <Typography variant="h6">{selectedTeam}</Typography>
                     <Box sx={{ ml: 'auto', width: '600px' }}>
                         <TeamSelect
                             currentValue={selectedTeam}
                             onTeamChange={handleTeamChange}
-                            multiple={false} />
+                            multiple={false}
+                        />
                     </Box>
                 </Box>
-                <Box sx={{ height: '30px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.primary : '' }}></Box>
-                <Box sx={{ height: '20px', backgroundColor: selectedTeam ? Consts.teamInfo[selectedTeam].colors.secondary : '' }}></Box>
+                <Box
+                    sx={{
+                        height: '30px',
+                        backgroundColor: selectedTeam
+                            ? Consts.teamInfo[selectedTeam].colors.primary
+                            : '',
+                    }}
+                ></Box>
+                <Box
+                    sx={{
+                        height: '20px',
+                        backgroundColor: selectedTeam
+                            ? Consts.teamInfo[selectedTeam].colors.secondary
+                            : '',
+                    }}
+                ></Box>
             </Box>
 
-            {roster &&
+            {roster && (
                 <DataTable
                     data={roster}
                     columns={rosterColumns}
                     options={{
                         select: {
-                            info: false
+                            info: false,
                         },
                         searching: true,
                         paging: false,
                         info: false,
                         ordering: true,
-                        dom: "ft",
+                        dom: 'ft',
                         destroy: true,
                         rowGroup: {
                             dataSrc: 'type.display',
@@ -115,7 +135,7 @@ export default function Rosters({ setTeamViewTab }) {
                     onSelect={handleSelect}
                     onDeselect={handleDeselect}
                 />
-            }
+            )}
         </>
-    )
+    );
 }

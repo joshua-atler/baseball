@@ -7,9 +7,7 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
 import { transformGameMedia } from '../../utils/gameTransformers.ts';
 
-
 export default function Media() {
-
     const { selectedGame } = useBasedash();
     const [media, setMedia] = useState(null);
     const [isReady, setIsReady] = useState(false);
@@ -19,7 +17,7 @@ export default function Media() {
             if (!selectedGame) {
                 setMedia(null);
                 return;
-            };
+            }
 
             try {
                 const content = await fetchContent(selectedGame);
@@ -27,7 +25,7 @@ export default function Media() {
                 setMedia(formattedMedia);
             } catch (error) {
                 setMedia(null);
-                console.error("News fetch failed:", error);
+                console.error('News fetch failed:', error);
             }
         };
 
@@ -36,32 +34,39 @@ export default function Media() {
 
     return (
         <GameTabContent>
-            {media ?
+            {media ? (
                 <>
                     {media.map((m, i) => {
-                        return <Box key={i} sx={{ mb: 2 }}>
-                            <Box key={i} sx={{
-                                aspectRatio: '16 / 9',
-                                '&:hover': { opacity: 0.8 },
-                                transition: 'opacity 0.2s',
-                                overflow: 'hidden'
-                            }}>
-                                <ReactPlayer
-                                    key={m.videoURL}
-                                    src={m.videoURL}
-                                    light={m.imageURL}
-                                    width="100%"
-                                    height="100%"
-                                    controls
-                                />
+                        return (
+                            <Box key={i} sx={{ mb: 2 }}>
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        aspectRatio: '16 / 9',
+                                        '&:hover': { opacity: 0.8 },
+                                        transition: 'opacity 0.2s',
+                                        overflow: 'hidden',
+                                    }}
+                                >
+                                    <ReactPlayer
+                                        key={m.videoURL}
+                                        src={m.videoURL}
+                                        light={m.imageURL}
+                                        width="100%"
+                                        height="100%"
+                                        controls
+                                    />
+                                </Box>
+                                <Typography variant="h6">{m.title}</Typography>
                             </Box>
-                            <Typography variant="h6">{m.title}</Typography>
-                        </Box>
+                        );
                     })}
-                </> :
+                </>
+            ) : (
                 <>
                     <Typography variant="h5">No content</Typography>
-                </>}
+                </>
+            )}
         </GameTabContent>
-    )
+    );
 }

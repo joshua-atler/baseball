@@ -1,6 +1,7 @@
 export type StandingsForBoxscore = [string, string];
 
-export type StandingsMode = 'regular season' | 'wild card' | 'spring training' | 'line chart';
+export type StandingsMode =
+    'regular season' | 'wild card' | 'spring training' | 'line chart';
 
 export type GroupingsMode = 'division' | 'league' | 'MLB';
 
@@ -25,5 +26,5 @@ export interface FormattedStandings {
 
 export interface LineChartDataset {
     division: string;
-    teamRecords: Record<string, any>[]; 
+    teamRecords: Record<string, any>[];
 }

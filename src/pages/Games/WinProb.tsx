@@ -17,8 +17,7 @@ function rgbaColor(color) {
     return rgbaColor;
 }
 
-export default function WinProb({ }) {
-
+export default function WinProb({}) {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
 
@@ -28,7 +27,6 @@ export default function WinProb({ }) {
     const canvasRef = useRef(null);
 
     useEffect(() => {
-
         const getWinProb = async () => {
             if (chartRef.current !== null) {
                 chartRef.current.destroy();
@@ -58,16 +56,44 @@ export default function WinProb({ }) {
                 let prevAtBatIndex = 0;
                 for (let i = 0; i < winProbData.length; i++) {
                     const atBatIndex = winProbData[i]['about']['atBatIndex'];
-                    const currInning = { half: winProbData[i]['about']['halfInning'], num: winProbData[i]['about']['inning'] };
-                    if (!(currInning.half === prevInning.half && prevInning.num === prevInning.num) || i == winProbData.length - 1) {
-                        shadedRegions[`${prevInning.half} ${prevInning.num}`] = {
-                            type: 'box',
-                            xMin: prevAtBatIndex,
-                            xMax: atBatIndex,
-                            backgroundColor: prevInning.half === 'top' ? rgbaColor(Consts.teamInfo[awayTeam].colors.primary) : rgbaColor(Consts.teamInfo[homeTeam].colors.primary),
-                            borderColor: prevInning.half === 'top' ? rgbaColor(Consts.teamInfo[awayTeam].colors.primary) : rgbaColor(Consts.teamInfo[homeTeam].colors.primary),
-                            borderWidth: 1
-                        };
+                    const currInning = {
+                        half: winProbData[i]['about']['halfInning'],
+                        num: winProbData[i]['about']['inning'],
+                    };
+                    if (
+                        !(
+                            currInning.half === prevInning.half &&
+                            prevInning.num === prevInning.num
+                        ) ||
+                        i == winProbData.length - 1
+                    ) {
+                        shadedRegions[`${prevInning.half} ${prevInning.num}`] =
+                            {
+                                type: 'box',
+                                xMin: prevAtBatIndex,
+                                xMax: atBatIndex,
+                                backgroundColor:
+                                    prevInning.half === 'top'
+                                        ? rgbaColor(
+                                              Consts.teamInfo[awayTeam].colors
+                                                  .primary
+                                          )
+                                        : rgbaColor(
+                                              Consts.teamInfo[homeTeam].colors
+                                                  .primary
+                                          ),
+                                borderColor:
+                                    prevInning.half === 'top'
+                                        ? rgbaColor(
+                                              Consts.teamInfo[awayTeam].colors
+                                                  .primary
+                                          )
+                                        : rgbaColor(
+                                              Consts.teamInfo[homeTeam].colors
+                                                  .primary
+                                          ),
+                                borderWidth: 1,
+                            };
                         prevInning = currInning;
                         prevAtBatIndex = atBatIndex;
                     }
@@ -90,26 +116,27 @@ export default function WinProb({ }) {
                             {
                                 label: `${Consts.teamInfo[homeTeam].abbr} Winning %`,
                                 data: homeTeamWinProbs,
-                                backgroundColor: Consts.teamInfo[homeTeam].colors.primary,
+                                backgroundColor:
+                                    Consts.teamInfo[homeTeam].colors.primary,
                                 borderColor: 'white',
                                 borderWidth: 1,
-                            }
-                        ]
+                            },
+                        ],
                     },
                     options: {
                         layout: {
                             padding: {
                                 left: 15,
-                                right: 30
-                            }
+                                right: 30,
+                            },
                         },
                         scales: {
                             y: {
                                 min: 0,
                                 max: 100,
                                 ticks: {
-                                    color: 'white'
-                                }
+                                    color: 'white',
+                                },
                             },
                             x: {
                                 title: {
@@ -117,13 +144,13 @@ export default function WinProb({ }) {
                                     text: 'At Bat #',
                                     color: 'white',
                                     font: {
-                                        size: 18
-                                    }
+                                        size: 18,
+                                    },
                                 },
                                 ticks: {
-                                    color: 'white'
-                                }
-                            }
+                                    color: 'white',
+                                },
+                            },
                         },
                         plugins: {
                             tooltip: {
@@ -135,39 +162,45 @@ export default function WinProb({ }) {
                                         return `${parseFloat(context[0]['raw']).toFixed(1)}%`;
                                     },
                                     label: function (context) {
-                                        const dataAtIndex = winProbData[context['dataIndex']];
-                                        const label = dataAtIndex['result']['description'];
+                                        const dataAtIndex =
+                                            winProbData[context['dataIndex']];
+                                        const label =
+                                            dataAtIndex['result'][
+                                                'description'
+                                            ];
                                         return label;
                                     },
                                     footer: function (context) {
-                                        const dataAtIndex = winProbData[context[0]['dataIndex']];
+                                        const dataAtIndex =
+                                            winProbData[
+                                                context[0]['dataIndex']
+                                            ];
                                         const footer = `${dataAtIndex['about']['halfInning']} ${dataAtIndex['about']['inning']}\n${Consts.teamInfo[awayTeam].abbr}: ${dataAtIndex['result']['awayScore']}, ${Consts.teamInfo[homeTeam].abbr}: ${dataAtIndex['result']['homeScore']}`;
                                         return footer;
-                                    }
-                                }
+                                    },
+                                },
                             },
                             legend: {
                                 labels: {
                                     color: 'white',
                                     font: {
-                                        size: 18
-                                    }
+                                        size: 18,
+                                    },
                                 },
                             },
                             annotation: {
                                 annotations: {
                                     ...shadedRegions,
-                                }
-                            }
-                        }
-                    }
+                                },
+                            },
+                        },
+                    },
                 });
                 setErrorLoadingChart(false);
             } catch (err) {
                 console.error('Failed to load chart:', err.message);
                 setErrorLoadingChart(true);
             }
-
 
             return () => {
                 const activeChart = Chart.getChart(canvasRef.current);
@@ -177,21 +210,22 @@ export default function WinProb({ }) {
                     chartRef.current = null;
                 }
             };
-        }
+        };
 
         getWinProb();
     }, [selectedGame]);
 
-
-
     return (
         <GameTabContent>
-            {!errorLoadingChart ?
+            {!errorLoadingChart ? (
                 <>
                     <canvas ref={canvasRef} />
-                </> : <>
+                </>
+            ) : (
+                <>
                     <Typography variant="h5">No content</Typography>
-                </>}
+                </>
+            )}
         </GameTabContent>
-    )
+    );
 }

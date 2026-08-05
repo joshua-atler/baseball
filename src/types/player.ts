@@ -1,7 +1,7 @@
 export interface Award {
     name: string;
     dates: string[];
-    teams: string[]
+    teams: string[];
 }
 
 export interface PitcherStats {
@@ -143,7 +143,7 @@ export interface SeriesStatus {
 export interface HitterStats {
     year: string;
     team: string;
-    stats: HittingMetrics
+    stats: HittingMetrics;
 }
 
 export interface HittingMetrics {

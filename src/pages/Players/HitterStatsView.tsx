@@ -4,42 +4,40 @@ import DataTable from 'datatables.net-react';
 
 import { Consts } from '../../consts/consts';
 
-
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
-
 
 export const HitterStatsView = ({
     hitterStats,
     displayedHitterStats,
-    hitterStatsColumns
+    hitterStatsColumns,
 }: any) => {
-
     console.log('displayedHitterStats');
     console.log(displayedHitterStats);
 
     return (
         <>
-            <Typography variant='h6'>Hitter stats</Typography>
-            {hitterStats && <Box sx={Consts.dataTableContainerSx}>
-                <DataTable
-                    data={displayedHitterStats}
-                    columns={hitterStatsColumns}
-                    options={{
-                        select: {
-                            info: false
-                        },
-                        paging: false,
-                        info: false,
-                        ordering: false,
-                        dom: "t",
-                        destroy: true,
-                    }}
-                    // onSelect={handlePitcherRowSelect}
-                    // onDeselect={handlePitcherRowDeselect}
-                />
-            </Box>
-            }
+            <Typography variant="h6">Hitter stats</Typography>
+            {hitterStats && (
+                <Box sx={Consts.dataTableContainerSx}>
+                    <DataTable
+                        data={displayedHitterStats}
+                        columns={hitterStatsColumns}
+                        options={{
+                            select: {
+                                info: false,
+                            },
+                            paging: false,
+                            info: false,
+                            ordering: false,
+                            dom: 't',
+                            destroy: true,
+                        }}
+                        // onSelect={handlePitcherRowSelect}
+                        // onDeselect={handlePitcherRowDeselect}
+                    />
+                </Box>
+            )}
             {/* {pitcherYearDetails.isLoading && <>
                 <LoadingCircle size={60} />
             </>}
@@ -105,5 +103,5 @@ export const HitterStatsView = ({
                 </Box>
             } */}
         </>
-    )
-}
+    );
+};

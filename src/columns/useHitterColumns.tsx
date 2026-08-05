@@ -3,27 +3,29 @@ import { useMemo } from 'react';
 
 import { Consts } from '../consts/consts';
 
-
 export const useHitterColumns = () => {
     const theme = useTheme();
 
-    const hitterStatsColumns = useMemo(() => [
-        { data: 'year', title: 'Year', className: 'dt-right' },
-        {
-            data: 'team', title: 'Team', render: (data) => {
-                if (data.length > 0) {
-                    const logoURL = Consts.teamInfo[data].logo;
-                    return `<img src=${logoURL} style="width: 40px; height: 40px" />`
-                } else {
-                    return '';
-                }
-            }
-        },
-    ], []);
+    const hitterStatsColumns = useMemo(
+        () => [
+            { data: 'year', title: 'Year', className: 'dt-right' },
+            {
+                data: 'team',
+                title: 'Team',
+                render: (data) => {
+                    if (data.length > 0) {
+                        const logoURL = Consts.teamInfo[data].logo;
+                        return `<img src=${logoURL} style="width: 40px; height: 40px" />`;
+                    } else {
+                        return '';
+                    }
+                },
+            },
+        ],
+        []
+    );
 
-    const hitterGameLogColumns = useMemo(() => [
-
-    ], []);
+    const hitterGameLogColumns = useMemo(() => [], []);
 
     // const pitcherGameLogColumns = useMemo(() => [
     //     { data: 'gamePk', title: '', visible: false },
@@ -80,6 +82,5 @@ export const useHitterColumns = () => {
     //     }
     // ], []);
 
-
     return { hitterStatsColumns, hitterGameLogColumns };
-}
+};

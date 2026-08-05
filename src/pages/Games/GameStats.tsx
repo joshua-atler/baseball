@@ -1,15 +1,15 @@
 import {
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography
+    Box,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
@@ -20,12 +20,12 @@ import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
 import { transformGameStats } from '../../utils/gameTransformers.ts';
 
-type StatsMode = "batting" | "pitching" | "fielding";
+type StatsMode = 'batting' | 'pitching' | 'fielding';
 interface StatsRow {
-    stat: string,
-    away: number,
-    home: number
-};
+    stat: string;
+    away: number;
+    home: number;
+}
 
 const lowerIsBetterStats = {
     batting: [
@@ -36,25 +36,43 @@ const lowerIsBetterStats = {
         'pickoffs',
         'atBatsPerHomeRun',
         'strikeOuts',
-        'flyOuts', 'groundOuts', 'popOuts', 'lineOuts', 'airOuts'
+        'flyOuts',
+        'groundOuts',
+        'popOuts',
+        'lineOuts',
+        'airOuts',
     ],
     pitching: [
-        'runs', 'earnedRuns', 'era', 'whip', 'hits',
-        'doubles', 'triples', 'homeRuns', 'rbi',
-        'baseOnBalls', 'intentionalWalks', 'hitByPitch',
-        'wildPitches', 'balks', 'balls',
-        'pitchesPerInning', 'numberOfPitches', 'pitchesThrown',
-        'obp', 'stolenBases', 'stolenBasePercentage',
-        'runsScoredPer9', 'homeRunsPer9',
-        'inheritedRunnersScored', 'sacBunts', 'sacFlies', 'passedBall'
-    ],
-    fielding: [
-        'errors',
-        'passedBall',
+        'runs',
+        'earnedRuns',
+        'era',
+        'whip',
+        'hits',
+        'doubles',
+        'triples',
+        'homeRuns',
+        'rbi',
+        'baseOnBalls',
+        'intentionalWalks',
+        'hitByPitch',
+        'wildPitches',
+        'balks',
+        'balls',
+        'pitchesPerInning',
+        'numberOfPitches',
+        'pitchesThrown',
+        'obp',
         'stolenBases',
-        'stolenBasePercentage'
-    ]
-}
+        'stolenBasePercentage',
+        'runsScoredPer9',
+        'homeRunsPer9',
+        'inheritedRunnersScored',
+        'sacBunts',
+        'sacFlies',
+        'passedBall',
+    ],
+    fielding: ['errors', 'passedBall', 'stolenBases', 'stolenBasePercentage'],
+};
 
 const formatLabel = (str) => {
     return str
@@ -79,7 +97,7 @@ const getWinner = (row, statsMode) => {
     } else {
         return away > home ? 'away' : 'home';
     }
-}
+};
 
 export default function GameStats() {
     const theme = useTheme();
@@ -98,7 +116,7 @@ export default function GameStats() {
             if (!selectedGame) {
                 setGameStats(null);
                 return;
-            };
+            }
 
             try {
                 const gameContent = await fetchGame(selectedGame);
@@ -106,7 +124,7 @@ export default function GameStats() {
                 setGameStats(formattedTeamStats);
             } catch (error) {
                 setGameStats(null);
-                console.error("Team stats fetch failed: ", error);
+                console.error('Team stats fetch failed: ', error);
             }
         };
 
@@ -116,17 +134,18 @@ export default function GameStats() {
     const tableRows = useMemo(() => {
         if (!gameStats) return [];
 
-        return Object.entries(gameStats.away.stats[statsMode]).map(([stat, value]) => ({
-            stat: stat,
-            away: value,
-            home: gameStats.home.stats[statsMode][stat]
-        }));
+        return Object.entries(gameStats.away.stats[statsMode]).map(
+            ([stat, value]) => ({
+                stat: stat,
+                away: value,
+                home: gameStats.home.stats[statsMode][stat],
+            })
+        );
     }, [gameStats, statsMode]);
-
 
     return (
         <GameTabContent>
-            {gameStats ?
+            {gameStats ? (
                 <>
                     <ToggleButtonGroup
                         sx={{ mb: 4 }}
@@ -140,43 +159,117 @@ export default function GameStats() {
                         <ToggleButton value="pitching">Pitching</ToggleButton>
                         <ToggleButton value="fielding">Fielding</ToggleButton>
                     </ToggleButtonGroup>
-                    <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
-                        <Table size="medium" sx={{ border: '0px !important', tableLayout: 'fixed', width: '100% !important' }}>
+                    <TableContainer
+                        component={Paper}
+                        sx={{ overflow: 'hidden' }}
+                    >
+                        <Table
+                            size="medium"
+                            sx={{
+                                border: '0px !important',
+                                tableLayout: 'fixed',
+                                width: '100% !important',
+                            }}
+                        >
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ width: '33%' }}><Typography variant="h5" component="span">Stat</Typography></TableCell>
                                     <TableCell sx={{ width: '33%' }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <TeamLogo teamAbbr={gameStats.away.team.abbr} size={30} />
-                                            <Typography variant="h5" component="span">{gameStats.away.team.abbr}</Typography>
+                                        <Typography
+                                            variant="h5"
+                                            component="span"
+                                        >
+                                            Stat
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell sx={{ width: '33%' }}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <TeamLogo
+                                                teamAbbr={
+                                                    gameStats.away.team.abbr
+                                                }
+                                                size={30}
+                                            />
+                                            <Typography
+                                                variant="h5"
+                                                component="span"
+                                            >
+                                                {gameStats.away.team.abbr}
+                                            </Typography>
                                         </Box>
                                     </TableCell>
-                                    <TableCell sx={{ width: '33%', verticalAlign: 'middle' }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <TeamLogo teamAbbr={gameStats.home.team.abbr} size={30} />
-                                            <Typography variant="h5" component="span">{gameStats.home.team.abbr}</Typography>
+                                    <TableCell
+                                        sx={{
+                                            width: '33%',
+                                            verticalAlign: 'middle',
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <TeamLogo
+                                                teamAbbr={
+                                                    gameStats.home.team.abbr
+                                                }
+                                                size={30}
+                                            />
+                                            <Typography
+                                                variant="h5"
+                                                component="span"
+                                            >
+                                                {gameStats.home.team.abbr}
+                                            </Typography>
                                         </Box>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {
-                                    tableRows.map((row, i) => {
-                                        const winner = getWinner(row, statsMode);
-                                        return <TableRow key={row.stat}>
-                                            <TableCell>{formatLabel(row.stat)}</TableCell>
-                                            <TableCell sx={{ bgcolor: (winner === 'away') && theme.palette.custom.highlightGreen }}>{row.away}</TableCell>
-                                            <TableCell sx={{ bgcolor: ((winner === 'home')) && theme.palette.custom.highlightGreen }}>{row.home}</TableCell>
+                                {tableRows.map((row, i) => {
+                                    const winner = getWinner(row, statsMode);
+                                    return (
+                                        <TableRow key={row.stat}>
+                                            <TableCell>
+                                                {formatLabel(row.stat)}
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    bgcolor:
+                                                        winner === 'away' &&
+                                                        theme.palette.custom
+                                                            .highlightGreen,
+                                                }}
+                                            >
+                                                {row.away}
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    bgcolor:
+                                                        winner === 'home' &&
+                                                        theme.palette.custom
+                                                            .highlightGreen,
+                                                }}
+                                            >
+                                                {row.home}
+                                            </TableCell>
                                         </TableRow>
-                                    })
-                                }
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </> :
+                </>
+            ) : (
                 <>
                     <Typography variant="h5">No Stats</Typography>
-                </>}
+                </>
+            )}
         </GameTabContent>
-    )
+    );
 }

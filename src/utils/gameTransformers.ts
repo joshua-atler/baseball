@@ -1,22 +1,35 @@
-import { Consts } from "../consts/consts";
-import { TimeZone } from "../context/BasedashContext";
-import { shortYearFormatter } from "./dateFormatters";
+import { Consts } from '../consts/consts';
+import { TimeZone } from '../context/BasedashContext';
+import { shortYearFormatter } from './dateFormatters';
 
-
-export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTeams: string, timeZone: TimeZone, onProgress) => {
+export const transformGames = async (
+    gamesJson,
+    isLiveGames: boolean,
+    selectedTeams: string,
+    timeZone: TimeZone,
+    onProgress
+) => {
     const gamesForDates = [];
     for (let i = 0; i < gamesJson.dates.length; i++) {
         for (let j = 0; j < gamesJson.dates[i].games.length; j++) {
-            if (isLiveGames && gamesJson.dates[i].games[j].status.abstractGameState != 'Live') {
+            if (
+                isLiveGames &&
+                gamesJson.dates[i].games[j].status.abstractGameState != 'Live'
+            ) {
                 // skip
             } else {
                 if (selectedTeams.length === 0) {
                     gamesForDates.push(gamesJson.dates[i].games[j]);
                 } else {
-                    const awayTeam = gamesJson.dates[i].games[j].teams.away.team.name;
-                    const homeTeam = gamesJson.dates[i].games[j].teams.home.team.name;
+                    const awayTeam =
+                        gamesJson.dates[i].games[j].teams.away.team.name;
+                    const homeTeam =
+                        gamesJson.dates[i].games[j].teams.home.team.name;
 
-                    if (selectedTeams.includes(awayTeam) || selectedTeams.includes(homeTeam)) {
+                    if (
+                        selectedTeams.includes(awayTeam) ||
+                        selectedTeams.includes(homeTeam)
+                    ) {
                         gamesForDates.push(gamesJson['dates'][i]['games'][j]);
                     }
                 }
@@ -34,19 +47,23 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
     let progressAmount = 0;
 
     const gamePromises = gamesForDates.map(async (game) => {
-
         const url = 'https://statsapi.mlb.com' + game['link'];
 
         const res = await fetch(url);
         const gameResponse = await res.json();
 
         const now = new Date();
-        const dateString = new Date(gameResponse['gameData']['datetime']['dateTime']).toLocaleDateString('en-US');
+        const dateString = new Date(
+            gameResponse['gameData']['datetime']['dateTime']
+        ).toLocaleDateString('en-US');
         const time = new Date(gameResponse['gameData']['datetime']['dateTime']);
 
         time.setHours(time.getHours() + Consts.timeZoneOffset[timeZone]);
 
-        const timeString = time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const timeString = time.toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+        });
         let awayScore = '-';
         const awayTeam = gameResponse['gameData']['teams']['away']['name'];
         let homeScore = '-';
@@ -59,12 +76,28 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
         let homeWin = false;
 
-        if (gameResponse['liveData']['linescore']['currentInning'] !== undefined && status == 'Live') {
-            const inningState = gameResponse['liveData']['linescore']['inningState'].substring(0, 3);
-            inningData = inningState + ' ' + gameResponse['liveData']['linescore']['currentInning'].toString();
+        if (
+            gameResponse['liveData']['linescore']['currentInning'] !==
+                undefined &&
+            status == 'Live'
+        ) {
+            const inningState = gameResponse['liveData']['linescore'][
+                'inningState'
+            ].substring(0, 3);
+            inningData =
+                inningState +
+                ' ' +
+                gameResponse['liveData']['linescore'][
+                    'currentInning'
+                ].toString();
             outs = gameResponse['liveData']['linescore']['outs'];
-            outs = '<span style="color: #EFB21F">&#11044;</span>'.repeat(outs) + '<span style="color: #888888">&#11044;</span>'.repeat(3 - outs);
-            count = gameResponse['liveData']['linescore']['balls'].toString() + '-' + gameResponse['liveData']['linescore']['strikes'].toString();
+            outs =
+                '<span style="color: #EFB21F">&#11044;</span>'.repeat(outs) +
+                '<span style="color: #888888">&#11044;</span>'.repeat(3 - outs);
+            count =
+                gameResponse['liveData']['linescore']['balls'].toString() +
+                '-' +
+                gameResponse['liveData']['linescore']['strikes'].toString();
 
             const runners = gameResponse['liveData']['linescore']['offense'];
             let bases = ['third', 'second', 'first'];
@@ -82,18 +115,40 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
                 <rect fill="${baseData[2][0]}" stroke-width="1" stroke="${baseData[2][1]}" width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
                 </svg>`;
 
-            inningData = '<span style="width: 45px; display: inline-block;">' + inningData + '</span>';
-            inningData = inningData + bases + '&nbsp;' + outs + '&nbsp;' + count;
-            inningData = '<span style="vertical-align: middle; display: inline-block;">' + inningData + '</span>';
+            inningData =
+                '<span style="width: 45px; display: inline-block;">' +
+                inningData +
+                '</span>';
+            inningData =
+                inningData + bases + '&nbsp;' + outs + '&nbsp;' + count;
+            inningData =
+                '<span style="vertical-align: middle; display: inline-block;">' +
+                inningData +
+                '</span>';
         }
 
-        const detailedState = gameResponse['gameData']['status']['detailedState'];
+        const detailedState =
+            gameResponse['gameData']['status']['detailedState'];
         if (status != 'Preview' && started) {
-            if (gameResponse['liveData']['linescore']['teams']['away']['runs'] !== undefined) {
-                awayScore = gameResponse['liveData']['linescore']['teams']['away']['runs'];
+            if (
+                gameResponse['liveData']['linescore']['teams']['away'][
+                    'runs'
+                ] !== undefined
+            ) {
+                awayScore =
+                    gameResponse['liveData']['linescore']['teams']['away'][
+                        'runs'
+                    ];
             }
-            if (gameResponse['liveData']['linescore']['teams']['home']['runs'] !== undefined) {
-                homeScore = gameResponse['liveData']['linescore']['teams']['home']['runs'];
+            if (
+                gameResponse['liveData']['linescore']['teams']['home'][
+                    'runs'
+                ] !== undefined
+            ) {
+                homeScore =
+                    gameResponse['liveData']['linescore']['teams']['home'][
+                        'runs'
+                    ];
             }
         }
         if (status != 'Preview' && !started) {
@@ -117,7 +172,7 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
             gameMetadata: {
                 tickets: '',
                 seriesStatus: {},
-                broadcasts: {}
+                broadcasts: {},
             },
             date: '',
             time: '',
@@ -126,7 +181,7 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
             home: '',
             homeScore: '',
             inning: '',
-            status: ''
+            status: '',
         };
         currGame.gamePk = gameResponse.gamePk;
         currGame.date = dateString;
@@ -146,8 +201,8 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
         if (status == 'Final') {
             if (homeWin) {
-                currGame.home = `<span style="font-weight: bold;">${currGame.home}</span>`
-                currGame.away = `<span style="color: #aaaaaa;">${currGame.away}</span>`
+                currGame.home = `<span style="font-weight: bold;">${currGame.home}</span>`;
+                currGame.away = `<span style="color: #aaaaaa;">${currGame.away}</span>`;
                 currGame.awayScore = `<span style="color: #aaaaaa;">${currGame.awayScore}</span>`;
             } else {
                 currGame.away = `<span style="font-weight: bold;">${currGame.away}</span>`;
@@ -160,12 +215,14 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
         currGame.status = status;
 
         currGame.gameMetadata.tickets = game.tickets?.[0]?.ticketLinks?.home;
-        currGame.gameMetadata.broadcasts = game.broadcasts.filter(b => b.type === 'TV').map(b => b.name);
+        currGame.gameMetadata.broadcasts = game.broadcasts
+            .filter((b) => b.type === 'TV')
+            .map((b) => b.name);
         currGame.gameMetadata.seriesStatus = game.seriesStatus;
 
         progressAmount++;
         if (onProgress) {
-            onProgress(100 * progressAmount / gamesForDates.length);
+            onProgress((100 * progressAmount) / gamesForDates.length);
         }
 
         return currGame;
@@ -173,18 +230,16 @@ export const transformGames = async (gamesJson, isLiveGames: boolean, selectedTe
 
     const allGames = await Promise.all(gamePromises);
 
-
     return allGames;
 };
 
 export const transformGameArticle = (content) => {
-
     if (Object.keys(content?.editorial).length === 0) {
         return null;
     }
 
     const editorial = content?.editorial?.recap?.mlb;
-    const authors = editorial.contributors?.flatMap(c => c.name);
+    const authors = editorial.contributors?.flatMap((c) => c.name);
 
     const article = {
         headline: '',
@@ -196,18 +251,19 @@ export const transformGameArticle = (content) => {
     };
 
     article.headline = editorial?.headline;
-    article.author = (Object.keys(editorial?.contributors?.[0]).length > 0) ? authors.join(', ') : '';
+    article.author =
+        Object.keys(editorial?.contributors?.[0]).length > 0
+            ? authors.join(', ')
+            : '';
     article.imageURL = editorial?.photo?.cuts?.[0].src;
     article.date = shortYearFormatter.format(new Date(editorial?.date));
     article.body = editorial?.body;
     article.slug = editorial?.slug;
 
     return article;
-}
-
+};
 
 export const transformGameMedia = (content) => {
-
     const highlights = content?.highlights?.highlights?.items;
 
     if (!highlights) {
@@ -215,29 +271,29 @@ export const transformGameMedia = (content) => {
     }
 
     interface Media {
-        title: string,
-        imageURL: string,
-        videoURL: string
+        title: string;
+        imageURL: string;
+        videoURL: string;
     }
 
     const media: Media[] = [];
 
-    highlights.forEach(highlight => {
+    highlights.forEach((highlight) => {
         media.push({
             title: highlight?.title,
             imageURL: highlight?.image?.cuts?.[0]?.src,
-            videoURL: highlight?.playbacks?.[0]?.url
+            videoURL: highlight?.playbacks?.[0]?.url,
         });
     });
 
-
     return media;
-}
+};
 
 export const transformGameStats = (gameContent) => {
-
-    const awayTeamName = gameContent?.liveData?.boxscore?.teams?.away?.team?.name;
-    const homeTeamName = gameContent?.liveData?.boxscore?.teams?.home?.team?.name;
+    const awayTeamName =
+        gameContent?.liveData?.boxscore?.teams?.away?.team?.name;
+    const homeTeamName =
+        gameContent?.liveData?.boxscore?.teams?.home?.team?.name;
     const awayTeam = Consts.teamInfo[awayTeamName];
     const homeTeam = Consts.teamInfo[homeTeamName];
 
@@ -251,16 +307,15 @@ export const transformGameStats = (gameContent) => {
         },
         home: {
             team: homeTeam,
-            stats: homeStats
-        }
+            stats: homeStats,
+        },
     };
 
     return gameStats;
-}
+};
 
 export const transformGamePlays = (playsContent) => {
     // console.log('transformGamePlays');
-
 
     // organize returned data into innings and plays
 
@@ -282,21 +337,27 @@ export const transformGamePlays = (playsContent) => {
 
         if (inning.top.length > 0) {
             // const topPlays = inning.top;
-            const topPlays = allPlays.slice(inning.top.at(0), inning.top.at(-1) + 1);
+            const topPlays = allPlays.slice(
+                inning.top.at(0),
+                inning.top.at(-1) + 1
+            );
             formattedPlays.push({
                 inningNum: i + 1,
                 half: 'Top',
                 teamAbbr: awayAbbr,
-                plays: topPlays
+                plays: topPlays,
             });
         }
         if (inning.bottom.length > 0) {
-            const bottomPlays = allPlays.slice(inning.bottom.at(0), inning.bottom.at(-1) + 1);
+            const bottomPlays = allPlays.slice(
+                inning.bottom.at(0),
+                inning.bottom.at(-1) + 1
+            );
             formattedPlays.push({
                 inningNum: i + 1,
                 half: 'Bottom',
                 teamAbbr: homeAbbr,
-                plays: bottomPlays
+                plays: bottomPlays,
             });
         }
     }
@@ -307,4 +368,4 @@ export const transformGamePlays = (playsContent) => {
     // console.log(formattedPlays);
 
     return formattedPlays;
-}
+};

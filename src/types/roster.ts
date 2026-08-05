@@ -13,4 +13,3 @@ export interface RosterPlayer {
         sort: number;
     };
 }
-

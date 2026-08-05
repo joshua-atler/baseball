@@ -2,8 +2,6 @@ import { Box, Toolbar, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import baseballsBackground from './assets/baseballs.jpg';
-import basedashLogo from './assets/basedash_logo.png';
-
 
 export const Header = () => {
     return (
@@ -24,13 +22,20 @@ export const Header = () => {
             />
             <Toolbar>
                 <Typography variant="h4" noWrap component="div">
-                    <Link to="/games" style={{ textDecoration: 'none', color: 'inherit', userSelect: 'none' }}>
+                    <Link
+                        to="/games"
+                        style={{
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            userSelect: 'none',
+                        }}
+                    >
                         Basedash
                     </Link>
                 </Typography>
                 <Box
                     sx={{
-                        backgroundImage: `url(${basedashLogo})`,
+                        // backgroundImage: `url(${basedashLogo})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         width: '100px',
@@ -46,5 +51,5 @@ export const Header = () => {
                 />
             </Toolbar>
         </>
-    )
-}
+    );
+};

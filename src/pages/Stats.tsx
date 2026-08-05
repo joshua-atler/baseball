@@ -10,7 +10,7 @@ import {
     Select,
     ToggleButton,
     ToggleButtonGroup,
-    Typography
+    Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import DT from 'datatables.net-dt';
@@ -21,21 +21,30 @@ import { useStatsColumns } from '../columns/useStatsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
 import { fetchTeamStats } from '../services/statsService.ts';
 import { FieldingStats, HittingStats, PitchingStats } from '../types/stats.ts';
-import { transformFieldingStats, transformHittingStats, transformPitchingStats } from '../utils/statsTransformers.ts';
-
+import {
+    transformFieldingStats,
+    transformHittingStats,
+    transformPitchingStats,
+} from '../utils/statsTransformers.ts';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export default function Stats({
-}) {
-
-    const [statsYear, setStatsYear] = useState(Temporal.Now.plainDateISO().year);
+export default function Stats({}) {
+    const [statsYear, setStatsYear] = useState(
+        Temporal.Now.plainDateISO().year
+    );
     const [statsGameType, setSeasonType] = useState('Regular Season');
     const [statsMode, setStatsMode] = useState('hitting');
-    const [hittingTableData, setHittingTableData] = useState<HittingStats[] | null>(null);
-    const [pitchingTableData, setPitchingTableData] = useState<PitchingStats[] | null>(null);
-    const [fieldingTableData, setFieldingTableData] = useState<FieldingStats[] | null>(null);
+    const [hittingTableData, setHittingTableData] = useState<
+        HittingStats[] | null
+    >(null);
+    const [pitchingTableData, setPitchingTableData] = useState<
+        PitchingStats[] | null
+    >(null);
+    const [fieldingTableData, setFieldingTableData] = useState<
+        FieldingStats[] | null
+    >(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const firstYear = 2010;
@@ -43,21 +52,22 @@ export default function Stats({
         paging: true,
         searching: false,
         select: {
-            info: false
+            info: false,
         },
         pageLength: 30,
-        dom: "t",
+        dom: 't',
         columnDefs: [],
         ordering: true,
         buttons: [],
         scrollCollapse: true,
         language: {
-            emptyTable: "No content",
-            zeroRecords: "No content"
-        }
+            emptyTable: 'No content',
+            zeroRecords: 'No content',
+        },
     };
 
-    const { hittingColumns, pitchingColumns, fieldingColumns } = useStatsColumns();
+    const { hittingColumns, pitchingColumns, fieldingColumns } =
+        useStatsColumns();
 
     const handleYearChange = (event) => {
         setIsLoading(true);
@@ -76,35 +86,50 @@ export default function Stats({
 
     const getGameType = (gameType) => {
         const gameTypes = {
-            "Regular Season": "R",
-            "Postseason": "P",
-            "Spring Training": "S"
+            'Regular Season': 'R',
+            Postseason: 'P',
+            'Spring Training': 'S',
         };
 
         return gameTypes[gameType];
-    }
+    };
 
     useEffect(() => {
         const getStats = async () => {
             if (statsMode === 'hitting') {
-                const rawHittingStats = await fetchTeamStats('hitting', statsYear, getGameType(statsGameType));
-                const hittingStats = await transformHittingStats(rawHittingStats);
+                const rawHittingStats = await fetchTeamStats(
+                    'hitting',
+                    statsYear,
+                    getGameType(statsGameType)
+                );
+                const hittingStats =
+                    await transformHittingStats(rawHittingStats);
                 setHittingTableData(hittingStats);
 
                 setPitchingTableData(null);
                 setFieldingTableData(null);
                 setIsLoading(false);
             } else if (statsMode === 'pitching') {
-                const rawPitchingStats = await fetchTeamStats('pitching', statsYear, getGameType(statsGameType));
-                const pitchingStats = await transformPitchingStats(rawPitchingStats);
+                const rawPitchingStats = await fetchTeamStats(
+                    'pitching',
+                    statsYear,
+                    getGameType(statsGameType)
+                );
+                const pitchingStats =
+                    await transformPitchingStats(rawPitchingStats);
                 setPitchingTableData(pitchingStats);
 
                 setHittingTableData(null);
                 setFieldingTableData(null);
                 setIsLoading(false);
             } else if (statsMode === 'fielding') {
-                const rawFieldingStats = await fetchTeamStats('fielding', statsYear, getGameType(statsGameType));
-                const fieldingStats = await transformFieldingStats(rawFieldingStats);
+                const rawFieldingStats = await fetchTeamStats(
+                    'fielding',
+                    statsYear,
+                    getGameType(statsGameType)
+                );
+                const fieldingStats =
+                    await transformFieldingStats(rawFieldingStats);
                 setFieldingTableData(fieldingStats);
 
                 setHittingTableData(null);
@@ -114,13 +139,18 @@ export default function Stats({
         };
 
         getStats();
-
-
     }, [statsYear, statsGameType, statsMode]);
 
     return (
         <Box>
-            <Grid container spacing={2} alignItems="center" mt={2} ml={2} mb={3}>
+            <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                mt={2}
+                ml={2}
+                mb={3}
+            >
                 <Grid>
                     <Typography variant="h6" noWrap component="div">
                         Year
@@ -129,13 +159,25 @@ export default function Stats({
                 <Grid>
                     <Box sx={{ minWidth: 120, width: 200 }}>
                         <FormControl fullWidth>
-                            <Select defaultValue={2025} displayEmpty
+                            <Select
+                                defaultValue={2025}
+                                displayEmpty
                                 value={statsYear}
                                 onChange={handleYearChange}
                             >
-                                {Array.from({ length: Temporal.Now.plainDateISO().year - firstYear + 1 }).map((_, i) => {
-                                    const year = Temporal.Now.plainDateISO().year - i;
-                                    return <MenuItem key={year} value={year}>{year}</MenuItem>
+                                {Array.from({
+                                    length:
+                                        Temporal.Now.plainDateISO().year -
+                                        firstYear +
+                                        1,
+                                }).map((_, i) => {
+                                    const year =
+                                        Temporal.Now.plainDateISO().year - i;
+                                    return (
+                                        <MenuItem key={year} value={year}>
+                                            {year}
+                                        </MenuItem>
+                                    );
                                 })}
                             </Select>
                         </FormControl>
@@ -144,13 +186,21 @@ export default function Stats({
                 <Grid>
                     <Box sx={{ minWidth: 120, width: 200 }}>
                         <FormControl fullWidth>
-                            <Select defaultValue={2025} displayEmpty
+                            <Select
+                                defaultValue={2025}
+                                displayEmpty
                                 value={statsGameType}
                                 onChange={handleStatsGameTypeChange}
                             >
-                                <MenuItem value={"Regular Season"}>Regular Season</MenuItem>
-                                <MenuItem value={"Postseason"}>Postseason</MenuItem>
-                                <MenuItem value={"Spring Training"}>Spring Training</MenuItem>
+                                <MenuItem value={'Regular Season'}>
+                                    Regular Season
+                                </MenuItem>
+                                <MenuItem value={'Postseason'}>
+                                    Postseason
+                                </MenuItem>
+                                <MenuItem value={'Spring Training'}>
+                                    Spring Training
+                                </MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
@@ -169,49 +219,62 @@ export default function Stats({
                 </Grid>
             </Grid>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-                {isLoading ?
-                    <LoadingCircle size={60} /> : <>
-                        <Box sx={{
-                            width: 1200,
-                            '& .dataTable tbody tr:hover': {
-                                backgroundColor: (theme) => `${theme.palette.custom.lightGray} !important`,
-                            },
-                            '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected': {
-                                backgroundColor: (theme) => `${theme.palette.custom.darkGray} !important`,
-                                boxShadow: 'none !important'
-                            },
-                        }}>
-                            {statsMode === 'hitting' && <>
-                                <DataTable
-                                    hidden={true}
-                                    data={hittingTableData}
-                                    columns={hittingColumns}
-                                    autoWidth={false}
-                                    options={options}
-                                />
-                            </>}
-                            {statsMode === 'pitching' && <>
-                                <DataTable
-                                    hidden={true}
-                                    data={pitchingTableData}
-                                    columns={pitchingColumns}
-                                    autoWidth={false}
-                                    options={options}
-                                />
-                            </>}
-                            {statsMode === 'fielding' && <>
-                                <DataTable
-                                    hidden={true}
-                                    data={fieldingTableData}
-                                    columns={fieldingColumns}
-                                    autoWidth={false}
-                                    options={options}
-                                />
-                            </>}
+                {isLoading ? (
+                    <LoadingCircle size={60} />
+                ) : (
+                    <>
+                        <Box
+                            sx={{
+                                width: 1200,
+                                '& .dataTable tbody tr:hover': {
+                                    backgroundColor: (theme) =>
+                                        `${theme.palette.custom.lightGray} !important`,
+                                },
+                                '& table.dataTable tbody tr.selected, & table.dataTable tbody tr td.selected':
+                                    {
+                                        backgroundColor: (theme) =>
+                                            `${theme.palette.custom.darkGray} !important`,
+                                        boxShadow: 'none !important',
+                                    },
+                            }}
+                        >
+                            {statsMode === 'hitting' && (
+                                <>
+                                    <DataTable
+                                        hidden={true}
+                                        data={hittingTableData}
+                                        columns={hittingColumns}
+                                        autoWidth={false}
+                                        options={options}
+                                    />
+                                </>
+                            )}
+                            {statsMode === 'pitching' && (
+                                <>
+                                    <DataTable
+                                        hidden={true}
+                                        data={pitchingTableData}
+                                        columns={pitchingColumns}
+                                        autoWidth={false}
+                                        options={options}
+                                    />
+                                </>
+                            )}
+                            {statsMode === 'fielding' && (
+                                <>
+                                    <DataTable
+                                        hidden={true}
+                                        data={fieldingTableData}
+                                        columns={fieldingColumns}
+                                        autoWidth={false}
+                                        options={options}
+                                    />
+                                </>
+                            )}
                         </Box>
                     </>
-                }
+                )}
             </Box>
         </Box>
-    )
+    );
 }

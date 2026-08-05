@@ -7,5 +7,5 @@ export const GameTabContent = styled(Box)(({ theme }) => ({
     margin: '0 auto',
     width: '600px',
     maxHeight: '1500px',
-    overflowY: 'auto'
+    overflowY: 'auto',
 }));
