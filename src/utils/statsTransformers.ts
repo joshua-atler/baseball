@@ -1,5 +1,5 @@
 import { Consts } from '../consts/consts';
-import { HittingStats, PitchingStats, FieldingStats } from '../types/stats';
+import { FieldingStats, HittingStats, PitchingStats } from '../types/stats.ts';
 
 export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
     if (rawHittingStats.stats.length === 0) {
