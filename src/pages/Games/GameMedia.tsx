@@ -5,12 +5,12 @@ import ReactPlayer from 'react-player';
 import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
+import { Media } from '../../types/game.ts';
 import { transformGameMedia } from '../../utils/gameTransformers.ts';
 
-export const Media = () => {
+export const GameMedia = () => {
     const { selectedGame } = useBasedash();
-    const [media, setMedia] = useState(null);
-    const [isReady, setIsReady] = useState(false);
+    const [media, setMedia] = useState<Media[] | null>(null);
 
     useEffect(() => {
         const getMedia = async () => {

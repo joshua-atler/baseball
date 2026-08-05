@@ -1,5 +1,6 @@
 import { Consts } from '../consts/consts';
 import { TimeZone } from '../context/BasedashContext';
+import { GameMedia } from '../types/game';
 import { shortYearFormatter } from './dateFormatters';
 
 export const transformGames = async (
@@ -241,42 +242,27 @@ export const transformGameArticle = (content) => {
     const editorial = content?.editorial?.recap?.mlb;
     const authors = editorial.contributors?.flatMap((c) => c.name);
 
-    const article = {
-        headline: '',
-        author: '',
-        date: '',
-        imageURL: '',
-        body: '',
-        slug: '',
+    return {
+        headline: editorial?.headline,
+        author:
+            Object.keys(editorial?.contributors?.[0]).length > 0
+                ? authors.join(', ')
+                : '',
+        imageURL: editorial?.photo?.cuts?.[0].src,
+        date: shortYearFormatter.format(new Date(editorial?.date)),
+        body: editorial?.body,
+        slug: editorial?.slug,
     };
-
-    article.headline = editorial?.headline;
-    article.author =
-        Object.keys(editorial?.contributors?.[0]).length > 0
-            ? authors.join(', ')
-            : '';
-    article.imageURL = editorial?.photo?.cuts?.[0].src;
-    article.date = shortYearFormatter.format(new Date(editorial?.date));
-    article.body = editorial?.body;
-    article.slug = editorial?.slug;
-
-    return article;
 };
 
-export const transformGameMedia = (content) => {
+export const transformGameMedia = (content): GameMedia[] => {
     const highlights = content?.highlights?.highlights?.items;
 
     if (!highlights) {
         return null;
     }
 
-    interface Media {
-        title: string;
-        imageURL: string;
-        videoURL: string;
-    }
-
-    const media: Media[] = [];
+    const media = [];
 
     highlights.forEach((highlight) => {
         media.push({

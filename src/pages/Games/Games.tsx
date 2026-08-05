@@ -6,9 +6,9 @@ import { GameTabContent } from '../../components/GameTabContent';
 import { useBasedash } from '../../context/BasedashContext';
 import { Boxscore } from './Boxscore';
 import { GameArticle } from './GameArticle';
+import { GameMedia } from './GameMedia';
 import { GamesList } from './GamesList';
 import { GameStats } from './GameStats';
-import { Media } from './Media';
 import { Plays } from './Plays';
 import { WinProb } from './WinProb';
 
@@ -167,7 +167,7 @@ export const Games = () => {
                                     <GameArticle key={selectedGame} />
                                 )}
                                 {getTabValue(tabValue) === 'Media' && (
-                                    <Media key={selectedGame} />
+                                    <GameMedia key={selectedGame} />
                                 )}
                                 {getTabValue(tabValue) === 'Stats' && (
                                     <GameStats key={selectedGame} />

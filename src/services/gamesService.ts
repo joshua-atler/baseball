@@ -12,7 +12,7 @@ export const fetchGame = (gamePk: string, hydrations: string[] = []) =>
         `/game/${gamePk}/feed/live${hydrations.length > 0 ? `?hydrate=${hydrations.join(',')}` : ''}`
     );
 
-export const fetchContent = (gamePk: string) =>
+export const fetchContent = (gamePk: number) =>
     apiClient(false, `/game/${gamePk}/content`);
 
 export const fetchWinProbability = (gamePk: string) =>

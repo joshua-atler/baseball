@@ -126,15 +126,6 @@ export const GameArticle = () => {
             ) : (
                 <>
                     <Typography variant="h5">No content</Typography>
-                    {/* <Box sx={{ mb: 1 }}>
-                            {Array.from({ length: 2 }).map((i) => {
-                                return <Skeleton key={i} height={50} />
-                            })}
-                        </Box>
-                        <Skeleton height={200} />
-                        {Array.from({ length: 20 }).map((i) => {
-                            return <Skeleton key={i} />
-                        })} */}
                 </>
             )}
         </GameTabContent>
