@@ -1,17 +1,17 @@
-import { Box, Link, Tooltip, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import { useEffect, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
 
 import { GameTabContent } from '../../components/GameTabContent.tsx';
-import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchContent } from '../../services/gamesService.ts';
+import { Article } from '../../types/game.ts';
 import { transformGameArticle } from '../../utils/gameTransformers.ts';
 
 export const GameArticle = () => {
     const { selectedGame } = useBasedash();
-    const [article, setArticle] = useState(null);
+    const [article, setArticle] = useState<Article | null>(null);
 
     useEffect(() => {
         const getNews = async () => {
@@ -90,37 +90,7 @@ export const GameArticle = () => {
                         }}
                     />
                     <Typography variant="body1" component="div">
-                        {parse(article?.body, {
-                            replace: (domNode) => {
-                                if (domNode.name === 'forge-entity') {
-                                    const slug =
-                                        domNode.attribs.slug.split('-');
-                                    const playerID = slug[slug.length - 1];
-                                    return (
-                                        <Tooltip
-                                            title={
-                                                <PlayerPhoto
-                                                    playerID={playerID}
-                                                    width={150}
-                                                    height={150}
-                                                />
-                                            }
-                                        >
-                                            <Link
-                                                href={`/player/${playerID}`}
-                                                sx={{
-                                                    fontWeight: 'bold',
-                                                    color: 'primary.main',
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
-                                                {domNode.children[0].data}
-                                            </Link>
-                                        </Tooltip>
-                                    );
-                                }
-                            },
-                        })}
+                        {parse(article?.body) ?? ''}
                     </Typography>
                 </>
             ) : (

@@ -1,6 +1,6 @@
 import { Consts } from '../consts/consts';
 import { TimeZone } from '../context/BasedashContext';
-import { GameMedia } from '../types/game';
+import { Article, GameMedia } from '../types/game';
 import { shortYearFormatter } from './dateFormatters';
 
 export const transformGames = async (
@@ -234,7 +234,7 @@ export const transformGames = async (
     return allGames;
 };
 
-export const transformGameArticle = (content) => {
+export const transformGameArticle = (content: any): Article | null => {
     if (Object.keys(content?.editorial).length === 0) {
         return null;
     }
