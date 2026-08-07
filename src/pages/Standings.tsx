@@ -20,7 +20,7 @@ import Grid from '@mui/material/Grid2';
 import { useTheme } from '@mui/material/styles';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     CartesianGrid,
     Line,
@@ -35,12 +35,13 @@ DataTable.use(DT);
 
 import { useStandingsColumns } from '../columns/useStandingsColumns.tsx';
 import { LoadingCircle } from '../components/LoadingCircle.tsx';
-import { Consts } from '../consts/consts.ts';
+import { Consts, TeamName } from '../consts/consts.ts';
 import {
     fetchLineChartStandings,
     fetchSeason,
     fetchStandings,
 } from '../services/standingsService.ts';
+import { League, SeasonBounds } from '../types/game.ts';
 import {
     FormattedStandings,
     GroupingsMode,
@@ -53,14 +54,22 @@ import {
     transformStandings,
 } from '../utils/standingsTransformers.ts';
 
-function StandingsTable({ tableData, standingsMode, groupingsMode }) {
-    const isLeague = tableData?.division.includes('League');
-    const lastPlayoffIndex = isLeague
-        ? tableData?.teamRecords
-              .map((row, i) => ({ row, i }))
-              .filter(({ row }) => row.wildCardGamesBack === '-')
-              .at(-1)?.i
-        : undefined;
+function StandingsTable({
+    tableData,
+    standingsMode,
+    groupingsMode,
+}: {
+    tableData: FormattedStandings | LineChartDataset;
+    standingsMode: StandingsMode;
+    groupingsMode: GroupingsMode;
+}) {
+    // const lastPlayoffIndex = isLeague
+    //     ? tableData?.teamRecords
+    //           .map((row, i) => ({ row, i }))
+    //           .filter(({ row }) => row.wildCardGamesBack === '-')
+    //           .at(-1)?.i
+    //     : undefined;
+    // TODO
 
     const { standingsColumns } = useStandingsColumns(
         tableData,
@@ -86,7 +95,7 @@ function StandingsTable({ tableData, standingsMode, groupingsMode }) {
 
 export const Standings = () => {
     const theme = useTheme();
-    const [standingsYear, setStandingsYear] = useState(
+    const [standingsYear, setStandingsYear] = useState<number>(
         Temporal.Now.plainDateISO().year
     );
     const isCurrentYear = standingsYear === Temporal.Now.plainDateISO().year;
@@ -94,11 +103,10 @@ export const Standings = () => {
         useState<StandingsMode>('regular season');
     const [groupingsMode, setGroupingsMode] =
         useState<GroupingsMode>('division');
-    const [leagueTab, setLeagueTab] = useState('AL');
+    const [leagueTab, setLeagueTab] = useState<League>('AL');
     const firstYear = 2010;
     const [sliderValue, setSliderValue] = useState(0);
-    const [debouncedValue, setDebouncedValue] = useState(0);
-    const [seasonBounds, setSeasonBounds] = useState({});
+    const [seasonBounds, setSeasonBounds] = useState<SeasonBounds | null>(null);
     const [standings, setStandings] = useState<
         FormattedStandings[] | LineChartDataset[] | null
     >(null);
@@ -106,24 +114,33 @@ export const Standings = () => {
 
     const handleYearChange = (event: SelectChangeEvent) => {
         setIsLoading(true);
-        setStandingsYear(event.target.value as string);
+        setStandingsYear(Number(event.target.value));
     };
 
-    const handleStandingsModeChange = (event: SelectChangeEvent) => {
+    const handleStandingsModeChange = (
+        _event: React.MouseEvent<HTMLElement>,
+        value: StandingsMode
+    ) => {
         setIsLoading(true);
-        setStandingsMode(event.target.value as string);
+        setStandingsMode(value);
     };
 
-    const handleGroupingsModeChange = (event: SelectChangeEvent) => {
+    const handleGroupingsModeChange = (
+        _event: React.MouseEvent<HTMLElement>,
+        value: GroupingsMode
+    ) => {
         setIsLoading(true);
-        setGroupingsMode(event.target.value as string);
+        setGroupingsMode(value);
     };
 
-    const handleLeagueChange = (event, newValue) => {
+    const handleLeagueChange = (
+        _event: React.SyntheticEvent,
+        newValue: League
+    ) => {
         setLeagueTab(newValue);
     };
 
-    const formatLabel = (value) => {
+    const formatLabel = (value: number) => {
         if (!seasonBounds || !seasonBounds.start) return '';
 
         const date = new Date(seasonBounds.start);
@@ -135,23 +152,9 @@ export const Standings = () => {
         });
     };
 
-    const sliderMarks = useMemo(() => {
-        if (!seasonBounds) return [];
-
-        return [
-            { value: 0, label: 'Opening Day' },
-            {
-                value: Math.floor(seasonBounds.totalDays / 2),
-                label: 'Mid-Season',
-            },
-            { value: seasonBounds.totalDays, label: 'Final Day' },
-        ];
-    }, [seasonBounds]);
-
     useEffect(() => {
         const handler = setTimeout(() => {
             setIsLoading(true);
-            setDebouncedValue(sliderValue);
         }, 300);
 
         return () => clearTimeout(handler);
@@ -168,7 +171,7 @@ export const Standings = () => {
             day: '2-digit',
             year: 'numeric',
         });
-    }, [debouncedValue, standingsYear]);
+    }, [seasonBounds, sliderValue]);
 
     useEffect(() => {
         const updateSeasonBounds = async () => {
@@ -179,11 +182,9 @@ export const Standings = () => {
                 const start = new Date(seasonData.springStartDate);
                 start.setDate(start.getDate() + 1);
                 const end = new Date(seasonData.springEndDate);
-                const isCurrentYear =
-                    standingsYear === Temporal.Now.plainDateISO().year;
-                const diffTime = Math.abs(end - start);
+                const diffTime = Math.abs(end.getTime() - start.getTime());
                 const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                setSeasonBounds({ start, end, totalDays });
+                setSeasonBounds({ start, totalDays });
                 setSliderValue(totalDays);
             } else {
                 const start = new Date(seasonData.regularSeasonStartDate);
@@ -192,9 +193,11 @@ export const Standings = () => {
                 const isCurrentYear =
                     standingsYear === Temporal.Now.plainDateISO().year;
                 const effectiveEnd = isCurrentYear ? new Date() : end;
-                const diffTime = Math.abs(effectiveEnd - start);
+                const diffTime = Math.abs(
+                    effectiveEnd.getTime() - start.getTime()
+                );
                 const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                setSeasonBounds({ start, effectiveEnd, totalDays });
+                setSeasonBounds({ start, totalDays });
                 setSliderValue(totalDays);
             }
         };
@@ -219,9 +222,9 @@ export const Standings = () => {
                     const [month, day, year] = selectedDateApiString.split('/');
 
                     const rawStandings = await fetchStandings(
-                        month,
-                        day,
-                        year,
+                        Number(month),
+                        Number(day),
+                        Number(year),
                         standingsMode,
                         groupingsMode
                     );
@@ -250,6 +253,7 @@ export const Standings = () => {
 
                     setStandings(formattedStandings);
                 }
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
                 setStandings(null);
             } finally {
@@ -258,7 +262,13 @@ export const Standings = () => {
         };
 
         getStandings();
-    }, [selectedDateApiString, standingsMode, groupingsMode]);
+    }, [
+        selectedDateApiString,
+        standingsMode,
+        groupingsMode,
+        standingsYear,
+        isCurrentYear,
+    ]);
 
     return (
         <Box>
@@ -278,7 +288,7 @@ export const Standings = () => {
                         <FormControl fullWidth>
                             <Select
                                 displayEmpty
-                                value={standingsYear}
+                                value={standingsYear.toString()}
                                 onChange={handleYearChange}
                             >
                                 {Array.from({
@@ -300,7 +310,6 @@ export const Standings = () => {
                     </Box>
                 </Grid>
                 <Grid size="auto">
-                    {/* <Box> */}
                     <ToggleButtonGroup
                         color="primary"
                         value={standingsMode}
@@ -318,7 +327,6 @@ export const Standings = () => {
                             Line Chart
                         </ToggleButton>
                     </ToggleButtonGroup>
-                    {/* </Box> */}
                 </Grid>
                 <Grid size="auto">
                     <Tooltip
@@ -387,12 +395,13 @@ export const Standings = () => {
                         </Typography>
                         {seasonBounds && (
                             <Slider
-                                defaultValue={30}
                                 min={0}
                                 max={seasonBounds.totalDays}
                                 value={sliderValue}
                                 valueLabelDisplay="auto"
-                                onChange={(e, val) => setSliderValue(val)}
+                                onChange={(_, val) => {
+                                    setSliderValue(val as number);
+                                }}
                                 valueLabelFormat={formatLabel}
                                 step={1}
                             />
@@ -413,7 +422,7 @@ export const Standings = () => {
                                     key={`${standingsMode}-${groupingsMode}-${leagueTab}`}
                                 >
                                     {standings &&
-                                        standings.map((divisionData, index) => {
+                                        standings.map((divisionData) => {
                                             switch (standingsMode) {
                                                 case 'regular season':
                                                     switch (groupingsMode) {
@@ -484,7 +493,7 @@ export const Standings = () => {
                                                         default:
                                                             return <></>;
                                                     }
-                                                case 'wild card':
+                                                case 'wild card': {
                                                     const isVisible =
                                                         divisionData.division.includes(
                                                             leagueTab
@@ -511,6 +520,7 @@ export const Standings = () => {
                                                             />
                                                         )
                                                     );
+                                                }
                                                 case 'spring training':
                                                     return (
                                                         <StandingsTable
@@ -543,7 +553,7 @@ export const Standings = () => {
                                         Wins - Losses
                                     </Typography>
                                     {standings &&
-                                        standings.map((divisionData, index) => {
+                                        standings.map((divisionData) => {
                                             let isVisible = true;
                                             switch (groupingsMode) {
                                                 case 'division':
@@ -663,16 +673,16 @@ export const Standings = () => {
                                                                 itemSorter={(
                                                                     item
                                                                 ) =>
-                                                                    -item.value
+                                                                    -(
+                                                                        item?.value ??
+                                                                        0
+                                                                    )
                                                                 }
                                                             />
                                                             {Object.keys(
                                                                 Consts.teamInfo
                                                             ).map(
-                                                                (
-                                                                    teamName,
-                                                                    i
-                                                                ) => {
+                                                                (teamName) => {
                                                                     return (
                                                                         <Line
                                                                             key={
@@ -685,7 +695,7 @@ export const Standings = () => {
                                                                             stroke={
                                                                                 Consts
                                                                                     .teamInfo[
-                                                                                    teamName
+                                                                                    teamName as TeamName
                                                                                 ]
                                                                                     .colors
                                                                                     .primary

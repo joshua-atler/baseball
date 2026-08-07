@@ -12,3 +12,10 @@ export interface Article {
     body: string;
     slug: string;
 }
+
+export type League = 'AL' | 'NL';
+
+export interface SeasonBounds {
+    start: Date;
+    totalDays: number;
+}
