@@ -1,6 +1,7 @@
 import { Consts } from '../consts/consts';
 import { TimeZone } from '../context/BasedashContext';
 import { Article, GameMedia } from '../types/game';
+import { TeamGameStats } from '../types/gameStats';
 import { shortYearFormatter } from './dateFormatters';
 
 export const transformGames = async (
@@ -275,7 +276,7 @@ export const transformGameMedia = (content): GameMedia[] => {
     return media;
 };
 
-export const transformGameStats = (gameContent) => {
+export const transformGameStats = (gameContent: any): TeamGameStats => {
     const awayTeamName =
         gameContent?.liveData?.boxscore?.teams?.away?.team?.name;
     const homeTeamName =
@@ -289,11 +290,19 @@ export const transformGameStats = (gameContent) => {
     const gameStats = {
         away: {
             team: awayTeam,
-            stats: awayStats,
+            stats: {
+                hitting: awayStats.batting,
+                pitching: awayStats.pitching,
+                fielding: awayStats.fielding,
+            },
         },
         home: {
             team: homeTeam,
-            stats: homeStats,
+            stats: {
+                hitting: homeStats.batting,
+                pitching: homeStats.pitching,
+                fielding: homeStats.fielding,
+            },
         },
     };
 

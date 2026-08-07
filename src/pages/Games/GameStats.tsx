@@ -18,17 +18,12 @@ import { GameTabContent } from '../../components/GameTabContent.tsx';
 import { TeamLogo } from '../../components/TeamLogo.tsx';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame } from '../../services/gamesService.ts';
+import { StatsRow, TeamGameStats } from '../../types/gameStats.ts';
+import { StatsMode } from '../../types/stats.ts';
 import { transformGameStats } from '../../utils/gameTransformers.ts';
 
-type StatsMode = 'batting' | 'pitching' | 'fielding';
-interface StatsRow {
-    stat: string;
-    away: number;
-    home: number;
-}
-
 const lowerIsBetterStats = {
-    batting: [
+    hitting: [
         'caughtStealing',
         'groundedIntoDoublePlay',
         'groundedIntoTriplePlay',
@@ -74,17 +69,17 @@ const lowerIsBetterStats = {
     fielding: ['errors', 'passedBall', 'stolenBases', 'stolenBasePercentage'],
 };
 
-const formatLabel = (str) => {
+const formatLabel = (str: string) => {
     return str
         .replace(/([A-Z])/g, ' $1')
         .replace(/^./, (match) => match.toUpperCase());
 };
 
-const getWinner = (row, statsMode) => {
-    const away = parseFloat(row.away);
-    const home = parseFloat(row.home);
+const getWinner = (row: StatsRow, statsMode: StatsMode) => {
+    const away = Number(row.away);
+    const home = Number(row.home);
 
-    if (isNaN(away) || isNaN(home)) {
+    if (Number.isNaN(away) || Number.isNaN(home)) {
         return null;
     }
 
@@ -102,14 +97,16 @@ const getWinner = (row, statsMode) => {
 export const GameStats = () => {
     const theme = useTheme();
     const { selectedGame } = useBasedash();
-    const [statsMode, setStatsMode] = useState<StatsMode>('batting');
+    const [statsMode, setStatsMode] = useState<StatsMode>('hitting');
 
-    const handleModeChange = (event: SelectChangeEvent) => {
-        setStatsMode(event.target.value as string);
+    const handleModeChange = (
+        _event: React.MouseEvent<HTMLElement>,
+        value: StatsMode
+    ) => {
+        setStatsMode(value);
     };
 
-    const [gameStats, setGameStats] = useState(null);
-    // const [tableRows, setTableRows] = useState([]);
+    const [gameStats, setGameStats] = useState<TeamGameStats | null>(null);
 
     useEffect(() => {
         const getTeamStats = async () => {
@@ -131,16 +128,24 @@ export const GameStats = () => {
         getTeamStats();
     }, [selectedGame]);
 
-    const tableRows = useMemo(() => {
+    const tableRows: StatsRow[] = useMemo(() => {
         if (!gameStats) return [];
 
-        return Object.entries(gameStats.away.stats[statsMode]).map(
-            ([stat, value]) => ({
-                stat: stat,
-                away: value,
-                home: gameStats.home.stats[statsMode][stat],
-            })
-        );
+        const currentAwayStats = gameStats.away.stats[statsMode];
+        const currentHomeStats = gameStats.home.stats[statsMode];
+
+        type CurrentStatKey = keyof typeof currentAwayStats;
+
+        return (
+            Object.entries(currentAwayStats) as [
+                CurrentStatKey,
+                number | string,
+            ][]
+        ).map(([stat, value]) => ({
+            stat: stat,
+            away: value,
+            home: currentHomeStats[stat],
+        }));
     }, [gameStats, statsMode]);
 
     return (
@@ -155,7 +160,7 @@ export const GameStats = () => {
                         exclusive
                         onChange={handleModeChange}
                     >
-                        <ToggleButton value="batting">Batting</ToggleButton>
+                        <ToggleButton value="hitting">Hitting</ToggleButton>
                         <ToggleButton value="pitching">Pitching</ToggleButton>
                         <ToggleButton value="fielding">Fielding</ToggleButton>
                     </ToggleButtonGroup>
@@ -231,7 +236,7 @@ export const GameStats = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {tableRows.map((row, i) => {
+                                {tableRows.map((row) => {
                                     const winner = getWinner(row, statsMode);
                                     return (
                                         <TableRow key={row.stat}>
@@ -240,20 +245,22 @@ export const GameStats = () => {
                                             </TableCell>
                                             <TableCell
                                                 sx={{
-                                                    bgcolor:
-                                                        winner === 'away' &&
-                                                        theme.palette.custom
-                                                            .highlightGreen,
+                                                    ...(winner === 'away' && {
+                                                        bgcolor:
+                                                            theme.palette.custom
+                                                                .highlightGreen,
+                                                    }),
                                                 }}
                                             >
                                                 {row.away}
                                             </TableCell>
                                             <TableCell
                                                 sx={{
-                                                    bgcolor:
-                                                        winner === 'home' &&
-                                                        theme.palette.custom
-                                                            .highlightGreen,
+                                                    ...(winner === 'home' && {
+                                                        bgcolor:
+                                                            theme.palette.custom
+                                                                .highlightGreen,
+                                                    }),
                                                 }}
                                             >
                                                 {row.home}
