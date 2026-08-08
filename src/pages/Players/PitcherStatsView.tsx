@@ -10,6 +10,7 @@ import { PitchArsenalChart } from '../../charts/PitchArsenalChart';
 import { PitchSpeedsChart } from '../../charts/PitchSpeedsChart';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { Consts } from '../../consts/consts';
+import { SeasonInningsPitched } from '../../types/player';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
@@ -29,7 +30,10 @@ export const PitcherStatsView = ({
     handlePitcherGameRowDeselect,
     selectedPitcherGamePitches,
     selectedPitcherGamePitchesVelocity,
-}: any) => {
+}: {
+    seasonInningsPitched: SeasonInningsPitched[];
+    [key: string]: any;
+}) => {
     return (
         <>
             <Typography variant="h6">Pitcher stats</Typography>

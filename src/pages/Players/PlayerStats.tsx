@@ -42,6 +42,7 @@ import {
     HitterStats,
     PitcherStats,
     PitcherYearDetails,
+    SeasonInningsPitched,
 } from '../../types/player.ts';
 import {
     transformAwards,
@@ -189,7 +190,9 @@ export const PlayerStats = () => {
             Object.values(game).flat()
         );
     }, [pitcherYearDetails]);
-    const [seasonInningsPitched, setSeasonInningsPitched] = useState([]);
+    const [seasonInningsPitched, setSeasonInningsPitched] = useState<
+        SeasonInningsPitched[]
+    >([]);
 
     const [selectedPitcherGamePitches, setSelectedPitcherGamePitches] =
         useState(null);

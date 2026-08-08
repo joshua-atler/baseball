@@ -7,11 +7,17 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
+import { SeasonInningsPitched } from '../types/player';
 
-export const InningsPitchedChart = ({ seasonInningsPitched }) => {
+export const InningsPitchedChart = ({
+    seasonInningsPitched,
+}: {
+    seasonInningsPitched: SeasonInningsPitched[];
+}) => {
     const theme = useTheme();
+
     const maxInningsValue = Math.max(
-        ...seasonInningsPitched.map((x) => x.inningsPitched),
+        ...seasonInningsPitched.map((x) => Number(x.inningsPitched)),
         5
     );
     const seasonsPitchedYAxisTicks = Array.from(

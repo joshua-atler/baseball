@@ -12,6 +12,11 @@ export interface PitcherStats {
     stats: PitchingMetrics;
 }
 
+export interface SeasonInningsPitched {
+    inningNum: string;
+    inningsPitched: string;
+}
+
 export interface PitchingMetrics {
     age: number;
     gamesPlayed: number;
