@@ -1,3 +1,5 @@
+import { Consts } from "../consts/consts";
+
 export interface Award {
     name: string;
     dates: string[];
@@ -92,7 +94,7 @@ export interface PitchArsenal {
 }
 
 export interface PitchSpeeds {
-    pitchType: string;
+    pitchType: keyof typeof Consts.PITCH_COLORS;
     speed: number;
 }
 

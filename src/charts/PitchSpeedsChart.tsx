@@ -9,9 +9,14 @@ import {
     YAxis,
 } from 'recharts';
 
+import { PitchSpeeds } from '../types/player.ts';
+
 import { Consts } from '../consts/consts.ts';
 
-export const PitchSpeedsChart = ({ pitchSpeeds }) => {
+export const PitchSpeedsChart = ({ pitchSpeeds }: {
+    pitchSpeeds: PitchSpeeds[]
+}) => {
+
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
