@@ -12,9 +12,6 @@ export const HitterStatsView = ({
     displayedHitterStats,
     hitterStatsColumns,
 }: any) => {
-    console.log('displayedHitterStats');
-    console.log(displayedHitterStats);
-
     return (
         <>
             <Typography variant="h6">Hitter stats</Typography>

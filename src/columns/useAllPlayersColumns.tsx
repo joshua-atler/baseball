@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 
-import { Consts } from '../consts/consts';
+import { Consts, TeamName } from '../consts/consts';
+import { RosterViewMode } from '../types/roster';
+import { AllPlayersPitcher } from '../types/allPlayers';
 
 const IMG_STYLE = 'vertical-align: middle; margin-right: 5px; height: 65px;';
 
-export const useAllPlayersColumns = (viewMode) => {
+export const useAllPlayersColumns = (viewMode: RosterViewMode) => {
     const allPlayersColumns = useMemo(() => {
         return viewMode === 'Pitchers'
             ? [
@@ -14,7 +16,11 @@ export const useAllPlayersColumns = (viewMode) => {
                       title: 'Name',
                       width: '20%',
                       visible: true,
-                      render: function (data, type, row) {
+                      render: function (
+                          data: string,
+                          _type: string,
+                          row: AllPlayersPitcher
+                      ) {
                           return `<img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.player.id}/headshot/silo/current" style="${IMG_STYLE}"> ${data}`;
                       },
                   },
@@ -23,11 +29,14 @@ export const useAllPlayersColumns = (viewMode) => {
                       title: 'Team',
                       width: '20%',
                       visible: true,
-                      render: function (data, type, row) {
+                      render: function (
+                          data: TeamName,
+                          _type: string,
+                          _row: AllPlayersPitcher
+                      ) {
                           const selectedTeamLogo = data
                               ? Consts.teamInfo[data]?.logo
                               : '';
-                          // return `<img src="${selectedTeamLogo}" style="width: 50px; height: 50px;" onerror="this.style.opacity='0';"/> ${data}`;
                           return `<img src="${selectedTeamLogo}" style="${IMG_STYLE}" onerror="this.style.opacity='0';"/> ${data}`;
                       },
                   },
@@ -58,7 +67,7 @@ export const useAllPlayersColumns = (viewMode) => {
                       title: 'Name',
                       width: '20%',
                       visible: true,
-                      render: function (data, type, row) {
+                      render: function (data: string, _type: string, row) {
                           return `<img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:silo:current.png/r_max/w_180,q_auto:best/v1/people/${row.player.id}/headshot/silo/current" style="${IMG_STYLE}"> ${data}`;
                       },
                   },
@@ -67,7 +76,7 @@ export const useAllPlayersColumns = (viewMode) => {
                       title: 'Team',
                       width: '20%',
                       visible: true,
-                      render: function (data, type, row) {
+                      render: function (data: TeamName, _type: string, row) {
                           const selectedTeamLogo = data
                               ? Consts.teamInfo[data].logo
                               : '';

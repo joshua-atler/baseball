@@ -34,7 +34,7 @@ export interface GameStatsTeam {
     nickname: string;
 }
 
-export type HittingGameStats = {
+export interface HittingGameStats {
     flyOuts: number;
     groundOuts: number;
     airOuts: number;
@@ -68,9 +68,9 @@ export type HittingGameStats = {
     atBatsPerHomeRun: string;
     popOuts: number;
     lineOuts: number;
-};
+}
 
-export type PitchingGameStats = {
+export interface PitchingGameStats {
     flyOuts: number;
     groundOuts: number;
     airOuts: number;
@@ -120,9 +120,9 @@ export type PitchingGameStats = {
     passedBall: number;
     popOuts: number;
     lineOuts: number;
-};
+}
 
-export type FieldingGameStats = {
+export interface FieldingGameStats {
     caughtStealing: number;
     stolenBases: number;
     stolenBasePercentage: string;
@@ -133,4 +133,4 @@ export type FieldingGameStats = {
     chances: number;
     passedBall: number;
     pickoffs: number;
-};
+}

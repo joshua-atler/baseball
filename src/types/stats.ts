@@ -51,3 +51,5 @@ export interface PitchingStats {
     shutouts: number;
     saves: number;
 }
+
+export interface StatsTeam {}

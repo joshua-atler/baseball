@@ -470,9 +470,6 @@ export const PlayerStats = () => {
         };
     }, [pitcherYearDetails.gameLog, navigate]);
 
-    console.log('hitterStats');
-    console.log(hitterStats);
-
     useEffect(() => {
         const getPlayer = async () => {
             if (selectedPlayer === null) {

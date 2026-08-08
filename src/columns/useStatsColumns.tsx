@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { FieldingStats, HittingStats, PitchingStats } from '../types/stats';
 
 export const useStatsColumns = () => {
     const hittingColumns = useMemo(
@@ -7,7 +8,7 @@ export const useStatsColumns = () => {
                 data: 'team',
                 title: `Team`,
                 width: '30%',
-                render: function (data) {
+                render: function (data: HittingStats['team']) {
                     return `<img src=${data.logo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
                 },
             },
@@ -32,7 +33,7 @@ export const useStatsColumns = () => {
                 data: 'team',
                 title: `Team`,
                 width: '30%',
-                render: function (data) {
+                render: function (data: PitchingStats['team']) {
                     return `<img src=${data.logo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
                 },
             },
@@ -57,7 +58,7 @@ export const useStatsColumns = () => {
                 data: 'team',
                 title: `Team`,
                 width: '30%',
-                render: function (data) {
+                render: function (data: FieldingStats['team']) {
                     return `<img src=${data.logo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
                 },
             },

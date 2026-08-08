@@ -21,6 +21,7 @@ import { LoadingCircle } from '../../components/LoadingCircle.tsx';
 import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchPlayerStats } from '../../services/rosterService.ts';
+import { RosterViewMode } from '../../types/roster.ts';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
@@ -28,7 +29,7 @@ DataTable.use(DT);
 export const AllPlayers = ({ setTeamViewTab }) => {
     const { setSelectedPlayer, setSelectedTeam } = useBasedash();
 
-    const [viewMode, setViewMode] = useState('Pitchers');
+    const [viewMode, setViewMode] = useState<RosterViewMode>('Pitchers');
     const [allPlayers, setAllPlayers] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [standingsYear, setStandingsYear] = useState(

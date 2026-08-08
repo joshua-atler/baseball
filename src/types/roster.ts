@@ -13,3 +13,5 @@ export interface RosterPlayer {
         sort: number;
     };
 }
+
+export type RosterViewMode = 'Pitchers' | 'Hitters';
