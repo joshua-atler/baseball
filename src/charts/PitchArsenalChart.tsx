@@ -7,9 +7,12 @@ import {
     Tooltip,
 } from 'recharts';
 
+import { PitchArsenal } from '../types/player.ts';
 import { Consts } from '../consts/consts.ts';
 
-export const PitchArsenalChart = ({ pitchArsenal }) => {
+export const PitchArsenalChart = ({ pitchArsenal }: {
+    pitchArsenal: PitchArsenal[]
+}) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">

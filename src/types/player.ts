@@ -89,7 +89,7 @@ export interface PitcherYearDetails {
 }
 
 export interface PitchArsenal {
-    pitchType: string;
+    pitchType: keyof typeof Consts.PITCH_COLORS;
     count: number;
 }
 
