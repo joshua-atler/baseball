@@ -13,7 +13,11 @@ import { Consts } from '../consts/consts';
 import { handleScatterClick } from './chartUtils';
 import { PitchTooltip } from './PitchTooltip';
 
-export const AllSeasonPitchesChart = ({ allSeasonPitches }) => {
+export const AllSeasonPitchesChart = ({
+    allSeasonPitches,
+}: {
+    allSeasonPitches: any;
+}) => {
     return (
         <>
             <ResponsiveContainer width="100%" height="100%">
@@ -50,29 +54,32 @@ export const AllSeasonPitchesChart = ({ allSeasonPitches }) => {
                             borderRadius: '4px',
                         }}
                         itemStyle={{ color: '#fff' }}
+                        // @ts-expect-error
                         content={<PitchTooltip />}
                     />
                     <Scatter
-                        data={allSeasonPitches.map((pitch) => ({
+                        data={allSeasonPitches.map((pitch: any) => ({
                             ...pitch,
                             axisLine: 'Velocity',
                             yAxisTrack: Math.random(),
                         }))}
                         isAnimationActive={false}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
                         onClick={handleScatterClick}
                     >
-                        {allSeasonPitches.map((entry, index) => (
-                            <Cell
-                                key={`pitch-${index}`}
-                                fill={
-                                    Consts.PITCH_COLORS[
-                                        entry.details?.type?.description
-                                    ] || '#555555'
-                                }
-                                opacity={0.5}
-                            />
-                        ))}
+                        {allSeasonPitches.map((entry: any, index: number) => {
+                            const pitchDescription = entry.details?.type
+                                ?.description as keyof typeof Consts.PITCH_COLORS;
+                            return (
+                                <Cell
+                                    key={`pitch-${index}`}
+                                    fill={
+                                        Consts.PITCH_COLORS[pitchDescription] ||
+                                        '#555555'
+                                    }
+                                    opacity={0.5}
+                                />
+                            );
+                        })}
                     </Scatter>
                 </ScatterChart>
             </ResponsiveContainer>

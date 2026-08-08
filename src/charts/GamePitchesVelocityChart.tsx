@@ -15,6 +15,8 @@ import { PitchTooltip } from './PitchTooltip';
 
 export const GamePitchesVelocityChart = ({
     selectedPitcherGamePitchesVelocity,
+}: {
+    selectedPitcherGamePitchesVelocity: any;
 }) => {
     return (
         <>
