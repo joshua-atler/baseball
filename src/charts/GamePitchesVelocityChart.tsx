@@ -65,30 +65,34 @@ export const GamePitchesVelocityChart = ({
                             borderRadius: '4px',
                         }}
                         itemStyle={{ color: '#fff' }}
+                        // @ts-expect-error
                         content={<PitchTooltip />}
                     />
                     <Scatter
                         data={selectedPitcherGamePitchesVelocity.map(
-                            (pitch) => ({
+                            (pitch: any) => ({
                                 ...pitch,
                             })
                         )}
                         isAnimationActive={false}
-                        activeDot={{ r: 6, strokeWidth: 0 }}
                         onClick={handleScatterClick}
                     >
                         {selectedPitcherGamePitchesVelocity.map(
-                            (entry, index) => (
-                                <Cell
-                                    key={`pitch-${index}`}
-                                    fill={
-                                        Consts.PITCH_COLORS[
-                                            entry.details?.type?.description
-                                        ] || '#555555'
-                                    }
-                                    opacity={0.5}
-                                />
-                            )
+                            (entry: any, index: number) => {
+                                const pitchDescription = entry.details?.type
+                                    ?.description as keyof typeof Consts.PITCH_COLORS;
+                                return (
+                                    <Cell
+                                        key={`pitch-${index}`}
+                                        fill={
+                                            Consts.PITCH_COLORS[
+                                                pitchDescription
+                                            ] || '#555555'
+                                        }
+                                        opacity={0.5}
+                                    />
+                                );
+                            }
                         )}
                     </Scatter>
                 </ScatterChart>
