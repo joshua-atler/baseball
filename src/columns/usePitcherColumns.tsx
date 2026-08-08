@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import { renderToString } from 'react-dom/server';
 import { HiCheck, HiExternalLink, HiX } from 'react-icons/hi';
 
-import { Consts } from '../consts/consts';
+import { Consts, TeamName } from '../consts/consts';
+import { PitcherGameLog } from '../types/player';
 
 export const usePitcherColumns = () => {
     const theme = useTheme();
@@ -14,7 +15,7 @@ export const usePitcherColumns = () => {
             {
                 data: 'team',
                 title: 'Team',
-                render: (data) => {
+                render: (data: TeamName) => {
                     if (data.length > 0) {
                         const logoURL = Consts.teamInfo[data].logo;
                         return `<img src=${logoURL} style="width: 40px; height: 40px" />`;
@@ -43,7 +44,7 @@ export const usePitcherColumns = () => {
             {
                 data: 'matchup',
                 title: 'Matchup',
-                render: (data) => {
+                render: (data: TeamName[]) => {
                     const awayLogoURL = Consts.teamInfo[data[0]].logo ?? '';
                     const homeLogoURL = Consts.teamInfo[data[1]].logo ?? '';
                     return `<span style="display: inline-flex; align-items: center"><img src=${awayLogoURL} style="width: 40px; height: 40px" />
@@ -54,7 +55,7 @@ export const usePitcherColumns = () => {
             {
                 data: 'isWin',
                 title: 'Win/Loss',
-                render: (data) => {
+                render: (data: boolean) => {
                     if (data) {
                         return `
                         <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background-color: #e8f5e9; border: 1px solid #a5d6a7; vertical-align: middle;">
@@ -83,7 +84,7 @@ export const usePitcherColumns = () => {
                 title: 'Actions',
                 data: null,
                 className: 'dt-center',
-                render: (data, type, row) => {
+                render: (_data: any, _type: string, row: PitcherGameLog) => {
                     return `
                 <button
                     onclick="event.stopPropagation(); handleViewGameClick(${row.gamePk})"

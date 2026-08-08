@@ -170,7 +170,7 @@ class Consts {
         },
     };
 
-    static teams = {
+    static teams: Record<'AL' | 'NL', TeamName[][]> = {
         AL: [
             [
                 'New York Yankees',
