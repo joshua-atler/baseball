@@ -1,4 +1,7 @@
-export const PitchTooltip = ({ active, payload }) => {
+export const PitchTooltip = ({ active, payload }: {
+    active: boolean,
+    payload: any
+}) => {
     if (active && payload && payload.length) {
         const pitch = payload[0].payload;
 
@@ -20,7 +23,6 @@ export const PitchTooltip = ({ active, payload }) => {
                         fontSize: '14px',
                     }}
                 >
-                    {/* {pitch.pitchType} */}
                     {pitch.details.type.description}
                 </p>
                 <p

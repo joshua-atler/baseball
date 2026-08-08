@@ -40,8 +40,6 @@ export const AllSeasonPitchesChart = ({ allSeasonPitches }) => {
                         domain={[-0.05, 1.05]}
                         tick={false}
                         tickLine={false}
-                        name=""
-                        show={false}
                     />
                     <Tooltip
                         cursor={{ strokeDasharray: '5 5' }}
