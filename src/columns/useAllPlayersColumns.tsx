@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { Consts, TeamName } from '../consts/consts';
-import { RosterViewMode } from '../types/roster';
 import { AllPlayersPitcher } from '../types/allPlayers';
+import { RosterViewMode } from '../types/roster';
 
 const IMG_STYLE = 'vertical-align: middle; margin-right: 5px; height: 65px;';
 

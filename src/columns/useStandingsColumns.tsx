@@ -1,9 +1,18 @@
 import { useMemo } from 'react';
 
+import {
+    FormattedStandings,
+    GroupingsMode,
+    LineChartDataset,
+    RecordSplit,
+    StandingsMode,
+    TeamRecord,
+} from '../types/standings';
+
 export const useStandingsColumns = (
-    tableData,
-    standingsMode,
-    groupingsMode
+    tableData: FormattedStandings | LineChartDataset,
+    standingsMode: StandingsMode,
+    groupingsMode: GroupingsMode
 ) => {
     const standingsColumns = useMemo(
         () => [
@@ -11,7 +20,9 @@ export const useStandingsColumns = (
                 data: 'team',
                 title: `${tableData?.division}`,
                 width: '20%',
-                render: function (data) {
+                render: function (data: TeamRecord['team']) {
+                    console.log('data');
+                    console.log(data);
                     return `<img src=${data.teamLogo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
                 },
             },
@@ -32,7 +43,7 @@ export const useStandingsColumns = (
                       {
                           data: 'wildCardGamesBack',
                           title: 'GB',
-                          render: (data) => {
+                          render: (data: string) => {
                               return `<div style="text-align: right;">${data ?? ''}</div>`;
                           },
                       },
@@ -45,7 +56,7 @@ export const useStandingsColumns = (
             {
                 data: 'records',
                 title: 'Home',
-                render: function (data) {
+                render: function (data: Record<string, RecordSplit[]>) {
                     const home = data?.splitRecords?.find(
                         (record) => record.type === 'home'
                     );
@@ -56,7 +67,7 @@ export const useStandingsColumns = (
             {
                 data: 'records',
                 title: 'Away',
-                render: function (data) {
+                render: function (data: Record<string, RecordSplit[]>) {
                     const away = data?.splitRecords?.find(
                         (record) => record.type === 'away'
                     );
@@ -69,7 +80,7 @@ export const useStandingsColumns = (
             {
                 data: 'streak.streakCode',
                 title: 'Streak',
-                render: function (data) {
+                render: function (data: string) {
                     const streakCode = data ?? '-';
                     return streakCode;
                 },
@@ -77,7 +88,7 @@ export const useStandingsColumns = (
             {
                 data: 'records',
                 title: 'L10',
-                render: function (data) {
+                render: function (data: Record<string, RecordSplit[]>) {
                     const lastTen = data?.splitRecords?.find(
                         (record) => record.type === 'lastTen'
                     );

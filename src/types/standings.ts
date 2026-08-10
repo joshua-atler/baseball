@@ -28,3 +28,17 @@ export interface LineChartDataset {
     division: string;
     teamRecords: Record<string, any>[];
 }
+
+export interface LeagueDivision {
+    id: number;
+    name: string;
+    link: string;
+}
+export interface RecordSplit {
+    wins: number;
+    losses: number;
+    pct: string;
+    type?: string;
+    division?: LeagueDivision;
+    league?: LeagueDivision;
+}

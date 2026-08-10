@@ -1,7 +1,7 @@
 import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
 
-import { Consts } from '../consts/consts';
+import { Consts, TeamName } from '../consts/consts';
 
 export const useHitterColumns = () => {
     const theme = useTheme();
@@ -12,7 +12,7 @@ export const useHitterColumns = () => {
             {
                 data: 'team',
                 title: 'Team',
-                render: (data) => {
+                render: (data: TeamName) => {
                     if (data.length > 0) {
                         const logoURL = Consts.teamInfo[data].logo;
                         return `<img src=${logoURL} style="width: 40px; height: 40px" />`;
