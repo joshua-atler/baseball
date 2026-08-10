@@ -7,14 +7,16 @@ import { PlayerStats } from './PlayerStats';
 import { Rosters } from './Rosters';
 
 export const Players = () => {
-    const { selectedPlayer, setSelectedPlayer, selectedTeam, setSelectedTeam } =
-        useBasedash();
+    const { setSelectedPlayer } = useBasedash();
 
     const [teamViewTab, setTeamViewTab] = useState('Roster');
 
-    const handleTeamViewChange = (event, newValue) => {
+    const handleTeamViewChange = (
+        _event: React.SyntheticEvent,
+        value: string
+    ) => {
         setSelectedPlayer(null);
-        setTeamViewTab(newValue);
+        setTeamViewTab(value);
     };
 
     return (

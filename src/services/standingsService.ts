@@ -8,17 +8,19 @@ export const fetchStandings = (
     standingsMode: string,
     groupingsMode: string
 ) => {
+    const standingsTypes = {
+        division: Consts.STANDING_TYPES.REGULAR_SEASON,
+        league: Consts.STANDING_TYPES.BY_LEAGUE,
+        MLB: Consts.STANDING_TYPES.BY_LEAGUE,
+    } as const;
+    const standingsType =
+        standingsTypes[groupingsMode as keyof typeof standingsTypes];
+
     switch (standingsMode) {
         case 'regular season':
-            const standingsTypes = {
-                division: Consts.STANDING_TYPES.REGULAR_SEASON,
-                league: Consts.STANDING_TYPES.BY_LEAGUE,
-                MLB: Consts.STANDING_TYPES.BY_LEAGUE,
-            };
-
             return apiClient(
                 false,
-                `/standings?leagueId=103,104&season=${year}&standingsTypes=${standingsTypes[groupingsMode]}&date=${month}/${day}/${year}`
+                `/standings?leagueId=103,104&season=${year}&standingsTypes=${standingsType}&date=${month}/${day}/${year}`
             );
         case 'wild card':
             return apiClient(

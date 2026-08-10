@@ -1,12 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import { useEffect, useState } from 'react';
 
-interface Article {
-    title: string;
-    link: string;
-    pubDate: string;
-    imageUrl: string;
-}
+import { FormattedArticle, RawArticle } from '../types/news';
 
 const parseXMLtoJSON = (xmlString: string) => {
     const parser = new XMLParser({
@@ -24,7 +19,7 @@ export const formatDate = (pubDate: string): string => {
 };
 
 export const useNews = (team: string) => {
-    const [articles, setArticles] = useState<Article[]>([]);
+    const [articles, setArticles] = useState<FormattedArticle[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
@@ -46,12 +41,16 @@ export const useNews = (team: string) => {
                 const json = parseXMLtoJSON(data);
 
                 const rawItems = json?.rss?.channel?.item || [];
-                const formattedArticles = rawItems.map((article) => ({
-                    title: article['title'],
-                    link: article['link'],
-                    pubDate: formatDate(article['pubDate']),
-                    imageUrl: article?.['image']?.['@_href'] || null,
-                }));
+                console.log('rawItems');
+                console.log(rawItems);
+                const formattedArticles: FormattedArticle[] = rawItems.map(
+                    (article: RawArticle) => ({
+                        title: article.title,
+                        link: article.link,
+                        pubDate: formatDate(article.pubDate),
+                        imageUrl: article?.image?.['@_href'] ?? null,
+                    })
+                );
 
                 setArticles(formattedArticles);
                 setIsLoading(false);
