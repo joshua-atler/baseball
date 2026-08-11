@@ -33,7 +33,7 @@ export const GamesList = () => {
 
     const [progress, setProgress] = useState(0);
     const [isLoading, setIsLoading] = useState('manual');
-    const datePickerRef = useRef();
+    const datePickerRef = useRef(null);
 
     const [dates, setDates] = useState([new Date(), new Date()]);
     const [month, day, year] = shortYearFormatter.format(dates[0]).split('/');
@@ -54,7 +54,7 @@ export const GamesList = () => {
 
     const updateTableRef = useRef(null);
 
-    const handleSelect = (e, dt, type, indexes) => {
+    const handleSelect = (_e: any, _dt: any, _type: any, indexes: any) => {
         setSelectedGame(tableData[indexes].gamePk);
         setSelectedGameMetadata({
             tickets: tableData[indexes].gameMetadata.tickets,
@@ -83,18 +83,6 @@ export const GamesList = () => {
     };
 
     useEffect(() => {
-        updateTableRef.current = (loadingType: string) => {
-            setIsLoading(loadingType);
-            setProgress(0);
-            (async () => {
-                fillTableWithDates(dates);
-            })();
-        };
-
-        updateTableRef.current('manual');
-    }, [dates, selectedTeams, isLiveGames]);
-
-    useEffect(() => {
         let intervalId;
         if (isAutoUpdate) {
             intervalId = setInterval(function () {
@@ -109,29 +97,34 @@ export const GamesList = () => {
         };
     }, [isAutoUpdate]);
 
-    async function fillTableWithDates(dates) {
-        const allData = [];
+    useEffect(() => {
+        async function fillTableWithDates(datesParam: any[]) {
+            const startDate = formatter.format(datesParam[0]);
+            const endDate =
+                datesParam.length === 2
+                    ? formatter.format(datesParam[1])
+                    : formatter.format(datesParam[0]);
 
-        const startDate = formatter.format(dates[0]);
-        if (dates.length === 2) {
-            const endDate = formatter.format(dates[1]);
+            const gamesJson = await fetchSchedule(startDate, endDate);
+            const gamesData = await transformGames(
+                gamesJson,
+                isLiveGames,
+                selectedTeams,
+                timeZone,
+                (p: number) => setProgress(p)
+            );
+            setTableData(gamesData);
+            setIsLoading(null);
         }
-        const endDate =
-            dates.length === 2
-                ? formatter.format(dates[1])
-                : formatter.format(dates[0]);
 
-        const gamesJson = await fetchSchedule(startDate, endDate);
-        const gamesData = await transformGames(
-            gamesJson,
-            isLiveGames,
-            selectedTeams,
-            timeZone,
-            (p) => setProgress(p)
-        );
-        setTableData(gamesData);
-        setIsLoading(null);
-    }
+        updateTableRef.current = (loadingType: string) => {
+            setIsLoading(loadingType);
+            setProgress(0);
+            fillTableWithDates(dates);
+        };
+
+        updateTableRef.current('manual');
+    }, [dates, selectedTeams, isLiveGames, timeZone]);
 
     return (
         <>
@@ -155,11 +148,14 @@ export const GamesList = () => {
                         value={dates}
                         format="MM/DD/YY"
                         minDate="01/01/20"
-                        onChange={(e, newValue) => {
-                            setDates(
-                                newValue.validatedValue.map((v) => new Date(v))
-                            );
-                            if (newValue.validatedValue.length === 2) {
+                        onChange={(_e, newValue) => {
+                            const dateArray = Array.isArray(
+                                newValue.validatedValue
+                            )
+                                ? newValue.validatedValue
+                                : [newValue.validatedValue];
+                            setDates(dateArray.map((v) => new Date(v)));
+                            if (dateArray.length === 2) {
                                 datePickerRef.current?.closeCalendar();
                             }
                         }}
@@ -278,7 +274,6 @@ export const GamesList = () => {
             ) : (
                 <Box sx={Consts.dataTableContainerSx}>
                     <DataTable
-                        hidden={true}
                         data={tableData}
                         columns={gamesColumns}
                         options={{
@@ -291,7 +286,6 @@ export const GamesList = () => {
                             dom: 'Bript',
                             columnDefs: [],
                             ordering: false,
-                            buttons: [],
                             scrollCollapse: true,
                             language: {
                                 emptyTable: 'No games for selected filters',

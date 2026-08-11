@@ -7,7 +7,7 @@ import { shortYearFormatter } from './dateFormatters';
 export const transformGames = async (
     gamesJson,
     isLiveGames: boolean,
-    selectedTeams: string,
+    selectedTeams: string[],
     timeZone: TimeZone,
     onProgress
 ) => {
