@@ -37,15 +37,18 @@ export const AllPlayers = ({ setTeamViewTab }) => {
     );
     const firstYear = 2010;
 
-    const handleYearChange = (event: SelectChangeEvent) => {
-        setStandingsYear(event.target.value as string);
+    const handleYearChange = (event: SelectChangeEvent<number>) => {
+        setStandingsYear(Number(event.target.value));
     };
 
-    const handleViewModeChange = (event: SelectChangeEvent) => {
-        setViewMode(event.target.value as string);
+    const handleViewModeChange = (
+        _event: React.MouseEvent<HTMLElement>,
+        value: RosterViewMode
+    ) => {
+        setViewMode(value);
     };
 
-    const handleSelect = (e, dt, type, indexes) => {
+    const handleSelect = (_e: any, dt: any, _type: any, indexes: any) => {
         const rowData = dt.row(indexes).data();
 
         if (rowData && rowData.player.id) {
@@ -55,7 +58,7 @@ export const AllPlayers = ({ setTeamViewTab }) => {
         }
     };
 
-    const handleDeselect = (e, dt, type, indexes) => {
+    const handleDeselect = () => {
         setSelectedPlayer(null);
     };
 
@@ -97,7 +100,10 @@ export const AllPlayers = ({ setTeamViewTab }) => {
                 sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 2 }}
             >
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
-                    <Select value={standingsYear} onChange={handleYearChange}>
+                    <Select<number>
+                        value={standingsYear}
+                        onChange={handleYearChange}
+                    >
                         {Array.from({
                             length:
                                 Temporal.Now.plainDateISO().year -

@@ -11,7 +11,6 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -30,7 +29,6 @@ import { transformGames } from '../../utils/gameTransformers.ts';
 DataTable.use(DT);
 
 export const GamesList = () => {
-    const theme = useTheme();
     const { setSelectedGame, setSelectedGameMetadata } = useBasedash();
 
     const [progress, setProgress] = useState(0);
@@ -65,7 +63,7 @@ export const GamesList = () => {
         });
     };
 
-    const handleDeselect = (e, dt, type, indexes) => {
+    const handleDeselect = () => {
         setSelectedGame(null);
         setSelectedGameMetadata(null);
     };
