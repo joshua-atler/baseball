@@ -1,3 +1,5 @@
+import { BaseEntity } from './common';
+
 export type StatsGameType = 'Regular Season' | 'Postseason' | 'Spring Training';
 export type StatsMode = 'hitting' | 'pitching' | 'fielding';
 
@@ -52,4 +54,9 @@ export interface PitchingStats {
     saves: number;
 }
 
-export interface StatsTeam {}
+export interface StatsSplit {
+    rank: number;
+    season: string;
+    stat: Record<string, any>;
+    team: BaseEntity;
+}

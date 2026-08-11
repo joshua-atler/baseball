@@ -1,5 +1,10 @@
-import { Consts } from '../consts/consts';
-import { FieldingStats, HittingStats, PitchingStats } from '../types/stats.ts';
+import { Consts, TeamName } from '../consts/consts';
+import {
+    FieldingStats,
+    HittingStats,
+    PitchingStats,
+    StatsSplit,
+} from '../types/stats.ts';
 
 export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
     if (rawHittingStats.stats.length === 0) {
@@ -20,15 +25,19 @@ export const transformHittingStats = (rawHittingStats: any): HittingStats[] => {
         'stolenBases',
     ]);
 
-    const hittingStats = rawHittingStats.stats[0].splits.map((split) => ({
-        team: {
-            name: split.team.name,
-            logo: Consts.teamInfo[split.team.name].logo,
-        },
-        ...Object.fromEntries(
-            Object.entries(split.stat).filter(([key]) => hittingKeys.has(key))
-        ),
-    }));
+    const hittingStats = rawHittingStats.stats[0].splits.map(
+        (split: StatsSplit) => ({
+            team: {
+                name: split.team.name,
+                logo: Consts.teamInfo[split.team.name as TeamName].logo,
+            },
+            ...Object.fromEntries(
+                Object.entries(split.stat).filter(([key]) =>
+                    hittingKeys.has(key)
+                )
+            ),
+        })
+    );
 
     return hittingStats;
 };
@@ -54,15 +63,19 @@ export const transformPitchingStats = (
         'saves',
     ]);
 
-    const pitchingStats = rawPitchingStats.stats[0].splits.map((split) => ({
-        team: {
-            name: split.team.name,
-            logo: Consts.teamInfo[split.team.name].logo,
-        },
-        ...Object.fromEntries(
-            Object.entries(split.stat).filter(([key]) => pitchingKeys.has(key))
-        ),
-    }));
+    const pitchingStats = rawPitchingStats.stats[0].splits.map(
+        (split: StatsSplit) => ({
+            team: {
+                name: split.team.name,
+                logo: Consts.teamInfo[split.team.name as TeamName].logo,
+            },
+            ...Object.fromEntries(
+                Object.entries(split.stat).filter(([key]) =>
+                    pitchingKeys.has(key)
+                )
+            ),
+        })
+    );
 
     return pitchingStats;
 };
@@ -86,15 +99,19 @@ export const transformFieldingStats = (
         'wildPitches',
     ]);
 
-    const fieldingStats = rawFieldingStats.stats[0].splits.map((split) => ({
-        team: {
-            name: split.team.name,
-            logo: Consts.teamInfo[split.team.name].logo,
-        },
-        ...Object.fromEntries(
-            Object.entries(split.stat).filter(([key]) => fieldingKeys.has(key))
-        ),
-    }));
+    const fieldingStats = rawFieldingStats.stats[0].splits.map(
+        (split: StatsSplit) => ({
+            team: {
+                name: split.team.name,
+                logo: Consts.teamInfo[split.team.name as TeamName].logo,
+            },
+            ...Object.fromEntries(
+                Object.entries(split.stat).filter(([key]) =>
+                    fieldingKeys.has(key)
+                )
+            ),
+        })
+    );
 
     return fieldingStats;
 };

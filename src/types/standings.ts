@@ -1,3 +1,5 @@
+import { BaseEntity } from './common';
+
 export type StandingsForBoxscore = [string, string];
 
 export type StandingsMode =
@@ -29,16 +31,11 @@ export interface LineChartDataset {
     teamRecords: Record<string, any>[];
 }
 
-export interface LeagueDivision {
-    id: number;
-    name: string;
-    link: string;
-}
 export interface RecordSplit {
     wins: number;
     losses: number;
     pct: string;
     type?: string;
-    division?: LeagueDivision;
-    league?: LeagueDivision;
+    division?: BaseEntity;
+    league?: BaseEntity;
 }
