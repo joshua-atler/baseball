@@ -15,8 +15,6 @@ export const transformStandingsForBoxscore = (
     awayTeamID: number,
     homeTeamID: number
 ): StandingsForBoxscore => {
-    console.log('standingsJson');
-    console.log(standingsJson);
     const allTeamRecords = standingsJson.records.flatMap(
         (division: any) => division.teamRecords
     );

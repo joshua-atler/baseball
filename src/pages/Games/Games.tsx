@@ -116,10 +116,7 @@ export const Games = () => {
                                 },
                         }}
                     >
-                        <Boxscore
-                            highlightedPlayer={undefined}
-                            setSelectedPlayer={setSelectedPlayer}
-                        />
+                        <Boxscore />
                     </Box>
                 </Grid>
                 <Grid>

@@ -12,7 +12,7 @@ import Grid from '@mui/material/Grid2';
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { PlayerPhoto } from '../../components/PlayerPhoto.tsx';
 import { TeamLogo } from '../../components/TeamLogo.tsx';
@@ -184,10 +184,9 @@ function ProbablePitcher({ pitcher }) {
     );
 }
 
-export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
+export const Boxscore = () => {
     const theme = useTheme();
-    const navigate = useNavigate();
-    const { selectedGame, selectedGameMetadata, timeZone } = useBasedash();
+    const { selectedGame, selectedGameMetadata } = useBasedash();
 
     const [currGame, setCurrGame] = useState(null);
     const [probablePitchers, setProbablePitchers] = useState(null);
@@ -275,9 +274,10 @@ export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
         numInnings = 9;
     }
 
-    const teamStats = {};
-    teamStats.away = boxscore?.teams?.away?.teamStats;
-    teamStats.home = boxscore?.teams?.home?.teamStats;
+    const teamStats = {
+        away: boxscore?.teams?.away?.teamStats,
+        home: boxscore?.teams?.home?.teamStats,
+    };
 
     useEffect(() => {
         if (currGame) {
@@ -289,6 +289,7 @@ export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
             setProbablePitchers(null);
             setTeamRecords(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currGame]);
 
     useEffect(() => {
@@ -424,25 +425,26 @@ export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
                         )}
                         {selectedGameMetadata?.seriesStatus && (
                             <Chip
-                                target="_blank"
                                 label={`Game ${selectedGameMetadata.seriesStatus.gameNumber}/${selectedGameMetadata.seriesStatus.totalGames}${selectedGameMetadata.seriesStatus.result ? ` - ${selectedGameMetadata.seriesStatus.result}` : ''}`}
                                 color="warning"
                                 variant="outlined"
-                            ></Chip>
+                            />
                         )}
                         <Stack direction="row" spacing={1}>
-                            {[...new Set(selectedGameMetadata?.broadcasts)].map(
-                                (b) => {
-                                    return (
-                                        <Chip
-                                            key={b}
-                                            label={cleanBroadcastName(b)}
-                                            color="info"
-                                            variant="outlined"
-                                        />
-                                    );
-                                }
-                            )}
+                            {[
+                                ...new Set<string>(
+                                    selectedGameMetadata?.broadcasts || []
+                                ),
+                            ].map((b: string) => {
+                                return (
+                                    <Chip
+                                        key={b}
+                                        label={cleanBroadcastName(b)}
+                                        color="info"
+                                        variant="outlined"
+                                    />
+                                );
+                            })}
                         </Stack>
                     </>
                 )}
@@ -720,7 +722,7 @@ export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
                                 boxscore?.teams?.[selectedSide]?.pitchers;
                             return !pitchers.includes(batterID);
                         })
-                        .map((batterID, i) => {
+                        .map((batterID) => {
                             const batter =
                                 boxscore?.teams?.[selectedSide]?.players?.[
                                     `ID${batterID}`
@@ -913,7 +915,7 @@ export const Boxscore = ({ highlightedPlayer, setSelectedPlayer }) => {
                 </thead>
                 <tbody>
                     {boxscore?.teams?.[selectedSide]?.pitchers.map(
-                        (pitcherID, i) => {
+                        (pitcherID) => {
                             const pitcher =
                                 boxscore?.teams?.[selectedSide]?.players?.[
                                     `ID${pitcherID}`
