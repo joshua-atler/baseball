@@ -28,7 +28,7 @@ export const Rosters = ({ setTeamViewTab }) => {
 
     const [roster, setRoster] = useState<RosterPlayer[] | null>(null);
 
-    const handleSelect = (e, dt, type, indexes) => {
+    const handleSelect = (_e: any, dt: any, _type: any, indexes: any) => {
         const rowData = dt.row(indexes).data();
 
         if (rowData && rowData.id) {
@@ -37,7 +37,7 @@ export const Rosters = ({ setTeamViewTab }) => {
         }
     };
 
-    const handleDeselect = (e, dt, type, indexes) => {
+    const handleDeselect = () => {
         setSelectedPlayer(null);
     };
 
@@ -65,9 +65,12 @@ export const Rosters = ({ setTeamViewTab }) => {
         getRoster();
     }, [selectedTeam]);
 
-    const handleTeamChange = useCallback((val) => {
-        setSelectedTeam(val[0]);
-    }, []);
+    const handleTeamChange = useCallback(
+        (val: any) => {
+            setSelectedTeam(val[0]);
+        },
+        [setSelectedTeam]
+    );
 
     return (
         <>
