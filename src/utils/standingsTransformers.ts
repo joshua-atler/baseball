@@ -15,11 +15,18 @@ export const transformStandingsForBoxscore = (
     awayTeamID: number,
     homeTeamID: number
 ): StandingsForBoxscore => {
+    console.log('standingsJson');
+    console.log(standingsJson);
     const allTeamRecords = standingsJson.records.flatMap(
-        (division) => division.teamRecords
+        (division: any) => division.teamRecords
     );
-    const awayTeamRecord = allTeamRecords.find((x) => x.team.id === awayTeamID);
-    const homeTeamRecord = allTeamRecords.find((x) => x.team.id === homeTeamID);
+
+    const awayTeamRecord = allTeamRecords.find(
+        (team: any) => team.team.id === awayTeamID
+    );
+    const homeTeamRecord = allTeamRecords.find(
+        (team: any) => team.team.id === homeTeamID
+    );
 
     const awayTeamWinsLosses = `${awayTeamRecord.leagueRecord.wins}-${awayTeamRecord.leagueRecord.losses}`;
     const homeTeamWinsLosses = `${homeTeamRecord.leagueRecord.wins}-${homeTeamRecord.leagueRecord.losses}`;
@@ -88,19 +95,19 @@ export const transformStandings = async (
                     );
 
                 case 'league': {
-                    const americanLeagueTeams = allProcessedRecords
+                    const americanLeagueTeams = [...allProcessedRecords]
                         .filter((r) => r.league?.id === 103)
                         .flatMap((r) => r.teamRecords)
-                        .toSorted(
+                        .sort(
                             (a, b) =>
                                 parseInt(a.leagueRank || '0') -
                                 parseInt(b.leagueRank || '0')
                         );
 
-                    const nationalLeagueTeams = allProcessedRecords
+                    const nationalLeagueTeams = [...allProcessedRecords]
                         .filter((r) => r.league?.id === 104)
                         .flatMap((r) => r.teamRecords)
-                        .toSorted(
+                        .sort(
                             (a, b) =>
                                 parseInt(a.leagueRank || '0') -
                                 parseInt(b.leagueRank || '0')
@@ -119,9 +126,9 @@ export const transformStandings = async (
                 }
 
                 case 'MLB': {
-                    const mlbTeams = allProcessedRecords
+                    const mlbTeams = [...allProcessedRecords]
                         .flatMap((r) => r.teamRecords)
-                        .toSorted(
+                        .sort(
                             (a, b) =>
                                 parseInt(a.sportRank || '0') -
                                 parseInt(b.sportRank || '0')
@@ -140,7 +147,7 @@ export const transformStandings = async (
             }
 
         case 'wild card': {
-            const wildCardTeams = allProcessedRecords
+            const wildCardTeams = [...allProcessedRecords]
                 .filter((r) => r.standingsType === 'wildCard')
                 .map((record: any): FormattedStandings => ({
                     division:
@@ -181,7 +188,7 @@ export const transformStandings = async (
                 order.map((value, index) => [value, index])
             );
 
-            return allWildCardTeams.toSorted((a, b) => {
+            return [...allWildCardTeams].sort((a, b) => {
                 return (
                     (orderMap.get(a.division) ?? Infinity) -
                     (orderMap.get(b.division) ?? Infinity)
@@ -190,7 +197,7 @@ export const transformStandings = async (
         }
 
         case 'spring training': {
-            const grapefruitLeagueTeams = allProcessedRecords
+            const grapefruitLeagueTeams = [...allProcessedRecords]
                 .map((division) => ({
                     ...division,
                     teamRecords: division.teamRecords.filter(
@@ -199,13 +206,13 @@ export const transformStandings = async (
                 }))
                 .filter((division) => division.teamRecords.length > 0)
                 .flatMap((r) => r.teamRecords)
-                .toSorted(
+                .sort(
                     (a, b) =>
                         parseInt(a.springLeagueRank || '0') -
                         parseInt(b.springLeagueRank || '0')
                 );
 
-            const cactusLeagueTeams = allProcessedRecords
+            const cactusLeagueTeams = [...allProcessedRecords]
                 .map((division) => ({
                     ...division,
                     teamRecords: division.teamRecords.filter(
@@ -214,7 +221,7 @@ export const transformStandings = async (
                 }))
                 .filter((division) => division.teamRecords.length > 0)
                 .flatMap((r) => r.teamRecords)
-                .toSorted(
+                .sort(
                     (a, b) =>
                         parseInt(a.springLeagueRank || '0') -
                         parseInt(b.springLeagueRank || '0')
@@ -272,7 +279,7 @@ export const transformLineChartStandings = (
             }
         });
 
-        const [year, month, day] = date.date.split('-');
+        const [, month, day] = date.date.split('-');
 
         return {
             date: `${month}/${day}`,

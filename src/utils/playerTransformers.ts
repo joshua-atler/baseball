@@ -79,7 +79,7 @@ export const transformPitcherPitchSpeeds = (
 export const transformPitcherPitchLog = async (
     rawPitcherGameLog: any,
     selectedPlayer: number
-): PitchLog[] => {
+): Promise<PitchLog[]> => {
     const seasonGames = await Promise.all(
         rawPitcherGameLog.map(async (game) => {
             const gameContent = await fetchGame(game.game.gamePk);

@@ -1,6 +1,6 @@
 import { Consts } from '../consts/consts';
 import { TimeZone } from '../context/BasedashContext';
-import { Article, GameMedia } from '../types/game';
+import { Article, Media } from '../types/game';
 import { TeamGameStats } from '../types/gameStats';
 import { shortYearFormatter } from './dateFormatters';
 
@@ -67,42 +67,42 @@ export const transformGames = async (
             minute: '2-digit',
         });
         let awayScore = '-';
-        const awayTeam = gameResponse['gameData']['teams']['away']['name'];
+        const awayTeam = gameResponse?.gameData?.teams?.away?.name;
         let homeScore = '-';
-        const homeTeam = gameResponse['gameData']['teams']['home']['name'];
+        const homeTeam = gameResponse?.gameData?.teams?.home?.name;
         let inningData = '';
         let outs = '';
         let count = '';
-        let status = gameResponse['gameData']['status']['abstractGameState'];
+        let status = gameResponse?.gameData?.status?.abstractGameState;
         const started = time < now;
 
         let homeWin = false;
 
         if (
-            gameResponse['liveData']['linescore']['currentInning'] !==
-                undefined &&
+            gameResponse?.liveData?.linescore?.currentInning !== undefined &&
             status == 'Live'
         ) {
-            const inningState = gameResponse['liveData']['linescore'][
-                'inningState'
-            ].substring(0, 3);
+            const inningState =
+                gameResponse?.liveData?.linescore?.inningState.substring(0, 3);
             inningData =
                 inningState +
                 ' ' +
-                gameResponse['liveData']['linescore'][
-                    'currentInning'
-                ].toString();
-            outs = gameResponse['liveData']['linescore']['outs'];
+                gameResponse?.liveData?.linescore?.currentInning?.toString();
+            outs = gameResponse?.liveData?.linescore?.outs;
             outs =
-                '<span style="color: #EFB21F">&#11044;</span>'.repeat(outs) +
-                '<span style="color: #888888">&#11044;</span>'.repeat(3 - outs);
+                '<span style="color: #EFB21F">&#11044;</span>'.repeat(
+                    Number(outs)
+                ) +
+                '<span style="color: #888888">&#11044;</span>'.repeat(
+                    3 - Number(outs)
+                );
             count =
-                gameResponse['liveData']['linescore']['balls'].toString() +
+                gameResponse?.liveData?.lineScore?.balls.toString() +
                 '-' +
-                gameResponse['liveData']['linescore']['strikes'].toString();
+                gameResponse?.liveData?.lineScore?.strikes.toString();
 
-            const runners = gameResponse['liveData']['linescore']['offense'];
-            let bases = ['third', 'second', 'first'];
+            const runners = gameResponse?.liveData?.lineScore?.offsense;
+            const bases = ['third', 'second', 'first'];
             const baseData = [];
             for (const base of bases) {
                 if (base in runners) {
@@ -111,7 +111,7 @@ export const transformGames = async (
                     baseData.push(['#888888', '#AAAAAA']);
                 }
             }
-            bases = `<svg style="vertical-align: middle; display: inline-block;" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base"><title>Bases.</title>
+            const basesSvg = `<svg style="vertical-align: middle; display: inline-block;" width="35" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16.25" aria-label="base"><title>Bases.</title>
                 <rect fill="${baseData[0][0]}" stroke-width="1" stroke="${baseData[0][1]}" width="6" height="6" transform="translate(5, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
                 <rect fill="${baseData[1][0]}" stroke-width="1" stroke="${baseData[1][1]}" width="6" height="6" transform="translate(12, 0.5) rotate(-315)" rx="1px" ry="1px"></rect>
                 <rect fill="${baseData[2][0]}" stroke-width="1" stroke="${baseData[2][1]}" width="6" height="6" transform="translate(19, 7.25) rotate(-315)" rx="1px" ry="1px"></rect>
@@ -122,7 +122,7 @@ export const transformGames = async (
                 inningData +
                 '</span>';
             inningData =
-                inningData + bases + '&nbsp;' + outs + '&nbsp;' + count;
+                inningData + basesSvg + '&nbsp;' + outs + '&nbsp;' + count;
             inningData =
                 '<span style="vertical-align: middle; display: inline-block;">' +
                 inningData +
@@ -256,7 +256,7 @@ export const transformGameArticle = (content: any): Article | null => {
     };
 };
 
-export const transformGameMedia = (content): GameMedia[] => {
+export const transformGameMedia = (content): Media[] => {
     const highlights = content?.highlights?.highlights?.items;
 
     if (!highlights) {
@@ -310,10 +310,6 @@ export const transformGameStats = (gameContent: any): TeamGameStats => {
 };
 
 export const transformGamePlays = (playsContent) => {
-    // console.log('transformGamePlays');
-
-    // organize returned data into innings and plays
-
     const playsByInning = playsContent?.liveData?.plays?.playsByInning;
     const allPlays = playsContent?.liveData?.plays?.allPlays;
 
@@ -322,7 +318,6 @@ export const transformGamePlays = (playsContent) => {
     }
 
     const formattedPlays = [];
-    // relevant play data in each half inning
 
     const awayAbbr = playsContent?.gameData?.teams?.away?.abbreviation;
     const homeAbbr = playsContent?.gameData?.teams?.home?.abbreviation;
@@ -331,7 +326,6 @@ export const transformGamePlays = (playsContent) => {
         const inning = playsByInning[i];
 
         if (inning.top.length > 0) {
-            // const topPlays = inning.top;
             const topPlays = allPlays.slice(
                 inning.top.at(0),
                 inning.top.at(-1) + 1
@@ -356,11 +350,6 @@ export const transformGamePlays = (playsContent) => {
             });
         }
     }
-
-    // console.log('playsByInning');
-    // console.log(playsByInning);
-    // console.log('formattedPlays');
-    // console.log(formattedPlays);
 
     return formattedPlays;
 };

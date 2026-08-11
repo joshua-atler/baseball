@@ -21,8 +21,6 @@ export const useStandingsColumns = (
                 title: `${tableData?.division}`,
                 width: '20%',
                 render: function (data: TeamRecord['team']) {
-                    console.log('data');
-                    console.log(data);
                     return `<img src=${data.teamLogo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
                 },
             },
