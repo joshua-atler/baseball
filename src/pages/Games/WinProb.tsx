@@ -1,5 +1,4 @@
 import { Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { useEffect, useRef, useState } from 'react';
@@ -18,7 +17,6 @@ function rgbaColor(color) {
 }
 
 export const WinProb = () => {
-    const theme = useTheme();
     const { selectedGame } = useBasedash();
 
     const [errorLoadingChart, setErrorLoadingChart] = useState(false);
@@ -40,8 +38,6 @@ export const WinProb = () => {
                 if (existingChart) {
                     existingChart.destroy();
                 }
-
-                // move this to a transformers file
 
                 if (chartRef.current) {
                     chartRef.current.destroy();
@@ -159,7 +155,9 @@ export const WinProb = () => {
                                 bodyColor: '#fff',
                                 callbacks: {
                                     title: function (context) {
-                                        return `${parseFloat(context[0]['raw']).toFixed(1)}%`;
+                                        console.log('context');
+                                        console.log(context);
+                                        return `${parseFloat(context[0]?.raw.toString()).toFixed(1)}%`;
                                     },
                                     label: function (context) {
                                         const dataAtIndex =
@@ -197,8 +195,9 @@ export const WinProb = () => {
                     },
                 });
                 setErrorLoadingChart(false);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
-                console.error('Failed to load chart:', err.message);
+                console.error('Failed to load chart');
                 setErrorLoadingChart(true);
             }
 
