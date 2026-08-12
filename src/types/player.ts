@@ -1,4 +1,4 @@
-import { Consts } from "../consts/consts";
+import { Consts } from '../consts/consts';
 
 export interface Award {
     name: string;
@@ -13,7 +13,7 @@ export interface PitcherStats {
 }
 
 export interface SeasonInningsPitched {
-    inningNum: string;
+    inningNum: number;
     inningsPitched: string;
 }
 
@@ -84,7 +84,7 @@ export interface PitchingMetrics {
 
 export interface PitcherYearDetails {
     isLoading: boolean;
-    year: string | null;
+    year: number | null;
     pitchSpeeds: PitchSpeeds[] | null;
     pitchArsenal: PitchArsenal[] | null;
     gameLog: PitcherGameLog[] | null;
@@ -129,6 +129,7 @@ export interface PitcherGameLog {
 }
 
 export interface GameMetadata {
+    tickets: string;
     broadcasts: string[];
     seriesStatus: SeriesStatus;
 }

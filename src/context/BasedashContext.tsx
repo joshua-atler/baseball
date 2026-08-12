@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 
 import { TeamName } from '../consts/consts';
+import { GameMetadata } from '../types/player';
 
 export type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 
@@ -11,9 +12,9 @@ interface BasedashProviderProps {
 export interface BasedashContextType {
     selectedGame: number | null;
     setSelectedGame: React.Dispatch<React.SetStateAction<number | null>>;
-    selectedGameMetadata: Record<string, any> | null;
+    selectedGameMetadata: GameMetadata | null;
     setSelectedGameMetadata: React.Dispatch<
-        React.SetStateAction<Record<string, any> | null>
+        React.SetStateAction<GameMetadata | null>
     >;
     selectedPlayer: number | null;
     setSelectedPlayer: React.Dispatch<React.SetStateAction<number | null>>;
@@ -29,10 +30,8 @@ const BasedashContext = createContext<BasedashContextType | undefined>(
 
 export const BasedashProvider = ({ children }: BasedashProviderProps) => {
     const [selectedGame, setSelectedGame] = useState<number | null>(null);
-    const [selectedGameMetadata, setSelectedGameMetadata] = useState<Record<
-        string,
-        any
-    > | null>(null);
+    const [selectedGameMetadata, setSelectedGameMetadata] =
+        useState<GameMetadata | null>(null);
     const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
     const [selectedTeam, setSelectedTeam] = useState<TeamName | null>(null);
     const [timeZone, setTimeZone] = useState<TimeZone>('ET');

@@ -240,15 +240,15 @@ function Baserunners({
             theme.palette.custom.basesIconEmptyEdge,
         ],
     ];
-    if (runners.first) {
+    if (runners?.first) {
         baseData[2][0] = theme.palette.custom.basesIconRunner;
         baseData[2][1] = theme.palette.custom.basesIconRunner;
     }
-    if (runners.second) {
+    if (runners?.second) {
         baseData[1][0] = theme.palette.custom.basesIconRunner;
         baseData[1][1] = theme.palette.custom.basesIconRunner;
     }
-    if (runners.third) {
+    if (runners?.third) {
         baseData[0][0] = theme.palette.custom.basesIconRunner;
         baseData[0][1] = theme.palette.custom.basesIconRunner;
     }

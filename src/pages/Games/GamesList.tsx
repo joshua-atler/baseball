@@ -56,6 +56,8 @@ export const GamesList = () => {
 
     const handleSelect = (_e: any, _dt: any, _type: any, indexes: any) => {
         setSelectedGame(tableData[indexes].gamePk);
+        console.log('-------------------------------------');
+        console.log(tableData[indexes].gameMetadata.tickets);
         setSelectedGameMetadata({
             tickets: tableData[indexes].gameMetadata.tickets,
             broadcasts: tableData[indexes].gameMetadata.broadcasts,

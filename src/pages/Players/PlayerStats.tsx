@@ -290,31 +290,29 @@ export const PlayerStats = () => {
             );
             const allGames = await Promise.all(gamePromises);
 
-            const masterOutsByInning = {};
+            const masterOutsByInning: Record<number, number> = {};
 
-            const gamesInningsPitched = allGames.map((game) => {
-                const pitcherOuts = game.liveData.plays.allPlays.filter(
+            allGames
+                .flatMap((game) => game.liveData.plays.allPlays)
+                .filter(
                     (play) =>
                         play.result.isOut &&
                         play.matchup.pitcher.id === playerInfo.id
-                );
-                pitcherOuts.forEach((play) => {
+                )
+                .forEach((play) => {
                     const inningNum = play.about.inning;
-
-                    if (!masterOutsByInning[inningNum]) {
-                        masterOutsByInning[inningNum] = 0;
-                    }
-
-                    masterOutsByInning[inningNum] += 1;
+                    masterOutsByInning[inningNum] =
+                        (masterOutsByInning[inningNum] || 0) + 1;
                 });
-            });
             setSeasonInningsPitched(
-                Object.entries(masterOutsByInning).map((inning) => {
-                    return {
-                        inningNum: inning[0],
-                        inningsPitched: Number(inning[1] / 3).toFixed(2),
-                    };
-                })
+                Object.entries(masterOutsByInning).map(
+                    ([inningNum, totalOuts]) => {
+                        return {
+                            inningNum: Number(inningNum),
+                            inningsPitched: Number(totalOuts[1] / 3).toFixed(2),
+                        };
+                    }
+                )
             );
         }
 
@@ -325,9 +323,9 @@ export const PlayerStats = () => {
         }
     }, [pitcherYearDetails.gameLog, playerInfo?.id]);
 
-    const handlePitcherRowSelect = (e, dt, type, indexes) => {
+    const handlePitcherRowSelect = (_e, _dt, _type, indexes) => {
         const getPitcherYearDetails = async () => {
-            const selectedYear = displayedPitcherStats[indexes].year;
+            const selectedYear = Number(displayedPitcherStats[indexes].year);
             setPitcherYearDetails((prev) => ({
                 ...prev,
                 isLoading: true,
@@ -383,19 +381,14 @@ export const PlayerStats = () => {
                     error: false,
                 });
             } catch (err) {
-                console.error(err.message);
-                setPitcherYearDetails((prev) => ({
-                    ...prev,
-                    isLoading: false,
-                    error: err.message,
-                }));
+                console.error(err);
             }
         };
 
         getPitcherYearDetails();
     };
 
-    const handlePitcherRowDeselect = (e, dt, type, indexes) => {
+    const handlePitcherRowDeselect = () => {
         setPitcherYearDetails({
             isLoading: false,
             year: null,
@@ -428,7 +421,7 @@ export const PlayerStats = () => {
         );
     };
 
-    const handlePitcherGameRowDeselect = (e, dt, type, indexes) => {
+    const handlePitcherGameRowDeselect = () => {
         setSelectedPitcherGamePitches(null);
         setSelectedPitcherGamePitchesVelocity(null);
     };
@@ -468,7 +461,12 @@ export const PlayerStats = () => {
         return () => {
             delete window.handleViewGameClick;
         };
-    }, [pitcherYearDetails.gameLog, navigate]);
+    }, [
+        pitcherYearDetails.gameLog,
+        navigate,
+        setSelectedGame,
+        setSelectedGameMetadata,
+    ]);
 
     useEffect(() => {
         const getPlayer = async () => {
@@ -885,9 +883,6 @@ export const PlayerStats = () => {
         //                                                                             stacked: true
         //
     }, [selectedPlayer]);
-
-    console.log('playerInfo');
-    console.log(playerInfo);
 
     return (
         <>
