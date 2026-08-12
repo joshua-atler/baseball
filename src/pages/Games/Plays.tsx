@@ -14,7 +14,7 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
 
@@ -25,16 +25,13 @@ import { TeamLogo } from '../../components/TeamLogo.tsx';
 import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext';
 import { fetchGame } from '../../services/gamesService.ts';
+import { BaseRunners, FinalDestination } from '../../types/plays.ts';
 import { transformGamePlays } from '../../utils/gameTransformers.ts';
 
 const strikeZoneWidth = 180;
 const strikeZoneHeight = 240;
 const strikeZoneSide = 17 / 24;
 const sizeMult = 55;
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 function Inning({ inning, theme }) {
     return (
@@ -109,7 +106,7 @@ function Play({ play, theme }) {
 
     const pitches = play?.playEvents.filter((p) => p.isPitch);
 
-    const finalDestinations = {};
+    const finalDestinations: Record<number, FinalDestination> = {};
 
     play?.runners.forEach((runner) => {
         const runnerId = runner.details.runner.id;
@@ -213,13 +210,7 @@ function Play({ play, theme }) {
                     <StrikeZone pitches={pitches} />
                     <Stack direction="column" gap={2}>
                         {play?.playEvents?.map((playEvent, i) => {
-                            return (
-                                <PlayEvent
-                                    key={i}
-                                    playEvent={playEvent}
-                                    theme={theme}
-                                />
-                            );
+                            return <PlayEvent key={i} playEvent={playEvent} />;
                         })}
                     </Stack>
                 </Box>
@@ -228,7 +219,13 @@ function Play({ play, theme }) {
     );
 }
 
-function Baserunners({ runners = {}, theme }) {
+function Baserunners({
+    runners,
+    theme,
+}: {
+    runners: BaseRunners;
+    theme: Theme;
+}) {
     const baseData = [
         [
             theme.palette.custom.basesIconEmptyFill,
@@ -344,7 +341,7 @@ function PlayIcon({ desc }) {
     );
 }
 
-function PlayEvent({ playEvent, theme }) {
+function PlayEvent({ playEvent }: { playEvent: any }) {
     const callDescription = playEvent?.details?.call?.description;
     const description = playEvent?.details?.type?.description;
     const count = `${playEvent?.count?.balls}-${playEvent?.count?.strikes}`;
@@ -568,20 +565,6 @@ export const Plays = () => {
         <GameTabContent>
             {isLoading ? (
                 <>
-                    {/* <Box
-                        sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: '50%',
-                            border: '5px solid rgba(255, 255, 255, 0.1)',
-                            borderTop: (theme) => `5px solid ${theme.palette.custom.highlightGreen}`,
-                            animation: 'spin 1s linear infinite',
-                            '@keyframes spin': {
-                                '0%': { transform: 'rotate(0deg)' },
-                                '100%': { transform: 'rotate(360deg)' },
-                            },
-                        }}
-                    /> */}
                     <LoadingCircle size={60} />
                 </>
             ) : innings.length !== 0 ? (

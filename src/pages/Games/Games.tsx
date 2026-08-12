@@ -13,7 +13,7 @@ import { Plays } from './Plays';
 import { WinProb } from './WinProb';
 
 export const Games = () => {
-    const { selectedGame, setSelectedPlayer } = useBasedash();
+    const { selectedGame } = useBasedash();
 
     const [tabValue, setTabValue] = useState('Boxscore');
 
