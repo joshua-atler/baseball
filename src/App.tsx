@@ -17,6 +17,7 @@ import { Games } from './pages/Games/Games.tsx';
 import { News } from './pages/News.tsx';
 import { Players } from './pages/Players/Players.tsx';
 import { Settings } from './pages/Settings.tsx';
+import { Charts } from './pages/Charts.tsx';
 import { Standings } from './pages/Standings.tsx';
 import { Stats } from './pages/Stats.tsx';
 import { baseDashTheme } from './theme.ts';
@@ -109,6 +110,10 @@ export const App = () => {
                                     <Route
                                         path="/standings"
                                         element={<Standings />}
+                                    />
+                                    <Route
+                                        path="/charts"
+                                        element={<Charts />}
                                     />
                                     <Route
                                         path="/settings"

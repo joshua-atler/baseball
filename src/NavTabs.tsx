@@ -14,6 +14,7 @@ export const NavTabs = () => {
             '/news',
             '/stats',
             '/standings',
+            '/charts',
             '/settings',
         ];
 
@@ -52,6 +53,12 @@ export const NavTabs = () => {
                     component={Link}
                     to="/standings"
                     value="/standings"
+                />
+                <Tab
+                    label="Charts"
+                    component={Link}
+                    to="/charts"
+                    value="/charts"
                 />
                 <Tab
                     label="Settings"
