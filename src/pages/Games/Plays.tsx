@@ -33,7 +33,7 @@ const strikeZoneHeight = 240;
 const strikeZoneSide = 17 / 24;
 const sizeMult = 55;
 
-function Inning({ inning, theme }) {
+const Inning = ({ inning, theme }) => {
     return (
         <Accordion>
             <AccordionSummary
@@ -84,9 +84,9 @@ function Inning({ inning, theme }) {
             </AccordionDetails>
         </Accordion>
     );
-}
+};
 
-function Play({ play, theme }) {
+const Play = ({ play, theme }) => {
     const result = play?.result?.event;
     const matchup = play?.matchup;
 
@@ -217,15 +217,15 @@ function Play({ play, theme }) {
             </AccordionDetails>
         </Accordion>
     );
-}
+};
 
-function Baserunners({
+const Baserunners = ({
     runners,
     theme,
 }: {
     runners: BaseRunners;
     theme: Theme;
-}) {
+}) => {
     const baseData = [
         [
             theme.palette.custom.basesIconEmptyFill,
@@ -294,9 +294,9 @@ function Baserunners({
             ></rect>
         </svg>
     );
-}
+};
 
-function PlayIcon({ desc }) {
+const PlayIcon = ({ desc }) => {
     let pathData = '';
     if (desc !== undefined) {
         if (desc.includes('steals')) {
@@ -339,9 +339,9 @@ function PlayIcon({ desc }) {
             <path d={pathData} fill="#ffffff" />
         </svg>
     );
-}
+};
 
-function PlayEvent({ playEvent }: { playEvent: any }) {
+const PlayEvent = ({ playEvent }: { playEvent: any }) => {
     const callDescription = playEvent?.details?.call?.description;
     const description = playEvent?.details?.type?.description;
     const count = `${playEvent?.count?.balls}-${playEvent?.count?.strikes}`;
@@ -417,9 +417,9 @@ function PlayEvent({ playEvent }: { playEvent: any }) {
             )}
         </>
     );
-}
+};
 
-function StrikeZone({ pitches }) {
+const StrikeZone = ({ pitches }) => {
     const strikeZoneTop = pitches[0]?.pitchData?.strikeZoneTop;
     const strikeZoneBottom = pitches[0]?.pitchData?.strikeZoneBottom;
 
@@ -501,9 +501,9 @@ function StrikeZone({ pitches }) {
             })}
         </svg>
     );
-}
+};
 
-function BallIcon({ pitch, pitchX, pitchY, ballNum }) {
+const BallIcon = ({ pitch, pitchX, pitchY, ballNum }) => {
     return (
         <g style={{ cursor: 'pointer' }}>
             <circle
@@ -526,7 +526,7 @@ function BallIcon({ pitch, pitchX, pitchY, ballNum }) {
             </text>
         </g>
     );
-}
+};
 
 export const Plays = () => {
     const theme = useTheme();

@@ -27,7 +27,7 @@ const cleanBroadcastName = (name) => {
     return name.split(/\s+presented\s+by\s+/i)[0].trim();
 };
 
-function LinescoreRow({ currGame, team, theme }) {
+const LinescoreRow = ({ currGame, team, theme }) => {
     const currentInning = currGame?.liveData?.linescore?.currentInning;
     const currentTeam = currGame?.liveData?.linescore?.isTopInning
         ? 'away'
@@ -109,9 +109,9 @@ function LinescoreRow({ currGame, team, theme }) {
                 })}
         </tr>
     );
-}
+};
 
-function ProbablePitcher({ pitcher }) {
+const ProbablePitcher = ({ pitcher }) => {
     const pitcherStats = pitcher?.people?.[0]?.stats;
     const seasonStats = pitcherStats?.find(
         (x) => x.type.displayName === 'season'
@@ -182,7 +182,7 @@ function ProbablePitcher({ pitcher }) {
             </Grid>
         </Stack>
     );
-}
+};
 
 export const Boxscore = () => {
     const theme = useTheme();
@@ -196,7 +196,7 @@ export const Boxscore = () => {
     const [selectedSide, setSelectedSide] = useState('away');
     const displayValue = currGame ? selectedSide : null;
 
-    async function fetchProbablePitchers() {
+    const fetchProbablePitchers = async () => {
         const awayPitcherID =
             currGame?.gameData?.probablePitchers?.away?.id ?? null;
         const homePitcherID =
@@ -211,9 +211,9 @@ export const Boxscore = () => {
                     : fetchPlayer(homePitcherID, ['pitching'], ['season']),
             ])
         );
-    }
+    };
 
-    async function fetchTeamRecords() {
+    const fetchTeamRecords = async () => {
         const standings = await fetchStandings(
             month,
             day,
@@ -230,7 +230,7 @@ export const Boxscore = () => {
         setTeamRecords(
             transformStandingsForBoxscore(standings, awayTeamID, homeTeamID)
         );
-    }
+    };
 
     const [awayPitcher, homePitcher] = probablePitchers ?? [null, null];
     const [awayRecord, homeRecord] = teamRecords ?? [null, null];

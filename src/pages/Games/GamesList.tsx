@@ -100,7 +100,7 @@ export const GamesList = () => {
     }, [isAutoUpdate]);
 
     useEffect(() => {
-        async function fillTableWithDates(datesParam: any[]) {
+        const fillTableWithDates = async (datesParam: any[]) => {
             const startDate = formatter.format(datesParam[0]);
             const endDate =
                 datesParam.length === 2
@@ -117,7 +117,7 @@ export const GamesList = () => {
             );
             setTableData(gamesData);
             setIsLoading(null);
-        }
+        };
 
         updateTableRef.current = (loadingType: string) => {
             setIsLoading(loadingType);

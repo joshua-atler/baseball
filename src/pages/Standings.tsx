@@ -54,7 +54,7 @@ import {
     transformStandings,
 } from '../utils/standingsTransformers.ts';
 
-function StandingsTable({
+const StandingsTable = ({
     tableData,
     standingsMode,
     groupingsMode,
@@ -62,7 +62,7 @@ function StandingsTable({
     tableData: FormattedStandings | LineChartDataset;
     standingsMode: StandingsMode;
     groupingsMode: GroupingsMode;
-}) {
+}) => {
     // const lastPlayoffIndex = isLeague
     //     ? tableData?.teamRecords
     //           .map((row, i) => ({ row, i }))
@@ -91,7 +91,7 @@ function StandingsTable({
             }}
         />
     );
-}
+};
 
 export const Standings = () => {
     const theme = useTheme();

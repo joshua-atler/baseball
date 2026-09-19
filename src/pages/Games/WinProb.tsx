@@ -8,13 +8,13 @@ import { Consts } from '../../consts/consts.ts';
 import { useBasedash } from '../../context/BasedashContext.tsx';
 import { fetchGame, fetchWinProbability } from '../../services/gamesService.ts';
 
-function rgbaColor(color) {
+const rgbaColor = (color) => {
     let rgbaColor = 'rgba(R, G, B, 0.3)';
     rgbaColor = rgbaColor.replace('R', color.split('(')[1].split(',')[0]);
     rgbaColor = rgbaColor.replace('G', color.split(' ')[1].split(',')[0]);
     rgbaColor = rgbaColor.replace('B', color.split(', ')[2].split(')')[0]);
     return rgbaColor;
-}
+};
 
 export const WinProb = () => {
     const { selectedGame } = useBasedash();

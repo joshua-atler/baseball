@@ -56,7 +56,7 @@ import {
 import { HitterStatsView } from './HitterStatsView.tsx';
 import { PitcherStatsView } from './PitcherStatsView.tsx';
 
-function AwardCard({ award, teams, dates }) {
+const AwardCard = ({ award, teams, dates }) => {
     return (
         <Card>
             <CardContent>
@@ -77,9 +77,9 @@ function AwardCard({ award, teams, dates }) {
             </CardContent>
         </Card>
     );
-}
+};
 
-function Awards({ awards, theme }) {
+const Awards = ({ awards, theme }) => {
     return (
         <Accordion
             sx={{
@@ -103,7 +103,7 @@ function Awards({ awards, theme }) {
             </AccordionDetails>
         </Accordion>
     );
-}
+};
 
 const fixName = (name: string) => {
     let cleanName = name.toLowerCase();
@@ -282,7 +282,7 @@ export const PlayerStats = () => {
     };
 
     useEffect(() => {
-        async function loadInningsPitched() {
+        const loadInningsPitched = async () => {
             const gamePromises = pitcherYearDetails.gameLog?.map(
                 async (gameInfo) => {
                     return await fetchGame(gameInfo.gamePk);
@@ -314,7 +314,7 @@ export const PlayerStats = () => {
                     }
                 )
             );
-        }
+        };
 
         if (pitcherYearDetails.gameLog) {
             loadInningsPitched();
