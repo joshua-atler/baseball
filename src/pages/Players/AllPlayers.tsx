@@ -15,6 +15,7 @@ import {
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useAllPlayersColumns } from '../../columns/useAllPlayersColumns.tsx';
 import { LoadingCircle } from '../../components/LoadingCircle.tsx';
@@ -26,7 +27,9 @@ import { RosterViewMode } from '../../types/roster.ts';
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export const AllPlayers = ({ setTeamViewTab }) => {
+export const AllPlayers = () => {
+    const navigate = useNavigate();
+
     const { setSelectedPlayer, setSelectedTeam } = useBasedash();
 
     const [viewMode, setViewMode] = useState<RosterViewMode>('Pitchers');
@@ -52,9 +55,8 @@ export const AllPlayers = ({ setTeamViewTab }) => {
         const rowData = dt.row(indexes).data();
 
         if (rowData && rowData.player.id) {
-            setSelectedPlayer(rowData.player.id);
             setSelectedTeam(rowData.team.name);
-            setTeamViewTab('Player');
+            navigate(`/players/${rowData.player.id}`);
         }
     };
 
@@ -132,7 +134,12 @@ export const AllPlayers = ({ setTeamViewTab }) => {
                     <LoadingCircle size={60} />
                 ) : (
                     <>
-                        <Box sx={Consts.dataTableContainerSx}>
+                        <Box
+                            sx={{
+                                ...Consts.dataTableContainerSx,
+                                width: '80%',
+                            }}
+                        >
                             <DataTable
                                 data={allPlayers}
                                 columns={allPlayersColumns}

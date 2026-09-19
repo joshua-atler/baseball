@@ -4,9 +4,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Analytics } from '@vercel/analytics/react';
 import {
+    BrowserRouter as Router,
     Navigate,
     Route,
-    BrowserRouter as Router,
     Routes,
 } from 'react-router-dom';
 
@@ -101,7 +101,7 @@ export const App = () => {
                                 <Routes>
                                     <Route path="/games" element={<Games />} />
                                     <Route
-                                        path="/players"
+                                        path="/players/*"
                                         element={<Players />}
                                     />
                                     <Route path="/news" element={<News />} />

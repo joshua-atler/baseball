@@ -22,7 +22,7 @@ import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
 import { useEffect, useMemo, useState } from 'react';
 import { HiExternalLink } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
@@ -122,12 +122,20 @@ const fixName = (name: string) => {
 
 export const PlayerStats = () => {
     const theme = useTheme();
+    const { playerId } = useParams<{ playerId: string }>();
     const {
         selectedPlayer,
+        setSelectedPlayer,
         selectedTeam,
         setSelectedGame,
         setSelectedGameMetadata,
     } = useBasedash();
+
+    useEffect(() => {
+        if (playerId) {
+            setSelectedPlayer(parseInt(playerId));
+        }
+    }, [playerId, setSelectedPlayer]);
 
     const { pitcherStatsColumns, pitcherGameLogColumns } = usePitcherColumns();
     const { hitterStatsColumns, hitterGameLogColumns } = useHitterColumns();

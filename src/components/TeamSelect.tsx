@@ -42,7 +42,7 @@ export const TeamSelect = memo(
                         value: teamName,
                         html: `
                     <div style="display: flex; align-items: center;">
-                        <img src="teamLogos/${Consts.teamInfo[teamName].abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
+                        <img src="/teamLogos/${Consts.teamInfo[teamName].abbr}.svg" width="30" height="30" style="margin-right: 10px;" />
                         <span style="font-weight: bold;">${Consts.teamInfo[teamName].abbr}</span>
                     </div>
                     `,

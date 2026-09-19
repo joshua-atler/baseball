@@ -155,8 +155,6 @@ export const WinProb = () => {
                                 bodyColor: '#fff',
                                 callbacks: {
                                     title: function (context) {
-                                        console.log('context');
-                                        console.log(context);
                                         return `${parseFloat(context[0]?.raw.toString()).toFixed(1)}%`;
                                     },
                                     label: function (context) {

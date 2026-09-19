@@ -1,42 +1,55 @@
 import { Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-import { useBasedash } from '../../context/BasedashContext';
 import { AllPlayers } from './AllPlayers.tsx';
 import { PlayerStats } from './PlayerStats';
 import { Rosters } from './Rosters';
 
 export const Players = () => {
-    const { setSelectedPlayer } = useBasedash();
+    const location = useLocation();
 
-    const [teamViewTab, setTeamViewTab] = useState('Roster');
+    const isStaticRoute = [
+        '/players/all-players',
+        '/players/rosters',
+        '/players/player',
+    ].includes(location.pathname);
 
-    const handleTeamViewChange = (
-        _event: React.SyntheticEvent,
-        value: string
-    ) => {
-        setSelectedPlayer(null);
-        setTeamViewTab(value);
-    };
+    const currentTab =
+        location.pathname === '/players'
+            ? '/players/all-players'
+            : isStaticRoute
+              ? location.pathname
+              : '/players/player';
 
     return (
         <>
-            <Tabs
-                value={teamViewTab}
-                onChange={handleTeamViewChange}
-                sx={{ mb: 5 }}
-            >
-                <Tab label="All Players" value={'All Players'} />
-                <Tab label="Roster" value={'Roster'} />
-                <Tab label="Player" value={'Player'} />
+            <Tabs value={currentTab} sx={{ pl: 4, mb: 4 }}>
+                <Tab
+                    label="All Players"
+                    component={Link}
+                    to="/players/all-players"
+                    value="/players/all-players"
+                />
+                <Tab
+                    label="rosters"
+                    component={Link}
+                    to="/players/rosters"
+                    value="/players/rosters"
+                />
+                <Tab
+                    label="Player"
+                    component={Link}
+                    to="/players/player"
+                    value="/players/player"
+                />
             </Tabs>
-            {teamViewTab === 'All Players' && (
-                <AllPlayers setTeamViewTab={setTeamViewTab} />
-            )}
-            {teamViewTab === 'Roster' && (
-                <Rosters setTeamViewTab={setTeamViewTab} />
-            )}
-            {teamViewTab === 'Player' && <PlayerStats />}
+            <Routes>
+                <Route index element={<Navigate to="all-players" replace />} />
+                <Route path="all-players" element={<AllPlayers />} />
+                <Route path="rosters" element={<Rosters />} />
+                <Route path=":playerId" element={<PlayerStats />} />
+            </Routes>
         </>
     );
 };

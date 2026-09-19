@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 import DT from 'datatables.net-dt';
 import DataTable from 'datatables.net-react';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useRosterColumns } from '../../columns/useRosterColumns.tsx';
 import { TeamSelect } from '../../components/TeamSelect.tsx';
@@ -19,7 +20,9 @@ import { transformRoster } from '../../utils/rosterTransformer.ts';
 // eslint-disable-next-line react-hooks/rules-of-hooks
 DataTable.use(DT);
 
-export const Rosters = ({ setTeamViewTab }) => {
+export const Rosters = () => {
+    const navigate = useNavigate();
+
     const { setSelectedPlayer, selectedTeam, setSelectedTeam } = useBasedash();
 
     const selectedTeamLogo = selectedTeam
@@ -32,8 +35,7 @@ export const Rosters = ({ setTeamViewTab }) => {
         const rowData = dt.row(indexes).data();
 
         if (rowData && rowData.id) {
-            setSelectedPlayer(rowData.id);
-            setTeamViewTab('Player');
+            navigate(`/players/${rowData.id}`);
         }
     };
 
@@ -74,7 +76,7 @@ export const Rosters = ({ setTeamViewTab }) => {
 
     return (
         <>
-            <Box sx={{ width: '100%', mb: 5 }}>
+            <Box sx={{ width: '80%', mb: 5 }}>
                 <Box
                     sx={{
                         display: 'flex',
@@ -117,28 +119,35 @@ export const Rosters = ({ setTeamViewTab }) => {
             </Box>
 
             {roster && (
-                <DataTable
-                    data={roster}
-                    columns={rosterColumns}
-                    options={{
-                        select: {
-                            info: false,
-                        },
-                        searching: true,
-                        paging: false,
-                        info: false,
-                        ordering: true,
-                        dom: 'ft',
-                        destroy: true,
-                        rowGroup: {
-                            dataSrc: 'type.display',
-                        },
-                        order: [[9, 'asc']],
-                        orderFixed: [[9, 'asc']],
+                <Box
+                    sx={{
+                        ...Consts.dataTableContainerSx,
+                        width: '80%',
                     }}
-                    onSelect={handleSelect}
-                    onDeselect={handleDeselect}
-                />
+                >
+                    <DataTable
+                        data={roster}
+                        columns={rosterColumns}
+                        options={{
+                            select: {
+                                info: false,
+                            },
+                            searching: true,
+                            paging: false,
+                            info: false,
+                            ordering: true,
+                            dom: 'ft',
+                            destroy: true,
+                            rowGroup: {
+                                dataSrc: 'type.display',
+                            },
+                            order: [[9, 'asc']],
+                            orderFixed: [[9, 'asc']],
+                        }}
+                        onSelect={handleSelect}
+                        onDeselect={handleDeselect}
+                    />
+                </Box>
             )}
         </>
     );

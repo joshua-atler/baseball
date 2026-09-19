@@ -14,7 +14,7 @@ export const useHitterColumns = () => {
                 title: 'Team',
                 render: (data: TeamName) => {
                     if (data.length > 0) {
-                        const logoURL = Consts.teamInfo[data].logo;
+                        const logoURL = Consts.teamInfo[data]?.logo ?? '';
                         return `<img src=${logoURL} style="width: 40px; height: 40px" />`;
                     } else {
                         return '';

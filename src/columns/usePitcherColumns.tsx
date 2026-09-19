@@ -17,7 +17,7 @@ export const usePitcherColumns = () => {
                 title: 'Team',
                 render: (data: TeamName) => {
                     if (data.length > 0) {
-                        const logoURL = Consts.teamInfo[data].logo;
+                        const logoURL = Consts.teamInfo[data]?.logo ?? '';
                         return `<img src=${logoURL} style="width: 40px; height: 40px" />`;
                     } else {
                         return '';
@@ -45,8 +45,8 @@ export const usePitcherColumns = () => {
                 data: 'matchup',
                 title: 'Matchup',
                 render: (data: TeamName[]) => {
-                    const awayLogoURL = Consts.teamInfo[data[0]].logo ?? '';
-                    const homeLogoURL = Consts.teamInfo[data[1]].logo ?? '';
+                    const awayLogoURL = Consts.teamInfo[data[0]]?.logo ?? '';
+                    const homeLogoURL = Consts.teamInfo[data[1]]?.logo ?? '';
                     return `<span style="display: inline-flex; align-items: center"><img src=${awayLogoURL} style="width: 40px; height: 40px" />
                 <span style="margin: 0 10px; font-weight: 500;">@</span>
                 <img src=${homeLogoURL} style="width: 40px; height: 40px" /></span>`;

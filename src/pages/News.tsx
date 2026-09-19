@@ -98,12 +98,12 @@ export const News = () => {
                 // <>
                 //     <Box>
                 //         <div style={{ height: '250px' }}>
-                //             <span id="news-team-logo" style={{ all: 'unset !important' }}></span>
-                //             <span id="news-team-label"></span>
-                //             <div className="news-team-color-banner" style={{ height: '30px' }}></div>
-                //             <div className="news-team-color-banner" style={{ height: '20px', marginBottom: '10px' }}></div>
-                //             <div id="news-teams-select-container" style={{ all: 'unset !important' }}>
-                //                 <select id="news-teams-select"></select>
+                //             <span style={{ all: 'unset !important' }}></span>
+                //             <span></span>
+                //             <div style={{ height: '30px' }}></div>
+                //             <div style={{ height: '20px', marginBottom: '10px' }}></div>
+                //             <div style={{ all: 'unset !important' }}>
+                //                 <select></select>
                 //             </div>
                 //         </div>
                 //     </Box>
