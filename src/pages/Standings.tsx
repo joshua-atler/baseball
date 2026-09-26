@@ -152,14 +152,6 @@ export const Standings = () => {
         });
     };
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setIsLoading(true);
-        }, 300);
-
-        return () => clearTimeout(handler);
-    }, [sliderValue]);
-
     const selectedDateApiString = useMemo(() => {
         if (!seasonBounds || !seasonBounds.start) return '';
 
@@ -206,6 +198,8 @@ export const Standings = () => {
     }, [standingsYear, standingsMode]);
 
     useEffect(() => {
+        let isCancelled = false;
+
         const getStandings = async () => {
             setStandings(null);
 
@@ -233,7 +227,8 @@ export const Standings = () => {
                         standingsMode,
                         groupingsMode
                     );
-                    setStandings(formattedStandings);
+
+                    if (!isCancelled) setStandings(formattedStandings);
                 } else {
                     const season = await fetchSeason(standingsYear);
                     const seasonData = season.seasons[0];
@@ -251,17 +246,23 @@ export const Standings = () => {
                         groupingsMode
                     );
 
-                    setStandings(formattedStandings);
+                    if (!isCancelled) setStandings(formattedStandings);
                 }
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
-                setStandings(null);
+                if (!isCancelled) setStandings(null);
             } finally {
-                setIsLoading(false);
+                if (!isCancelled) {
+                    setIsLoading(false);
+                }
             }
         };
 
         getStandings();
+
+        return () => {
+            isCancelled = true;
+        };
     }, [
         selectedDateApiString,
         standingsMode,
