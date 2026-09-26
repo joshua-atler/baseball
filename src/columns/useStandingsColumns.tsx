@@ -20,27 +20,83 @@ export const useStandingsColumns = (
                 data: 'team',
                 title: `${tableData?.division}`,
                 width: '20%',
-                render: function (data: TeamRecord['team']) {
-                    return `<img src=${data.teamLogo} style="width: 30px; height: 30px; margin-right: 5px; vertical-align: middle" /><span>${data.name}</span>`;
+                render: function (
+                    data: TeamRecord['team'],
+                    _type: string,
+                    row
+                ) {
+                    const clinchIndicator = row.clinched
+                        ? row.clinchIndicator
+                        : '';
+                    const eliminated =
+                        !row.clinched && row.wildCardEliminationNumber === 'E'
+                            ? 'E'
+                            : '';
+
+                    const color =
+                        clinchIndicator.length > 0 ? '#55aa55' : '#aa5555';
+                    const border = '1px solid #424242';
+
+                    const badgeHtml =
+                        clinchIndicator.length > 0 || eliminated.length > 0
+                            ? `
+                        <span style="
+                            border: ${border};
+                            color: ${color};
+                            font-size: 18px;
+                            font-weight: 700;
+                            padding: 5px;
+                            border-radius: 10px;
+                            line-height: 1;
+                            display: inline-block;
+                        ">${clinchIndicator}${eliminated}</span>
+                    `
+                            : '';
+
+                    return `<div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <img src="${data.teamLogo}" style="width: 30px; height: 30px; vertical-align: middle" />
+                                    <span>${data.name}</span>
+                                </div>
+                                ${badgeHtml}
+                            </div>`;
                 },
             },
-            { data: 'wins', title: 'W' },
-            { data: 'losses', title: 'L' },
+            { data: 'wins', title: 'W', width: '10%', className: 'dt-center' },
+            {
+                data: 'losses',
+                title: 'L',
+                width: '10%',
+                className: 'dt-center',
+            },
             ...(standingsMode === 'regular season' &&
             groupingsMode === 'division'
-                ? [{ data: 'gamesBack', title: 'GB' }]
+                ? [{ data: 'gamesBack', title: 'GB', className: 'dt-right' }]
                 : []),
             ...(standingsMode === 'regular season' && groupingsMode === 'league'
-                ? [{ data: 'leagueGamesBack', title: 'GB' }]
+                ? [
+                      {
+                          data: 'leagueGamesBack',
+                          title: 'GB',
+                          className: 'dt-right',
+                      },
+                  ]
                 : []),
             ...(standingsMode === 'regular season' && groupingsMode === 'MLB'
-                ? [{ data: 'sportGamesBack', title: 'GB' }]
+                ? [
+                      {
+                          data: 'sportGamesBack',
+                          title: 'GB',
+                          className: 'dt-right',
+                      },
+                  ]
                 : []),
             ...(standingsMode === 'wild card'
                 ? [
                       {
                           data: 'wildCardGamesBack',
                           title: 'GB',
+                          className: 'dt-right',
                           render: (data: string) => {
                               return `<div style="text-align: right;">${data ?? ''}</div>`;
                           },
@@ -48,7 +104,13 @@ export const useStandingsColumns = (
                   ]
                 : []),
             ...(standingsMode === 'spring training'
-                ? [{ data: 'springLeagueGamesBack', title: 'GB' }]
+                ? [
+                      {
+                          data: 'springLeagueGamesBack',
+                          title: 'GB',
+                          className: 'dt-right',
+                      },
+                  ]
                 : []),
 
             {

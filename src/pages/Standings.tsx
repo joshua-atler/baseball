@@ -335,11 +335,10 @@ export const Standings = () => {
                                 variant="body1"
                                 sx={{ fontSize: '1rem' }}
                             >
-                                x- Clinched Playoff Spot
-                                <br />
-                                y- Clinched Division
-                                <br />
-                                z- Clinched Best Record
+                                x - Clinched Playoff Spot
+                                <br />y - Clinched Division
+                                <br />z - Clinched Best Record
+                                <br />E - Eliminated from Postseason
                             </Typography>
                         }
                     >
@@ -351,7 +350,6 @@ export const Standings = () => {
                     </Tooltip>
                 </Grid>
             </Grid>
-            {/* <Box style={{ display: standingsMode === 'regular season' ? 'block' : 'none' }}> */}
             <Box>
                 <Box display="flex" gap={4} sx={{ width: '1500px', mb: 4 }}>
                     {['regular season', 'line chart'].includes(

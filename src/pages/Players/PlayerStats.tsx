@@ -29,8 +29,8 @@ DataTable.use(DT);
 
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 import 'datatables.net-dt';
-import '../../styles/dtStyle.css';
 
+// import '../../styles/dtStyle.css';
 import { useHitterColumns } from '../../columns/useHitterColumns.tsx';
 import { usePitcherColumns } from '../../columns/usePitcherColumns.tsx';
 import { Consts } from '../../consts/consts.ts';
