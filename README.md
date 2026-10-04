@@ -75,13 +75,26 @@ The **News** tab features an article that is written shortly after the game is o
 
 #### Media
 
+The **Media** tab includes at least 20 vidoes from the game. The first 2 videos are short highlights (about 3 minutes) and a longer condensed game (10 - 20 minutes). For upcoming games, several short videos are included highlighting bullpen availability and probable starting pitchers.
+
 ![Media](/doc_images/tabs_media.png)
 
 #### Stats
 
+The **Stats** tab includes numerous stats for each team across _Hitting_, _Pitching_, and _Fielding Groups_. The better value (higher or lower depending on the stat) is highlighted green.
+
 ![Stats](/doc_images/tabs_stats.png)
 
 #### Win Probability
+
+The **Win Probability** tab displays a chart showing the home team's chance of winning the game at each at bat. Each half inning slice is highlighted with the color team that is batting.
+
+Hovering over each point will show the following:
+
+- the win probability (between 0 and 100)
+- the description of the At Bat result
+- the half inning (ex. "top 4" or "bottom 5")
+- the current runs for each team
 
 ![Win Probability](/doc_images/tabs_win_prob.png)
 
