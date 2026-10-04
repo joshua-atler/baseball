@@ -1,6 +1,5 @@
 # BaseDash
 
-Introduction
 Basedash is a baseball dashboard featuring data pulled from the [MLB Stats API](https://github.com/joerex1418/mlb-statsapi-swagger-docs/blob/main/swagger-docs.json).
 
 Live link: [BaseDash](https://basedash.vercel.app)
@@ -63,9 +62,10 @@ The pitches are also listed in order and contain the following content:
 - a link to the pitch on BaseballSavant
 - the pitch speed in MPH
 
-![Media](/doc_images/tabs_plays.png)
+![Plays](/doc_images/tabs_plays.png)
 
 [![Pitch Video Highlight](./doc_images/tabs_plays_video_preview.png)](https://baseballsavant.mlb.com/sporty-videos?playId=a9cae4f7-2c64-30de-a96b-9b69a21cb899)
+_Click the pitch video highlight preview to view the clip on BaseballSavant._
 
 #### News
 
@@ -100,10 +100,20 @@ Hovering over each point will show the following:
 
 ## Players
 
+_Documentation for this view is coming soon._
+
 ## News
+
+_Documentation for this view is coming soon._
 
 ## Stats
 
+_Documentation for this view is coming soon._
+
 ## Standings
 
+_Documentation for this view is coming soon._
+
 ## Settings
+
+_Documentation for this view is coming soon._
