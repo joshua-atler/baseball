@@ -39,13 +39,51 @@ The game story can be viewed by clicking the **Recap** link, and the **mlb.com**
 
 #### Plays
 
+The **Plays** tab includes dropdowns for each half inning.
+
+Each play includes the following content on its header row:
+
+- a short description of the result
+- the number of outs recorded after the play is over (filled circles indicate outs)
+- the baserunners before and after the play
+- the player name
+- the player photo
+
+Each play is itself also a dropdown, which includes a diagram of the strike zone with the location of the pitches (from the catcher's point of view).
+
+The pitches are also listed in order and contain the following content:
+
+- pitch number colored with
+    - green for balls
+    - red for strikes
+    - blue for batted balls
+- the count (balls-strikes) after the pitch
+- the pitch type
+- the umpire's call
+- a link to the pitch on BaseballSavant
+- the pitch speed in MPH
+
+![Media](/doc_images/tabs_plays.png)
+
+[![Pitch Video Highlight](./doc_images/tabs_plays_video_preview.png)](https://baseballsavant.mlb.com/sporty-videos?playId=a9cae4f7-2c64-30de-a96b-9b69a21cb899)
+
 #### News
+
+The **News** tab features an article that is written shortly after the game is over. The article can also be viewed on **mlb.com** using the link next to the author and date.
+
+![News](/doc_images/tabs_news.png)
 
 #### Media
 
+![Media](/doc_images/tabs_media.png)
+
 #### Stats
 
+![Stats](/doc_images/tabs_stats.png)
+
 #### Win Probability
+
+![Win Probability](/doc_images/tabs_win_prob.png)
 
 ## Players
 
