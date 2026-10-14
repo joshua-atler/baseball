@@ -1,11 +1,11 @@
 import {
     CartesianGrid,
+    ReferenceLine,
     ResponsiveContainer,
     Scatter,
     ScatterChart,
     XAxis,
     YAxis,
-    ReferenceLine,
 } from 'recharts';
 
 export const HitsRunsChart = ({ seasonGames }: { seasonGames: any }) => {

@@ -1,21 +1,22 @@
+import { Temporal } from '@js-temporal/polyfill';
 import {
     Box,
-    Typography,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
     FormControl,
     LinearProgress,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useEffect, useState } from 'react';
-import { fetchSeason } from '../services/standingsService';
-import { Temporal } from '@js-temporal/polyfill';
-import { fetchGame, fetchSchedule } from '../services/gamesService';
+
 import { AwayHomeScoreChart } from '../charts/AwayHomeScoreChart';
 import { HitsRunsChart } from '../charts/HitsRunsChart';
-import { StrikeoutsRunsChart } from '../charts/StrikeoutsRunsChart';
 import { PitchesWalksChart } from '../charts/PitchesWalksChart';
+import { StrikeoutsRunsChart } from '../charts/StrikeoutsRunsChart';
+import { fetchGame, fetchSchedule } from '../services/gamesService';
+import { fetchSeason } from '../services/standingsService';
 
 export const Charts = () => {
     const [chartsYear, setChartsYear] = useState(
