@@ -18,6 +18,12 @@ export const NavTabs = () => {
             <Tab label="News" component={Link} to="/news" value="/news" />
             <Tab label="Stats" component={Link} to="/stats" value="/stats" />
             <Tab
+                label="Schedule"
+                component={Link}
+                to="/schedule"
+                value="/schedule"
+            />
+            <Tab
                 label="Standings"
                 component={Link}
                 to="/standings"

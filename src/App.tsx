@@ -16,6 +16,7 @@ import { NavTabs } from './NavTabs.tsx';
 import { Games } from './pages/Games/Games.tsx';
 import { News } from './pages/News.tsx';
 import { Players } from './pages/Players/Players.tsx';
+import { Schedule } from './pages/Schedule.tsx';
 import { Settings } from './pages/Settings.tsx';
 import { Standings } from './pages/Standings.tsx';
 import { Stats } from './pages/Stats.tsx';
@@ -106,6 +107,10 @@ export const App = () => {
                                     />
                                     <Route path="/news" element={<News />} />
                                     <Route path="/stats" element={<Stats />} />
+                                    <Route
+                                        path="/schedule"
+                                        element={<Schedule />}
+                                    />
                                     <Route
                                         path="/standings"
                                         element={<Standings />}
