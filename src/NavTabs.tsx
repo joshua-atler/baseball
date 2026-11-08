@@ -7,7 +7,7 @@ export const NavTabs = () => {
     const currentTab = '/' + location.pathname.split('/')[1];
 
     return (
-        <Tabs value={currentTab} sx={{ pl: 4 }}>
+        <Tabs value={currentTab} sx={{ ml: 4 }}>
             <Tab label="Games" component={Link} to="/games" value="/games" />
             <Tab
                 label="Players"
