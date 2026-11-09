@@ -331,8 +331,13 @@ export const PlayerStats = () => {
         }
     }, [pitcherYearDetails.gameLog, playerInfo?.id]);
 
+    console.log('playerInfo');
+    console.log(playerInfo);
+
     const handlePitcherRowSelect = (_e, _dt, _type, indexes) => {
         const getPitcherYearDetails = async () => {
+            console.log('displayedPitcherStats');
+            console.log(displayedPitcherStats);
             const selectedYear = Number(displayedPitcherStats[indexes].year);
             setPitcherYearDetails((prev) => ({
                 ...prev,
@@ -544,352 +549,6 @@ export const PlayerStats = () => {
         };
 
         getPlayer();
-
-        //                     console.log(gameLog[i]);
-        //                     var date = gameLog[i]['date'];
-        //                     var team = gameLog[i]['team']['name'];
-        //                     var opponent = gameLog[i]['opponent']['name'];
-        //                     var summary = gameLog[i]['stat']['summary'];
-        //                     var atBats = gameLog[i]['stat']['atBats'];
-        //                     var hits = gameLog[i]['stat']['hits'];
-        //                     var homeRuns = gameLog[i]['stat']['homeRuns'];
-        //                     var walks = gameLog[i]['stat']['baseOnBalls'];
-        //                     var strikeouts = gameLog[i]['stat']['strikeOuts'];
-        //                     var rbi = gameLog[i]['stat']['rbi'];
-        //                     var totalBases = gameLog[i]['stat']['totalBases'];
-        //                     var link = gameLog[i]['game']['link'];
-
-        //                     hittingGameLogDT.row.add([
-        //                         date,
-        //                         matchup,
-        //                         summary,
-        //                         atBats,
-        //                         hits,
-        //                         homeRuns,
-        //                         walks,
-        //                         strikeouts,
-        //                         rbi,
-        //                         totalBases,
-        //                         link
-        //                     ]);
-
-        //     function createGenericCharts(year) {
-        //         fetch(`https://statsapi.mlb.com/api/v1/seasons/${year}?sportId=1`)
-        //             .then(response => {
-        //                 if (!response.ok) {
-        //                     throw new Error('Network response was not ok');
-        //                 }
-        //                 return response.json();
-        //             })
-        //             .then(seasonInfo => {
-        //                 var seasonEndDate = seasonInfo['seasons'][0]['regularSeasonEndDate'];
-        //                 seasonEndDate = new Date(`${seasonEndDate}T00:00:00`);
-
-        //                 fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?appContext=majorLeague&hydrate=team,currentTeam,rosterEntries`)
-        //                     .then(response => {
-        //                         if (!response.ok) {
-        //                             throw new Error('Network response was not ok');
-        //                         }
-        //                         return response.json();
-        //                     })
-        //                     .then(playerInfo => {
-        //                         fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,gameLog],season=${year})`)
-        //                             .then(response => {
-        //                                 if (!response.ok) {
-        //                                     throw new Error('Network response was not ok');
-        //                                 }
-        //                                 return response.json();
-        //                             })
-        //                             .then(allStats => {
-        //                                 var seasonStatsByTeam = allStats['people'][0]['stats'][0]['splits'];
-        //                                 // console.log('----------------------');
-        //                                 console.log(seasonStatsByTeam);
-        //                                 var allTeamsURLs = [];
-        //                                 // for (let i = 0; i < seasonStatsByTeam.length; i++) {
-        //                                 for (let i = 0; i < seasonStatsByTeam.length; i++) {
-        //                                     if ('team' in seasonStatsByTeam[i]) {
-        //                                         allTeamsURLs.push(`${Consts.baseURL}/teams/${seasonStatsByTeam[i]['team']['id']}`);
-        //                                         // fetch(`${Consts.baseURL}/teams/${seasonStatsByTeam[i]['team']['id']}`)
-        //                                         // .then(response => {
-        //                                         //     if (!response.ok) {
-        //                                         //         throw new Error('Network response was not ok');
-        //                                         //     }
-        //                                         //     return response.json();
-        //                                         // })
-        //                                         // .then(teamInfo => {
-        //                                         //     console.log('team info');
-        //                                         //     console.log(teamInfo);
-        //                                         //     allTeams.push(teamInfo['teams'][0]['abbreviation']);
-        //                                         // })
-        //                                         // // allTeams.push(seasonStatsByTeam[i]['team']);
-        //                                     }
-        //                                 }
-
-        //                                 var promises = allTeamsURLs.map(url =>
-        //                                     fetch(url)
-        //                                         .then(response => {
-        //                                             return response.json();
-        //                                         })
-        //                                         .catch(error => console.error('Error fetching data:', error))
-        //                                 );
-
-        //                                 var allTeams = [];
-        //                                 Promise.all(promises)
-        //                                     .then(splitData => {
-        //                                         var combinedData = splitData.flat();
-        //                                         // console.log('combinedData');
-        //                                         // console.log(combinedData);
-
-        //                                         for (let i = 0; i < combinedData.length; i++) {
-        //                                             allTeams.push({
-        //                                                 id: combinedData[i]['teams'][0]['id'],
-        //                                                 name: combinedData[i]['teams'][0]['name'],
-        //                                                 abr: combinedData[i]['teams'][0]['abbreviation']
-        //                                             });
-        //                                         }
-
-        //                                         // var teamId = playerInfo['people'][0]['currentTeam']['id'];
-        //                                         // var teamName = playerInfo['people'][0]['currentTeam']['name'];
-
-        //                                         // console.log(`${teamId}: ${teamName}`);
-
-        //                                         var currDate;
-
-        //                                         var dates = [];
-        //                                         var rosterURLs = [];
-
-        //                                         var dateOptions = { month: '2-digit', day: '2-digit', year: 'numeric' };
-        //                                         for (let i = 0; i < allTeams.length; i++) {
-        //                                             currDate = new Date(`${seasonInfo['seasons'][0]['regularSeasonStartDate']}T00:00:00`);
-        //                                             while (currDate <= seasonEndDate) {
-        //                                                 // console.log(currDate);
-
-        //                                                 var formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(currDate);
-        //                                                 // console.log(formattedDate);
-        //                                                 dates.push(formattedDate);
-
-        //                                                 rosterURLs.push(`https://statsapi.mlb.com/api/v1/teams/${allTeams[i]['id']}/roster?rosterType=active&season=${year}&date=${formattedDate}`);
-        //                                                 var newDate = currDate.setDate(currDate.getDate() + 1);
-        //                                                 currDate = new Date(newDate);
-        //                                             }
-        //                                         }
-        //                                         // console.log(`rosterURLs.length: ${rosterURLs.length}`);
-
-        //                                         var promises = rosterURLs.map(url =>
-        //                                             fetch(url)
-        //                                                 .then(response => {
-        //                                                     return response.json();
-        //                                                 })
-        //                                                 .catch(error => console.error('Error fetching data:', error))
-        //                                         );
-
-        //                                         Promise.all(promises)
-        //                                             .then(splitData => {
-        //                                                 var combinedData = splitData.flat();
-
-        //                                                 // var activeDates = [];
-        //                                                 // var inactiveDates = [];
-        //                                                 var activeDates = {};
-        //                                                 var inactiveDates = {};
-
-        //                                                 // console.log(`combinedData.length: ${combinedData.length}`);
-        //                                                 var seasonLength = combinedData.length / allTeams.length;
-        //                                                 // console.log(`seasonLength: ${seasonLength}`);
-
-        //                                                 // console.log('all teams!');
-        //                                                 // console.log(allTeams);
-        //                                                 for (let i = 0; i < allTeams.length; i++) {
-        //                                                     // console.log(`++ ${allTeams[i]}`);
-        //                                                     var lastStatus = '';
-        //                                                     var currStatus = '';
-        //                                                     var sessionStart = dates[0];
-        //                                                     var sessionEnd;
-
-        //                                                     activeDates[allTeams[i]['abr']] = [];
-        //                                                     inactiveDates[allTeams[i]['abr']] = [];
-
-        //                                                     // console.log(activeDates);
-
-        //                                                     // for (let j = 0; j < combinedData.length; j++) {
-        //                                                     for (let j = 0; j < seasonLength; j++) {
-        //                                                         // console.log(seasonLength * i + j);
-        //                                                         // console.log(combinedData[seasonLength * i + j]['roster']);
-
-        //                                                         var roster = combinedData[seasonLength * i + j]['roster'];
-        //                                                         // console.log(roster);
-
-        //                                                         const playerOnRoster = roster.find(rosterEntry => rosterEntry.person.id == playerID);
-        //                                                         if (playerOnRoster) {
-        //                                                             // console.log(`${dates[i]}: ${playerOnRoster}`);
-        //                                                             // console.log(`${dates[i]}: active`);
-        //                                                             // console.log(playerOnRoster);
-        //                                                             currStatus = 'active';
-        //                                                         } else {
-        //                                                             // console.log(`${dates[i]}: not found`);
-        //                                                             currStatus = 'inactive';
-        //                                                         }
-
-        //                                                         // if (currStatus != lastStatus || j == combinedData.length - 1) {
-        //                                                         if (currStatus != lastStatus || j == seasonLength - 1) {
-        //                                                             if (j != 0) {
-        //                                                                 // sessionEnd = dates[i - 1];
-        //                                                                 sessionEnd = dates[j];
-        //                                                                 if (lastStatus == 'active') {
-        //                                                                     activeDates[allTeams[i]['abr']].push([new Date(sessionStart), new Date(sessionEnd)]);
-        //                                                                 } else if (lastStatus == 'inactive') {
-        //                                                                     inactiveDates[allTeams[i]['abr']].push([new Date(sessionStart), new Date(sessionEnd)]);
-        //                                                                 }
-        //                                                             }
-
-        //                                                             lastStatus = currStatus;
-        //                                                             sessionStart = dates[j];
-        //                                                         }
-        //                                                     }
-        //                                                 }
-
-        //                                                 console.log(`year: ${year}`);
-        //                                                 fetch(`https://statsapi.mlb.com/api/v1/people/${playerID}?hydrate=stats(group=[hitting,pitching],type=[season,seasonAdvanced,gameLog],season=${year})`)
-        //                                                     .then(response => {
-        //                                                         if (!response.ok) {
-        //                                                             throw new Error('Network response was not ok');
-        //                                                         }
-        //                                                         return response.json();
-        //                                                     })
-        //                                                     .then(allStats => {
-        //                                                         // console.log('allStats');
-        //                                                         // console.log(allStats);
-        //                                                         var gameLogInfo = allStats['people'][0]['stats'][2]['splits'];
-        //                                                         // only get game log, not season info?
-        //                                                         // console.log('gameLogInfo');
-        //                                                         // console.log(gameLogInfo);
-
-        //                                                         // TODO: use this
-        //                                                         // if (playerPosition == 'Pitcher') {
-        //                                                         //     var seasonPitching = stats.find(item =>
-        //                                                         //         item.type.displayName === 'season' &&
-        //                                                         //         item.group.displayName === 'pitching'
-        //                                                         //     );
-
-        //                                                         var datesPlayed = [];
-        //                                                         for (let i = 0; i < gameLogInfo.length; i++) {
-        //                                                             // datesPlayed.push(gameLogInfo[i]['date']);
-        //                                                             // var datePlayed = new Date(gameLogInfo[i]['date']);
-        //                                                             // console.log(gameLogInfo[i]);
-        //                                                             // console.log(gameLogInfo[i]['date']);
-        //                                                             var datePlayed = new Date(`${gameLogInfo[i]['date']}T00:00:00`);
-        //                                                             var datePlayedEnd = new Date(datePlayed);
-        //                                                             datePlayedEnd.setDate(datePlayedEnd.getDate() + 1);
-        //                                                             datesPlayed.push([datePlayed, datePlayedEnd]);
-        //                                                         }
-        //                                                         // console.log('datesPlayed');
-        //                                                         // console.log(datesPlayed);
-
-        //                                                         var datasets = [
-        //                                                             {
-        //                                                                 label: 'Games Played',
-        //                                                                 data: datesPlayed.map(dates => ({
-        //                                                                     x: dates,
-        //                                                                     y: 'Games'
-        //                                                                 })),
-        //                                                                 backgroundColor: 'rgba(100, 200, 200, 0.8)'
-        //                                                             }
-        //                                                         ];
-        //                                                         for (let i = 0; i < allTeams.length; i++) {
-        //                                                             datasets.push(
-        //                                                                 {
-        //                                                                     label: 'Inactive',
-        //                                                                     data: inactiveDates[allTeams[i]['abr']].map(dates => ({
-        //                                                                         x: dates,
-        //                                                                         // y: 'Roster'
-        //                                                                         y: allTeams[i]['abr']
-        //                                                                     })),
-        //                                                                     backgroundColor: 'rgba(200, 100, 100, 0.8)'
-        //                                                                 },
-        //                                                             );
-        //                                                             datasets.push(
-        //                                                                 {
-        //                                                                     label: 'Active',
-        //                                                                     data: activeDates[allTeams[i]['abr']].map(dates => ({
-        //                                                                         x: dates,
-        //                                                                         // y: 'Roster'
-        //                                                                         y: allTeams[i]['abr']
-        //                                                                         // y: ''/
-        //                                                                     })),
-        //                                                                     backgroundColor: 'rgba(100, 200, 100, 0.8)'
-        //                                                                 },
-        //                                                             );
-        //                                                         }
-
-        //                                                         var data = {
-        //                                                             datasets: datasets
-        //                                                         };
-
-        //                                                         // console.log('time data');
-        //                                                         // console.log(data);
-
-        //                                                         var imagePromises = [];
-        //                                                         for (let i = 0; i < allTeams.length; i++) {
-        //                                                             // console.log(Consts.teamsDetails[allTeams[i]['name']][0]);
-        //                                                             imagePromises.push(loadSVGToImage(Consts.teamInfo[allTeams[i]['name']][0]));
-        //                                                             // imagePromises.push(Consts.teamsDetails[allTeams[i]['name']][0]);
-        //                                                         }
-
-        //                                                         Promise.all(imagePromises).then((teamLogos) => {
-        //                                                             activeStatusTimePlot = new Chart(activeStatusTimePlotCanvas, {
-        //                                                                 type: 'bar',
-        //                                                                 data: data,
-        //                                                                 options: {
-        //                                                                     indexAxis: 'y',
-        //                                                                     responsive: true,
-        //                                                                     layout: {
-        //                                                                         padding: {
-        //                                                                             left: 15,
-        //                                                                             right: 30
-        //                                                                         }
-        //                                                                     },
-        //                                                                     scales: {
-        //                                                                         x: {
-        //                                                                             min: new Date(`${seasonInfo['seasons'][0]['regularSeasonStartDate']}T00:00:00`), // TODO: use months as ticks
-        //                                                                             max: seasonEndDate,
-        //                                                                             border: {
-        //                                                                                 display: false
-        //                                                                             },
-        //                                                                             ticks: {
-        //                                                                                 color: 'white',
-        //                                                                                 font: {
-        //                                                                                     size: 18
-        //                                                                                 }
-        //                                                                             },
-        //                                                                             grid: {
-        //                                                                                 color: 'white'
-        //                                                                             },
-        //                                                                             type: 'time',
-        //                                                                             time: {
-        //                                                                                 unit: 'day'
-        //                                                                             }
-        //                                                                         },
-        //                                                                         y: {
-        //                                                                             border: {
-        //                                                                                 display: false
-        //                                                                             },
-        //                                                                             ticks: {
-        //                                                                                 color: function (context) {
-        //                                                                                     if (context.index === 0) {
-        //                                                                                         return 'white';
-        //                                                                                     }
-        //                                                                                     return 'rgba(0, 0, 0, 0)';
-        //                                                                                 },
-        //                                                                                 font: {
-        //                                                                                     size: 18
-        //                                                                                 },
-        //                                                                                 padding: 10
-        //                                                                             },
-        //                                                                             grid: {
-        //                                                                                 color: 'white'
-        //                                                                             },
-        //                                                                             beginAtZero: true,
-        //                                                                             stacked: true
-        //
     }, [selectedPlayer]);
 
     return (
@@ -1048,100 +707,43 @@ export const PlayerStats = () => {
                             label="Group teams"
                         />
                     </Box>
-                    {pitcherStats && (
-                        <PitcherStatsView
-                            pitcherStats={pitcherStats}
-                            displayedPitcherStats={displayedPitcherStats}
-                            pitcherStatsColumns={pitcherStatsColumns}
-                            handlePitcherRowSelect={handlePitcherRowSelect}
-                            handlePitcherRowDeselect={handlePitcherRowDeselect}
-                            pitcherYearDetails={pitcherYearDetails}
-                            totalPitches={totalPitches}
-                            allSeasonPitches={allSeasonPitches}
-                            seasonInningsPitched={seasonInningsPitched}
-                            pitcherGameLogColumns={pitcherGameLogColumns}
-                            handlePitcherGameRowSelect={
-                                handlePitcherGameRowSelect
-                            }
-                            handlePitcherGameRowDeselect={
-                                handlePitcherGameRowDeselect
-                            }
-                            selectedPitcherGamePitches={
-                                selectedPitcherGamePitches
-                            }
-                            selectedPitcherGamePitchesVelocity={
-                                selectedPitcherGamePitchesVelocity
-                            }
-                        />
-                    )}
-                    {hitterStats && (
-                        <HitterStatsView
-                            hitterStats={hitterStats}
-                            displayedHitterStats={displayedHitterStats}
-                            hitterStatsColumns={hitterStatsColumns}
-                        />
-                    )}
-                    {/* <div id="hitting-stats-container">
-                    <table id="hitting-stats">
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th>Team</th>
-                                <th><span className="tooltip" data-tooltip="At bats">AB</span></th>
-                                <th><span className="tooltip" data-tooltip="Runs">R</span></th>
-                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
-                                <th><span className="tooltip" data-tooltip="Home runs">HR</span></th>
-                                <th><span className="tooltip" data-tooltip="Runs batted in">RBI</span></th>
-                                <th><span className="tooltip" data-tooltip="Stolen bases">SB</span></th>
-                                <th><span className="tooltip" data-tooltip="Batting average">AVG</span></th>
-                                <th><span className="tooltip" data-tooltip="On-base %">OPB</span></th>
-                                <th><span className="tooltip" data-tooltip="Slugging %">SLG</span></th>
-                                <th><span className="tooltip" data-tooltip="On-base + slugging">OPS</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <div id="hitting-stats-year-select-container"></div>
-                    <div id="hits-pie-chart">
-                        <canvas></canvas>
-                    </div>
-                    <div id="hits-scatter-plot">
-                        <canvas></canvas>
-                    </div>
-                    <h2>Game Log</h2>
-                    <table id="hitting-game-log">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Matchup</th>
-                                <th>Summary</th>
-                                <th><span className="tooltip" data-tooltip="At bats">AB</span></th>
-                                <th><span className="tooltip" data-tooltip="Hits">H</span></th>
-                                <th><span className="tooltip" data-tooltip="Home runs">HR</span></th>
-                                <th><span className="tooltip" data-tooltip="Walks">BB</span></th>
-                                <th><span className="tooltip" data-tooltip="Strikeouts">SO</span></th>
-                                <th><span className="tooltip" data-tooltip="RBI">RBI</span></th>
-                                <th>Total Bases</th>
-                                <th>link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div> */}
-                    {/* <div id="generic-stats-container">
-                    <h2 style={{ marginTop: '0px' }}>More Stats</h2>
-                    <div id="active-status-time-plot">
-                        <canvas></canvas>
-                    </div>
-                    <div id="game-stats">
-                        <button type="button" id="x-button" className="small-margin" disabled>X</button>
-                        <button type="button" id="details-button" className="small-margin" disabled>Details</button>
-                        <h2>Game stats<span id="game-log-summary"></span></h2>
-                        <p id="game-log-details"></p>
-                    </div>
-                </div> */}
+                    {playerInfo?.primaryPosition?.name === 'Pitcher' &&
+                        pitcherStats && (
+                            <PitcherStatsView
+                                pitcherStats={pitcherStats}
+                                displayedPitcherStats={displayedPitcherStats}
+                                pitcherStatsColumns={pitcherStatsColumns}
+                                handlePitcherRowSelect={handlePitcherRowSelect}
+                                handlePitcherRowDeselect={
+                                    handlePitcherRowDeselect
+                                }
+                                pitcherYearDetails={pitcherYearDetails}
+                                totalPitches={totalPitches}
+                                allSeasonPitches={allSeasonPitches}
+                                seasonInningsPitched={seasonInningsPitched}
+                                pitcherGameLogColumns={pitcherGameLogColumns}
+                                handlePitcherGameRowSelect={
+                                    handlePitcherGameRowSelect
+                                }
+                                handlePitcherGameRowDeselect={
+                                    handlePitcherGameRowDeselect
+                                }
+                                selectedPitcherGamePitches={
+                                    selectedPitcherGamePitches
+                                }
+                                selectedPitcherGamePitchesVelocity={
+                                    selectedPitcherGamePitchesVelocity
+                                }
+                            />
+                        )}
+                    {playerInfo?.primaryPosition?.name !== 'Pitcher' &&
+                        hitterStats && (
+                            <HitterStatsView
+                                hitterStats={hitterStats}
+                                displayedHitterStats={displayedHitterStats}
+                                hitterStatsColumns={hitterStatsColumns}
+                            />
+                        )}
                     {awards && <Awards awards={awards} theme={theme} />}
                     {/* <div id="missing-stats-container">
                     <Typography variant="h5" noWrap component="div" sx={{ mt: 5 }}>

@@ -1,10 +1,13 @@
 import { apiClient } from './apiClient';
 
-export const fetchSchedule = (start: string, end: string) =>
-    apiClient(
+export const fetchSchedule = (start: string, end: string, teamID?: number) => {
+    const teamParam = teamID ? `&teamId=${teamID}` : '';
+
+    return apiClient(
         false,
-        `/schedule?sportId=1&startDate=${start}&endDate=${end}&hydrate=game(tickets),broadcasts,seriesStatus`
+        `/schedule?sportId=1&startDate=${start}&endDate=${end}${teamParam}&hydrate=game(tickets),broadcasts,seriesStatus`
     );
+};
 
 export const fetchGame = (gamePk: number, hydrations: string[] = []) =>
     apiClient(

@@ -18,7 +18,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { TeamSelect } from '../components/TeamSelect';
 import { TeamName } from '../consts/consts';
+import { Consts } from '../consts/consts';
 import { fetchSchedule } from '../services/gamesService';
+import { fetchSeason } from '../services/standingsService';
 
 // import { TimeZone, useBasedash } from '../context/BasedashContext.tsx';
 
@@ -31,12 +33,13 @@ export const Schedule = () => {
 
     const [selectedTeam, setSelectedTeam] = useState<TeamName | ''>('');
     // const [gameEvents, setGameEvents] = useState<GameEvent[]>([]);
+    const [gameEvents, setGameEvents] = useState([]);
     // TODO
 
     const [scheduleYear, setScheduleYear] = useState(
         Temporal.Now.plainDateISO().year
     );
-    const firstYear = 2010;
+    const firstYear = 2015;
 
     const handleYearChange = (event: SelectChangeEvent<number>) => {
         setScheduleYear(Number(event.target.value));
@@ -56,16 +59,51 @@ export const Schedule = () => {
             selectedTeam: TeamName | ''
         ) => {
             if (selectedTeam === '') {
-                // setGameEvents([]);
+                setGameEvents([]);
             } else {
-                // fetch season
-                // const games = fetchSchedule();
-                // https://statsapi.mlb.com/api/v1/schedule/?sportId=1&startDate=2027-01-01&endDate=2027-06-06&teamId=118
+                const season = await fetchSeason(year);
+                const seasonData = season.seasons[0];
+                console.log('seasonData');
+
+                const startDate = seasonData.springStartDate;
+                const endDate = seasonData.postSeasonEndDate;
+
+                const games = await fetchSchedule(
+                    startDate,
+                    endDate,
+                    Consts.teamInfo[selectedTeam].id
+                );
+
+                console.log(games);
+
+                setGameEvents(
+                    games.dates.flatMap((date) =>
+                        date.games.map((game) => {
+                            const title = `${
+                                Consts.teamInfo[game.teams.away.team.name]
+                                    ?.abbr ?? '---'
+                            } @ ${
+                                Consts.teamInfo[game.teams.home.team.name]
+                                    ?.abbr ?? '---'
+                            }`;
+
+                            return {
+                                gamePk: game.gamePk,
+                                away: game.teams.away.team.name,
+                                home: game.teams.home.team.name,
+                                start: new Date(game.gameDate),
+                                title: title,
+                            };
+                        })
+                    )
+                );
             }
         };
 
         fetchGameEvents(scheduleYear, selectedTeam);
     }, [scheduleYear, selectedTeam]);
+
+    console.log(gameEvents);
 
     const renderEventContent = (eventInfo) => {
         return (
@@ -96,7 +134,7 @@ export const Schedule = () => {
                                     1,
                             }).map((_, i) => {
                                 const year =
-                                    Temporal.Now.plainDateISO().year - i;
+                                    Temporal.Now.plainDateISO().year - i + 1;
                                 return (
                                     <MenuItem key={year} value={year}>
                                         {year}
@@ -133,19 +171,25 @@ export const Schedule = () => {
                             // any other plugins
                         ]}
                         colorScheme="dark"
-                        // initialView="dayGridMonth"
                         initialView="dayGridMonth"
+                        // initialView="listWeek"
                         weekends={true}
-                        events={[
-                            { title: 'Meeting', start: new Date() },
-                            {
-                                title: 'Meeting',
-                                start: new Date(
-                                    Date.now() + 24 * 60 * 60 * 1000
-                                ),
-                            },
-                        ]}
+                        // events={[
+                        //     { title: 'Meeting', start: new Date() },
+                        //     {
+                        //         title: 'Meeting',
+                        //         start: new Date(
+                        //             Date.now() + 24 * 60 * 60 * 1000
+                        //         ),
+                        //     },
+                        // ]}
+                        events={gameEvents}
                         eventContent={renderEventContent}
+                        headerToolbar={{
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,dayGridWeek',
+                        }}
                     />
                 </Box>
             </Box>
