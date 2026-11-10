@@ -145,51 +145,136 @@ export const Schedule = () => {
     return (
         <>
             <Box>
-                <Stack spacing={3} sx={{ mt: 5, ml: 10, mb: 5 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Typography variant="h6" sx={{ minWidth: 60 }}>
-                            Year
-                        </Typography>
-                        <Select<number>
-                            value={scheduleYear}
-                            onChange={handleYearChange}
-                            sx={{ width: 200 }}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        mt: 5,
+                        mb: 5,
+                        ml: 10,
+                        mr: 10,
+                        width: '75%',
+                    }}
+                >
+                    <Stack spacing={3}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 3,
+                            }}
                         >
-                            {Array.from({
-                                length:
-                                    Temporal.Now.plainDateISO().year -
-                                    firstYear +
-                                    1,
-                            }).map((_, i) => {
-                                const year =
-                                    Temporal.Now.plainDateISO().year - i + 1;
-                                return (
-                                    <MenuItem key={year} value={year}>
-                                        {year}
-                                    </MenuItem>
-                                );
-                            })}
-                        </Select>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <Typography variant="h6" sx={{ minWidth: 60 }}>
-                            Team
-                        </Typography>
-                        <Box sx={{ width: 200 }}>
-                            <TeamSelect
-                                currentValue={selectedTeam}
-                                onTeamChange={handleTeamChange}
-                                multiple={false}
-                            />
+                            <Typography variant="h6" sx={{ minWidth: 60 }}>
+                                Year
+                            </Typography>
+                            <Select<number>
+                                value={scheduleYear}
+                                onChange={handleYearChange}
+                                sx={{ width: 200 }}
+                            >
+                                {Array.from({
+                                    length:
+                                        Temporal.Now.plainDateISO().year -
+                                        firstYear +
+                                        1,
+                                }).map((_, i) => {
+                                    const year =
+                                        Temporal.Now.plainDateISO().year -
+                                        i +
+                                        1;
+                                    return (
+                                        <MenuItem key={year} value={year}>
+                                            {year}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
                         </Box>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 3,
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ minWidth: 60 }}>
+                                Team
+                            </Typography>
+                            <Box sx={{ width: 200 }}>
+                                <TeamSelect
+                                    currentValue={selectedTeam}
+                                    onTeamChange={handleTeamChange}
+                                    multiple={false}
+                                />
+                            </Box>
+                        </Box>
+                    </Stack>
+                    <Box
+                        sx={{
+                            p: 1,
+                            outline: '1px solid white',
+                        }}
+                    >
+                        <Stack spacing={3}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 3,
+                                }}
+                            >
+                                <Typography variant="h6" sx={{ minWidth: 60 }}>
+                                    Legend
+                                </Typography>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 3,
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: '100px',
+                                        height: '50px',
+                                        backgroundColor: '#1e3a8a',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        borderRadius: '20px',
+                                    }}
+                                >
+                                    <Typography variant="body1">
+                                        Home
+                                    </Typography>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        width: '100px',
+                                        height: '50px',
+                                        backgroundColor: '#374151',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        borderRadius: '20px',
+                                    }}
+                                >
+                                    <Typography variant="body1">
+                                        Away
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Stack>
                     </Box>
-                </Stack>
+                </Box>
 
                 <Box
                     sx={{
                         width: '75%',
-                        ml: 5,
+                        ml: 10,
                     }}
                 >
                     <FullCalendar
