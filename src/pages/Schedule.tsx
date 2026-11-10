@@ -1,6 +1,6 @@
 import '@fullcalendar/react/skeleton.css';
-import '@fullcalendar/react/themes/classic/theme.css';
 import '@fullcalendar/react/themes/classic/palette.css';
+import '@fullcalendar/react/themes/classic/theme.css';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/react/daygrid';
@@ -17,8 +17,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 import { TeamSelect } from '../components/TeamSelect';
-import { TeamName } from '../consts/consts';
-import { Consts } from '../consts/consts';
+import { Consts, TeamName } from '../consts/consts';
 import { fetchSchedule } from '../services/gamesService';
 import { fetchSeason } from '../services/standingsService';
 
@@ -79,20 +78,34 @@ export const Schedule = () => {
                 setGameEvents(
                     games.dates.flatMap((date) =>
                         date.games.map((game) => {
-                            const title = `${
-                                Consts.teamInfo[game.teams.away.team.name]
-                                    ?.abbr ?? '---'
-                            } @ ${
-                                Consts.teamInfo[game.teams.home.team.name]
-                                    ?.abbr ?? '---'
-                            }`;
+                            // const title = `${
+                            //     Consts.teamInfo[game.teams.away.team.name]
+                            //         ?.abbr ?? '---'
+                            // } @ ${
+                            //     Consts.teamInfo[game.teams.home.team.name]
+                            //         ?.abbr ?? '---'
+                            // }`;
+
+                            // const ti
+
+                            const isHome =
+                                Consts.teamInfo[selectedTeam].id ===
+                                Consts.teamInfo[game.teams.home.team.name]?.id;
 
                             return {
+                                // title: title,
+                                start: new Date(game.gameDate),
                                 gamePk: game.gamePk,
                                 away: game.teams.away.team.name,
                                 home: game.teams.home.team.name,
-                                start: new Date(game.gameDate),
-                                title: title,
+                                awayLogo:
+                                    Consts.teamInfo[game.teams.away.team.name]
+                                        ?.logo ?? '',
+                                homeLogo:
+                                    Consts.teamInfo[game.teams.home.team.name]
+                                        ?.logo ?? '',
+                                color: isHome ? '#1e3a8a' : '#374151', // Home vs. Away colors
+                                // url: 'http://www.google.com',
                             };
                         })
                     )
@@ -106,10 +119,25 @@ export const Schedule = () => {
     console.log(gameEvents);
 
     const renderEventContent = (eventInfo) => {
+        const { awayLogo, homeLogo } = eventInfo.event.extendedProps;
         return (
             <>
                 <b>{eventInfo.timeText}</b>
-                <i>{eventInfo.event.title}</i>
+                {/* <i>{eventInfo.event.title}</i> */}
+                {/* <span>span</span> */}
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <img
+                        src={awayLogo}
+                        style={{ width: '20px', height: '20px' }}
+                    />
+                    <span style={{ margin: '0 2px', fontWeight: '500' }}>
+                        @
+                    </span>
+                    <img
+                        src={homeLogo}
+                        style={{ width: '20px', height: '20px' }}
+                    />
+                </span>
             </>
         );
     };
@@ -160,7 +188,7 @@ export const Schedule = () => {
 
                 <Box
                     sx={{
-                        width: '60%',
+                        width: '75%',
                         ml: 5,
                     }}
                 >
@@ -185,10 +213,12 @@ export const Schedule = () => {
                         // ]}
                         events={gameEvents}
                         eventContent={renderEventContent}
+                        eventDisplay="block"
+                        // eventColor="#aaffaa"
                         headerToolbar={{
-                            left: 'prev,next today',
                             center: 'title',
-                            right: 'dayGridMonth,dayGridWeek',
+                            right: 'prev,next today',
+                            // right: 'dayGridMonth,dayGridWeek',
                         }}
                     />
                 </Box>
